@@ -17,5 +17,4 @@ code {
 }
 #middle-section {
   height: calc(100vh - 57px) !important;
-  background-color: blue;
 }
