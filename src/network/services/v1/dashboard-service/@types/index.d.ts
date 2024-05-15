@@ -1,0 +1,3 @@
+interface SubscribersRequestBodyType {
+    email: string,
+}
