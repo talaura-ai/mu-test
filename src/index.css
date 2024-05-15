@@ -15,3 +15,7 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+#middle-section {
+  height: calc(100vh - 57px) !important;
+  background-color: blue;
+}
