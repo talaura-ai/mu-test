@@ -114,8 +114,8 @@ function MyAssessments () {
       </aside>
 
       <div className="sm:ml-16">
-        <div id="middle-section" className="mt-14 border-t-4 border-l-4 border-gray-200 rounded-tl-xl bg-[#F9F7F0] overflow-y-scroll">
-          <div className="sm:p-6 md:p-12 xl:p-6 lg:p-6 p-4">
+        <div id="middle-section" className="mt-14 border-t-2 border-l-2 border-[#eee] rounded-tl-xl bg-[#F9F7F0] overflow-y-scroll">
+          <div className="sm:p-6 md:p-12 p-4">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center justify-start">
                 <span className="text-xl font-semibold text-black self-center sm:text-2xl whitespace-nowrap">
