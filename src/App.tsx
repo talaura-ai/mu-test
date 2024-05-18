@@ -10,6 +10,7 @@ function App () {
       <Routes>
         <Route element={ <PrivateRoute /> }>
           <Route path="/" element={ <CommonLayout /> }>
+            <Route path="/assessment/:assessmentId" element={ <MyAssessments /> } />
             <Route path="/" element={ <MyAssessments /> } />
           </Route>
         </Route>

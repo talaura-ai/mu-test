@@ -1,7 +1,21 @@
 import { Outlet } from "react-router-dom";
 import DashboardIcon from "../assets/svg/DashboardLayoutIcon.svg"
+import { useLocation, useNavigate } from "react-router-dom";
+import React from "react";
 
 const CommonLayout = () => {
+	let location = useLocation();
+	const [active, setActive] = React.useState(true);
+
+	React.useEffect(() => {
+		if (location?.pathname) {
+			if (location?.pathname?.includes("assessment")) {
+				setActive(false);
+			} else {
+				setActive(true);
+			}
+		}
+	}, [location?.pathname]);
 
 	return (
 		<>
@@ -63,9 +77,9 @@ const CommonLayout = () => {
 				</div>
 			</nav>
 
-			<aside id="logo-sidebar" className="fixed top-0 left-0 z-40 w-16 h-screen pt-20 transition-transform -translate-x-full bg-white sm:translate-x-0 dark:bg-gray-800" aria-label="Sidebar">
+			{ active && <aside id="logo-sidebar" className="fixed top-0 left-0 z-40 w-16 h-screen pt-20 transition-transform -translate-x-full bg-white sm:translate-x-0 dark:bg-gray-800" aria-label="Sidebar">
 				<div className="h-full pb-4 overflow-y-auto bg-white dark:bg-gray-800">
-					<ul className="space-y-2 font-medium mt-[90px]">
+					<ul className="space-y-2 font-medium mt-[95px]">
 						<li className="bg-[#FFEFDF] flex justify-center">
 							<a href="#" className="flex items-center py-3 text-[#e4a76f] rounded-lg dark:text-white group">
 								<img src={ DashboardIcon }></img>
@@ -73,9 +87,12 @@ const CommonLayout = () => {
 						</li>
 					</ul>
 				</div>
-			</aside>
+			</aside> }
 
-			<Outlet />
+			<div className={ `${active && "sm:ml-16"}` }>
+				<Outlet />
+			</div>
+
 		</>
 	);
 };
