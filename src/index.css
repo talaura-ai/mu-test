@@ -16,5 +16,5 @@ code {
     monospace;
 }
 #middle-section {
-  height: calc(100vh - 57px) !important;
+  height: calc(100vh - 65px) !important;
 }

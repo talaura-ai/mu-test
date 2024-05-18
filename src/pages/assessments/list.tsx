@@ -7,7 +7,7 @@ function MyAssessments () {
   return (
     <>
       <div className="sm:ml-16">
-        <div id="middle-section" className="mt-14 rounded-tl-xl bg-[#F9F7F0] overflow-y-scroll shadow-[inset_5px_5px_10px_#e1e1e1]">
+        <div id="middle-section" className="mt-16 rounded-tl-xl bg-[#F9F7F0] overflow-y-scroll shadow-[inset_5px_5px_10px_#e1e1e1]">
           <div className="sm:p-6 md:p-12 p-4">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center justify-start">
