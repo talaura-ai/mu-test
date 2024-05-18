@@ -1,8 +1,10 @@
+import { useLocation, useNavigate } from "react-router-dom";
 import CalenderIcon from "../../assets/svg/calenderIcon.svg"
 import DurationIcon from "../../assets/svg/durationIcon.svg"
 import ExpireIcon from "../../assets/svg/expireIcon.svg"
 
 function MyAssessments () {
+  const navigate = useNavigate();
 
   return (
     <>
@@ -77,7 +79,7 @@ function MyAssessments () {
                 </div>
               </div>
               <div className="flex items-center justify-center py-6 md:w-[20%] sm:w-full">
-                <button type="button" className="text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40">
+                <button type="button" onClick={ () => { navigate("/assessment/1"); } } className="text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40">
                   Start
                 </button>
               </div>
