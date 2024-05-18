@@ -4,7 +4,6 @@ import LockNextIcon from "../../assets/svg/lockIcon.svg"
 
 function AssessmentDetails () {
   const navigate = useNavigate();
-
   return (
     <>
       <div className="sm:p-6 md:p-12 p-4">

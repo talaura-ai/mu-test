@@ -1,13 +1,22 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import CalenderIcon from "../../assets/svg/calenderIcon.svg"
 import DurationIcon from "../../assets/svg/durationIcon.svg"
 import ExpireIcon from "../../assets/svg/expireIcon.svg"
+import DeviceConfigTestModal from "../../components/deviceConfigTestModal";
 
 function MyAssessments () {
   const navigate = useNavigate();
+  const [deviceConfigModal, setDeviceConfigModal] = React.useState(false);
+
+  const onNextClicked = () => {
+    setDeviceConfigModal(false)
+    navigate("/assessment/1");
+  }
 
   return (
     <>
+      { deviceConfigModal && <DeviceConfigTestModal onClose={ () => { setDeviceConfigModal(false) } } onNextClicked={ onNextClicked } /> }
       <div className="sm:p-6 md:p-12 p-4">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center justify-start">
@@ -78,7 +87,7 @@ function MyAssessments () {
               </div>
             </div>
             <div className="flex items-center justify-center py-6 md:w-[20%] sm:w-full">
-              <button type="button" onClick={ () => { navigate("/assessment/1"); } } className="text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40">
+              <button type="button" onClick={ () => { setDeviceConfigModal(true) } } className="text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40">
                 Start
               </button>
             </div>
@@ -88,7 +97,4 @@ function MyAssessments () {
     </>
   );
 }
-
 export default MyAssessments;
-
-
