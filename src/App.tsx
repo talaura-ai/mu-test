@@ -4,6 +4,7 @@ import MyAssessments from './pages/assessments/list';
 import PrivateRoute from './PrivateRoute';
 import CommonLayout from './layouts/common';
 import AssessmentDetails from './pages/assessments/details';
+import StartMCQTest from './pages/assessments/mcqTest';
 
 function App () {
   return (
@@ -11,6 +12,7 @@ function App () {
       <Routes>
         <Route element={ <PrivateRoute /> }>
           <Route path="/" element={ <CommonLayout /> }>
+            <Route path="/assessment/:assessmentId/:testId" element={ <StartMCQTest /> } />
             <Route path="/assessment/:assessmentId" element={ <AssessmentDetails /> } />
             <Route path="/" element={ <MyAssessments /> } />
           </Route>

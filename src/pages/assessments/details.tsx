@@ -56,7 +56,7 @@ function AssessmentDetails () {
               </div>
             </div>
             <div className="flex items-center justify-center py-6 md:w-[15%] sm:w-full">
-              <button type="button" onClick={ () => { navigate("/assessment/1"); } } className="text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40">
+              <button type="button" onClick={ () => { navigate("/assessment/1/1"); } } className="text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40">
                 Next
               </button>
             </div>
