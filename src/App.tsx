@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import MyAssessments from './pages/assessments/list';
 import PrivateRoute from './PrivateRoute';
 import CommonLayout from './layouts/common';
+import AssessmentDetails from './pages/assessments/details';
 
 function App () {
   return (
@@ -10,11 +11,10 @@ function App () {
       <Routes>
         <Route element={ <PrivateRoute /> }>
           <Route path="/" element={ <CommonLayout /> }>
-            <Route path="/assessment/:assessmentId" element={ <MyAssessments /> } />
+            <Route path="/assessment/:assessmentId" element={ <AssessmentDetails /> } />
             <Route path="/" element={ <MyAssessments /> } />
           </Route>
         </Route>
-        <Route path="" element={ <MyAssessments /> } />
       </Routes >
     </BrowserRouter >
   );
