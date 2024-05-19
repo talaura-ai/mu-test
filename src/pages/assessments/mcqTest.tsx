@@ -5,7 +5,7 @@ import QuestionNumberBox from "../../components/questionNumberBox";
 import QuestionOptionBox from "../../components/displayQuestionOptions";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 
-function StartMCQTest() {
+function StartMCQTest () {
   const navigate = useNavigate();
   return (
     <>
@@ -21,7 +21,7 @@ function StartMCQTest() {
               <p className="text-[18px] text-[#FB2121] font-semibold">
                 Time left
               </p>
-              <img src={TimeLeftIcon} className="px-2" alt="left icon" />
+              <img src={ TimeLeftIcon } className="px-2" alt="left icon" />
               <p className="text-[18px] text-[#FB2121] font-semibold">
                 20:39 min
               </p>
@@ -32,7 +32,7 @@ function StartMCQTest() {
           <div className="w-full bg-[#C7C6C0] rounded-full h-2.5 mb-4 dark:bg-gray-700 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
             <div
               className="bg-gradient-to-r from-[#E5A971] to-[#F3BC84] h-2.5 rounded-full"
-              style={{ width: `${50}%` }}
+              style={ { width: `${50}%` } }
             ></div>
           </div>
         </div>
@@ -42,7 +42,7 @@ function StartMCQTest() {
               <div className="flex flex-row items-center mx-6 py-5 border-solid border-b-[3px] border-[#E6E6E6]">
                 <img
                   className="w-24 h-24 rounded-full shadow-lg"
-                  src={UserIcon}
+                  src={ UserIcon }
                   alt="user"
                 />
                 <h5 className="text-[24px] font-medium text-black ml-5">
@@ -65,16 +65,16 @@ function StartMCQTest() {
                   </h5>
                 </div>
                 <div className=" flex flex-wrap w-full gap-5 my-5">
-                  {[
+                  { [
                     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
                     18, 19, 20,
                   ].map((index) => (
                     <QuestionNumberBox
-                      questionNo={index}
-                      checked={index % 2 === 0}
-                      key={index}
+                      questionNo={ index }
+                      checked={ index % 2 === 0 }
+                      key={ index }
                     />
-                  ))}
+                  )) }
                 </div>
               </div>
               <button
@@ -86,33 +86,33 @@ function StartMCQTest() {
             </div>
           </div>
           <div className="basis-[65%]">
-            <div className="md:px-12 px-6">
+            <div className="md:px-16 px-6 md:pt-0 pt-6">
               <h5 className="text-[22px] font-normal text-black">
                 Q1. The area bounded by the curve y 2 = 4x and the circle x2 +
                 g2 - 2x - 3 = 0 is
               </h5>
               <div className=" space-y-5 mt-5">
-                {[
+                { [
                   { title: "First Choice", option: "A" },
                   { title: "Second Choice", option: "B" },
                   { title: "Third Choice", option: "C" },
                   { title: "Forth Choice", option: "D" },
                 ].map((item, index) => (
-                  <QuestionOptionBox option={item} checked={index % 4 === 0} />
-                ))}
+                  <QuestionOptionBox option={ item } checked={ index % 4 === 0 } />
+                )) }
               </div>
             </div>
             <div className="flex w-full justify-between mt-20">
               <button
                 type="button"
-                className="md:mx-12 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
+                className="md:mx-16 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
               >
                 <FaArrowLeft className="mr-2" />
                 PREVIOUS
               </button>
               <button
                 type="button"
-                className=" flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
+                className="md:mx-16 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
               >
                 NEXT <FaArrowRight className="ml-2" />
               </button>
