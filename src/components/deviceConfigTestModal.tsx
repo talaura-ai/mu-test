@@ -1,15 +1,74 @@
+import { useEffect, useState } from "react"
+import { useNetworkState } from 'react-use';
+import ReactLoading from 'react-loading';
+import { MdError } from "react-icons/md";
 import CloseIcon from "../assets/svg/closeIcon.svg"
 import CheckedIcon from "../assets/svg/checkedIcon.svg"
 import WifiIcon from "../assets/svg/wifiIcon.svg"
 import CameraIcon from "../assets/svg/cameraIcon.svg"
 import MicIcon from "../assets/svg/micIcon.svg"
 
+const data = [
+  { name: "Mic", icon: MicIcon },
+  { name: "Camera", icon: CameraIcon },
+  { name: "Internet", icon: WifiIcon }
+]
+
 export default function DeviceConfigTestModal (props: any) {
-  const data = [
-    { name: "Mic", icon: MicIcon },
-    { name: "Camera", icon: CameraIcon },
-    { name: "Internet", icon: WifiIcon }
-  ]
+  const [cameraChecking, setCameraChecking] = useState(0);
+  const [audioChecking, setAudioChecking] = useState(0);
+  const [networkChecking, setNetworkChecking] = useState(0);
+  const state = useNetworkState();
+
+  useEffect(() => {
+    checkMicrophonePermission();
+    checkCameraAccess();
+  }, []);
+
+  useEffect(() => {
+    if (state) {
+      setNetworkChecking(state?.online ? 1 : 2)
+    }
+  }, [state]);
+
+  const checkMicrophonePermission = async () => {
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      setAudioChecking(1)
+    } catch (err) {
+      setAudioChecking(2);
+    }
+  };
+
+  const checkCameraAccess = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      stream.getTracks().forEach(track => track.stop());
+      setCameraChecking(1);
+    } catch (err: any) {
+      setCameraChecking(2);
+    }
+  };
+
+  const renderIcons: any = {
+    0: <ReactLoading type={ "spin" } color="#19AA4C" height={ 24 } width={ 24 } />,
+    1: <img src={ CheckedIcon } />,
+    2: <MdError color="#F00" size={ 28 } />
+  }
+
+  const getStatus = (name: string) => {
+    if (name === "Mic") {
+      return audioChecking
+    }
+    if (name === "Camera") {
+      return cameraChecking
+    }
+    if (name === "Internet") {
+      return networkChecking
+    }
+    return 0
+  }
+
   return (
     <>
       <div
@@ -42,7 +101,7 @@ export default function DeviceConfigTestModal (props: any) {
                     </span>
                   </div>
                   <div className="flex items-center justify-center py-6">
-                    <img src={ CheckedIcon } />
+                    { renderIcons[getStatus(item?.name)] }
                   </div>
                 </div>
               )) }
