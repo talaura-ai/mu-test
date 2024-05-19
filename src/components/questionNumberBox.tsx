@@ -1,19 +1,14 @@
-import CloseIcon from "../assets/svg/closeIcon.svg"
-import CheckedIcon from "../assets/svg/checkedIcon.svg"
-import WifiIcon from "../assets/svg/wifiIcon.svg"
-import CameraIcon from "../assets/svg/cameraIcon.svg"
-import MicIcon from "../assets/svg/micIcon.svg"
-
-export default function QuestionNumberBox (props: any) {
-  const data = [
-    { name: "Mic", icon: MicIcon },
-    { name: "Camera", icon: CameraIcon },
-    { name: "Internet", icon: WifiIcon }
-  ]
+export default function QuestionNumberBox({ questionNo, checked }: any) {
   return (
     <>
-      <div className="flex flex-row items-center mx-6 py-4">
-        1
+      <div
+        className={`flex w-[40px] h-[40px] text-[20px] font-normal flex-row items-center justify-center rounded-md ${
+          checked
+            ? "border-[1.5px] border-solid border-[#B1B1B1] bg-white text-[#B1B1B1]"
+            : "bg-[#F3BC84] bg-opacity-40 text-[#F3BC84]"
+        }`}
+      >
+        {questionNo}
       </div>
     </>
   );
