@@ -17,7 +17,7 @@ export default function DeviceConfigTestModal (props: any) {
       >
         <div className="relative w-full my-6 mx-auto max-w-lg">
           {/*content*/ }
-          <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-[#F9F7F0] outline-none focus:outline-none px-6">
+          <div className="border-0 rounded-xl shadow-lg relative flex flex-col w-full bg-[#F9F7F0] outline-none focus:outline-none px-6">
             {/*header*/ }
             <div className="relative flex items-center py-3 justify-center border-solid border-b-2 border-[#BDBDBD] rounded-t">
               <h3 className="text-[24px] text-[#F2BC84] font-semibold">
