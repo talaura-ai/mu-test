@@ -8,6 +8,7 @@ import { whiteLight } from "@uiw/codemirror-theme-white";
 import EditorFooter from "./EditorFooter";
 import { toast } from "react-toastify";
 import { problems } from "../../../utils/problems";
+import { IoIosArrowDown } from "react-icons/io";
 
 export interface ISettings {
   fontSize: string;
@@ -82,7 +83,7 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
   };
 
   return (
-    <div className="flex flex-col relative overflow-x-hidden rounded">
+    <div className="flex flex-col relative overflow-x-hidden rounded ">
       <PreferenceNav settings={settings} setSettings={setSettings} />
 
       <Split
@@ -91,24 +92,34 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
         sizes={[60, 40]}
         minSize={60}
       >
-        <div className="w-full overflow-auto bg-white">
+        <div className="w-full overflow-auto bg-white border">
           <CodeMirror
             value={userCode}
             theme={whiteLight}
             onChange={onChange}
-			basicSetup={{foldGutter: false}}
+            basicSetup={{ foldGutter: false }}
             extensions={[javascript()]}
             style={{ fontSize: settings.fontSize, backgroundColor: "white" }}
           />
         </div>
-        <div className="w-full px-5 overflow-auto">
+        <div className="w-full px-5 overflow-auto border">
           {/* testcase heading */}
           <div className="flex h-10 items-center space-x-6">
             <div className="relative flex h-full flex-col justify-center cursor-pointer">
-              <div className="text-sm font-medium leading-5 text-white">
+              <div className="text-base font-medium leading-5 text-black">
                 Testcases
               </div>
-              <hr className="absolute bottom-0 h-0.5 w-full rounded-full border-none bg-white" />
+              <hr className="absolute bottom-0 h-0.5 w-full rounded-full border-none bg-black" />
+            </div>
+            <div className="mr-2 flex flex-1 flex-nowrap items-center space-x-4">
+              <div className="relative flex h-full flex-col justify-center cursor-pointer">
+                <button className="px-3 py-1.5 font-base items-center transition-all inline-flex bg-dark-fill-3 text-base hover:bg-dark-fill-2 text-dark-label-2 rounded-lg pl-3 pr-2  ">
+                  Console
+                  <div className="ml-1 transform transition flex items-center">
+                    <IoIosArrowDown className="fill-gray-6 mx-1 fill-dark-gray-6" />
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -122,7 +133,7 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
                 <div className="flex flex-wrap items-center gap-y-4">
                   <div
                     className={`font-medium items-center transition-all focus:outline-none inline-flex bg-dark-fill-3 hover:bg-dark-fill-2 relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
-										${activeTestCaseId === index ? "text-white" : "text-gray-500"}
+										${activeTestCaseId === index ? "text-black" : "text-gray-500"}
 									`}
                   >
                     Case {index + 1}
@@ -133,12 +144,12 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
           </div>
 
           <div className="font-semibold my-4">
-            <p className="text-sm font-medium mt-4 text-white">Input:</p>
-            <div className="w-full cursor-text rounded-lg border px-3 py-[10px] border-transparent text-white mt-2">
+            <p className="text-sm font-medium mt-4 text-black">Input:</p>
+            <div className="w-full cursor-text rounded-lg border px-3 py-[10px] border-transparent text-black mt-2">
               {problem?.examples?.[activeTestCaseId]?.inputText}
             </div>
-            <p className="text-sm font-medium mt-4 text-white">Output:</p>
-            <div className="w-full cursor-text rounded-lg border px-3 py-[10px] border-transparent text-white mt-2">
+            <p className="text-sm font-medium mt-4 text-black">Output:</p>
+            <div className="w-full cursor-text rounded-lg border px-3 py-[10px] border-transparent text-black mt-2">
               {problem?.examples?.[activeTestCaseId]?.outputText}
             </div>
           </div>

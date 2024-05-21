@@ -10,7 +10,7 @@ const Workspace: React.FC<any> = ({ problem }) => {
   return (
     <Split className="split" minSize={0}>
       <ProblemDescription problem={problem} _solved={solved} />
-      <div className="bg-white rounded-xl overflow-hidden border">
+      <div className="bg-white rounded-xl overflow-hidden ">
         <Playground
           problem={problem}
           setSuccess={setSuccess}

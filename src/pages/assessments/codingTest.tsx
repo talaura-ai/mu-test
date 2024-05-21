@@ -11,7 +11,7 @@ const CodingTest: React.FC<any> = (props) => {
     <div className="sm:p-6 md:p-12 p-4">
       <div className="flex md:flex-row flex-col items-center md:justify-between mb-6">
         <div className="flex items-center justify-start">
-          <span className="font-bold text-black self-center text-2xl whitespace-nowrap md:text-[40px] ">
+          <span className="font-bold text-black self-center text-2xl whitespace-nowrap md:text-[32px] ">
             Module 2: Coding
           </span>
         </div>
