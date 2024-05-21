@@ -37,7 +37,7 @@ function StartMCQTest () {
           </div>
         </div>
         <div className="mb-6 flex md:flex-row flex-col">
-          <div className="basis-[25%] w-full">
+          <div className="basis-[30%] w-full">
             <div className="w-full bg-white border border-gray-200 rounded-lg shadow overflow-hidden">
               <div className="flex flex-row items-center mx-6 py-5 border-solid border-b-[3px] border-[#E6E6E6]">
                 <img
@@ -85,7 +85,7 @@ function StartMCQTest () {
               </button>
             </div>
           </div>
-          <div className="basis-[75%]">
+          <div className="basis-[70%]">
             <div className="md:px-20 px-6 md:pt-0 pt-6">
               <h5 className="text-[22px] font-normal text-black">
                 Q1. The area bounded by the curve y 2 = 4x and the circle x2 +
