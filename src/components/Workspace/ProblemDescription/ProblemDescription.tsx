@@ -11,10 +11,10 @@ const ProblemDescription: React.FC<any> = ({ problem, _solved }) => {
 	const [updating, setUpdating] = useState(false);
 
 	return (
-		<div className='bg-dark-layer-1'>
+		<div className='bg-white rounded-xl overflow-hidden'>
 			{/* TAB */ }
-			<div className='flex h-11 w-full items-center pt-2 bg-dark-layer-2 text-white overflow-x-hidden'>
-				<div className={ "bg-dark-layer-1 rounded-t-[5px] px-5 py-[10px] text-xs cursor-pointer" }>
+			<div className='flex h-11 w-full items-center pt-2 text-black overflow-x-hidden bg-red-400'>
+				<div className={ "rounded-t-[5px] px-5 py-[10px] text-md cursor-pointer" }>
 					Description
 				</div>
 			</div>
@@ -24,7 +24,7 @@ const ProblemDescription: React.FC<any> = ({ problem, _solved }) => {
 					{/* Problem heading */ }
 					<div className='w-full'>
 						<div className='flex space-x-4'>
-							<div className='flex-1 mr-2 text-lg text-white font-medium'>{ problem?.title }</div>
+							<div className='flex-1 mr-2 text-lg text-black font-medium'>{ problem?.title }</div>
 						</div>
 						{ !loading && currentProblem && (
 							<div className='flex items-center mt-3'>
@@ -37,7 +37,7 @@ const ProblemDescription: React.FC<any> = ({ problem, _solved }) => {
 						) }
 
 						{/* Problem Statement(paragraphs) */ }
-						<div className='text-white text-sm'>
+						<div className='text-black text-sm'>
 							<div dangerouslySetInnerHTML={ { __html: problem?.problemStatement } } />
 						</div>
 
@@ -45,11 +45,11 @@ const ProblemDescription: React.FC<any> = ({ problem, _solved }) => {
 						<div className='mt-4'>
 							{ problem?.examples?.map((example: any, index: number) => (
 								<div key={ example?.id }>
-									<p className='font-medium text-white '>Example { index + 1 }: </p>
+									<p className='font-medium text-black '>Example { index + 1 }: </p>
 									{ example.img && <img src={ example.img } alt='' className='mt-3' /> }
 									<div className='example-card'>
 										<pre>
-											<strong className='text-white'>Input: </strong> { example.inputText }
+											<strong className='text-black'>Input: </strong> { example.inputText }
 											<br />
 											<strong>Output:</strong>
 											{ example.outputText } <br />
@@ -66,8 +66,8 @@ const ProblemDescription: React.FC<any> = ({ problem, _solved }) => {
 
 						{/* Constraints */ }
 						<div className='my-8 pb-4'>
-							<div className='text-white text-sm font-medium'>Constraints:</div>
-							<ul className='text-white ml-5 list-disc '>
+							<div className='text-black text-sm font-medium'>Constraints:</div>
+							<ul className='text-black ml-5 list-disc '>
 								<div dangerouslySetInnerHTML={ { __html: problem?.constraints } } />
 							</ul>
 						</div>

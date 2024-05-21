@@ -37,12 +37,14 @@ code {
 }
 
 .gutter {
-	background-color: rgb(26, 26, 26);
+	/* background-color: rgb(26, 26, 26); */
 	background-repeat: no-repeat;
 	background-position: 50%;
+	background-color: #f9f7f0;
 }
 .gutter:hover {
-	background-color: #0a84ff;
+	/* background-color: #0a84ff; */
+	background-color: white;
 }
 
 .gutter.gutter-horizontal {
@@ -70,18 +72,9 @@ code {
 	color: rgba(239, 241, 246, 0.75);
 }
 
-.example-card pre {
-	background-color: hsla(0, 0%, 100%, 0.1);
-	border-radius: 0.5rem;
-	color: rgba(239, 241, 246, 0.75);
-	font-size: 0.98rem;
-	line-height: 1.25rem;
-	margin-bottom: 1rem;
-	margin-top: 1rem;
-	padding: 1rem;
-	white-space: pre-wrap;
+.cm-scroller, .cm-gutters{
+	background-color: transparent !important;
 }
-.example-card pre strong {
-	color: white;
-	font-size: 1rem;
+.cm-scroller .cm-gutters{
+	border-right: 0px solid #ddd !important;
 }
