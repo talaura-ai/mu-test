@@ -9,10 +9,10 @@ function StartMCQTest () {
   const navigate = useNavigate();
   return (
     <>
-      <div className="sm:p-6 md:p-12 p-4">
+      <div className="sm:p-6 md:p-16 p-4">
         <div className="flex md:flex-row flex-col items-center md:justify-between mb-6">
           <div className="flex items-center justify-start">
-            <span className="font-bold text-black self-center text-2xl whitespace-nowrap md:text-[40px] ">
+            <span className="font-bold text-black self-center text-2xl whitespace-nowrap md:text-[32px] ">
               Module 1: MCQ Test
             </span>
           </div>
@@ -28,7 +28,7 @@ function StartMCQTest () {
             </div>
           </div>
         </div>
-        <div className="flex items-center mb-6 px-4">
+        <div className="flex items-center mb-10 px-4">
           <div className="w-full bg-[#C7C6C0] rounded-full h-2.5 mb-4 dark:bg-gray-700 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
             <div
               className="bg-gradient-to-r from-[#E5A971] to-[#F3BC84] h-2.5 rounded-full"
@@ -37,11 +37,11 @@ function StartMCQTest () {
           </div>
         </div>
         <div className="mb-6 flex md:flex-row flex-col">
-          <div className="basis-[35%] w-full">
+          <div className="basis-[25%] w-full">
             <div className="w-full bg-white border border-gray-200 rounded-lg shadow overflow-hidden">
               <div className="flex flex-row items-center mx-6 py-5 border-solid border-b-[3px] border-[#E6E6E6]">
                 <img
-                  className="w-24 h-24 rounded-full shadow-lg"
+                  className="w-16 h-16 rounded-full shadow-lg"
                   src={ UserIcon }
                   alt="user"
                 />
@@ -85,8 +85,8 @@ function StartMCQTest () {
               </button>
             </div>
           </div>
-          <div className="basis-[65%]">
-            <div className="md:px-16 px-6 md:pt-0 pt-6">
+          <div className="basis-[75%]">
+            <div className="md:px-20 px-6 md:pt-0 pt-6">
               <h5 className="text-[22px] font-normal text-black">
                 Q1. The area bounded by the curve y 2 = 4x and the circle x2 +
                 g2 - 2x - 3 = 0 is
@@ -105,14 +105,14 @@ function StartMCQTest () {
             <div className="flex w-full justify-between mt-20">
               <button
                 type="button"
-                className="md:mx-16 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
+                className="md:mx-20 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
               >
                 <FaArrowLeft className="mr-2" />
                 PREVIOUS
               </button>
               <button
                 type="button"
-                className="md:mx-16 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
+                className="md:mx-20 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
               >
                 NEXT <FaArrowRight className="ml-2" />
               </button>

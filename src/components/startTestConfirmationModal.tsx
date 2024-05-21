@@ -23,7 +23,7 @@ export default function StartTestConfirmationModal (props: any) {
             </div>
             {/*body*/ }
             <div className="px-3 flex-auto">
-              <div className="flex flex-col px-6 py-6">
+              <div className="flex flex-col px-6 py-4">
                 <span className="text-[20px] font-semibold text-[#7A8A94]">
                   Duration: <span className=" text-black text-[20px] font-medium">10 Mins</span>
                 </span>
@@ -60,7 +60,7 @@ export default function StartTestConfirmationModal (props: any) {
 
             </div>
             {/*footer*/ }
-            <div className="flex items-center justify-center border-t-[#CCC] border-t border-solid py-5">
+            <div className="flex items-center justify-center border-t-[#CCC] border-t border-solid py-4">
               <button onClick={ () => { props?.onClose() } } type="button" className="text-[#7A8A94] border-[#CCC] border mr-2 font-medium rounded-md text-lg w-40 py-2.5 text-center inline-flex items-center justify-center">
                 Cancel
               </button>
