@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import DashboardIcon from "../assets/svg/DashboardLayoutIcon.svg"
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import React from "react";
 
 const CommonLayout = () => {
@@ -29,7 +29,7 @@ const CommonLayout = () => {
 									<path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
 								</svg>
 							</button>
-							<a href="https://flowbite.com" className="flex md:ms-12 ms-2 md:me-24">
+							<a href="/" className="flex md:ms-12 ms-2 md:me-24">
 								<span className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#E4A76F] to-[#F3BD85] self-center sm:text-2xl whitespace-nowrap">
 									TalAura
 								</span>
@@ -53,7 +53,7 @@ const CommonLayout = () => {
 											Neil Sims
 										</p>
 										<p className="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
-											neil.sims@flowbite.com
+											neil.sims@gmail.com
 										</p>
 									</div>
 									<ul className="py-1" role="none">

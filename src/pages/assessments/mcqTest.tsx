@@ -7,6 +7,7 @@ import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 
 function StartMCQTest () {
   const navigate = useNavigate();
+  
   return (
     <>
       <div className="sm:p-6 md:p-16 p-4">
