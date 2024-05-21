@@ -15,13 +15,13 @@ function AssessmentDetails () {
 
   return (
     <>
-      <div className="sm:p-6 md:p-12 p-4">
+      <div className="sm:p-8 md:p-16 p-4">
         { [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
-          <div key={ item } className="flex flex-wrap justify-around mb-8 rounded-2xl relative py-4 bg-white">
+          <div key={ item } className="flex flex-wrap justify-around mb-10 rounded-2xl relative py-3 bg-white">
             <div className="absolute top-0 left-0 bottom-auto h-full flex items-center">
               <div className="w-[10px] md:h-[64px] sm:h-[130px] bg-gradient-to-r from-[#E5A971] to-[rgb(243,188,132)] rounded-r-xl"></div>
             </div>
-            <div className="absolute -top-6 -left-6">
+            <div className="absolute -top-6 -left-4">
               { item % 2 !== 0 ? <img src={ UnlockNextIcon } /> :
                 <img src={ LockNextIcon } /> }
             </div>
@@ -34,7 +34,7 @@ function AssessmentDetails () {
               <span className="text-[20px] font-normal text-black">
                 Skills
               </span>
-              <span className="text-[16px] font-medium text-[#BDBDBD]">
+              <span className="text-[14px] font-medium text-[#BDBDBD]">
                 Objective-C/Swift Proficiency, Offline Storage & Threading, Performance Tuning, RESTful APIs Integration, Cloud Messaging.
               </span>
             </div>
