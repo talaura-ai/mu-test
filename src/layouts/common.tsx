@@ -90,7 +90,7 @@ const CommonLayout = () => {
 			</aside> }
 
 			<div className={ `${active && "sm:ml-16"}` }>
-				<div id="middle-section" className="mt-16 rounded-tl-xl bg-[#F9F7F0] overflow-y-scroll shadow-[inset_5px_5px_10px_#e1e1e1]">
+				<div id="middle-section" className={ `mt-16 ${active && "rounded-tl-xl"} bg-[#F9F7F0] overflow-y-scroll shadow-[inset_5px_5px_10px_#e1e1e1]` }>
 					<Outlet />
 				</div>
 			</div>
