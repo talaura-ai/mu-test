@@ -1,6 +1,14 @@
 import React from "react";
 import MultiUserIcon from "../../assets/svg/multiUserIcon.svg";
+import AiBot from "../../assets/AiBot.png";
+import VideoCallUser from "../../assets/VideoCallUser.png";
+import LanguageIcon from "../../assets/svg/languageIcon.svg";
+import ChatIcon from "../../assets/svg/chatIcon.svg";
+import Caption from "../../assets/caption.png";
+import { useNavigate } from "react-router-dom";
+
 const VideoTest = () => {
+  const navigate = useNavigate();
   const noOfUser = 3;
   return (
     <div className="sm:p-6 md:p-12 p-4">
@@ -19,6 +27,44 @@ const VideoTest = () => {
             </span>
           </div>
         </div>
+      </div>
+
+      <div className=" relative flex md:flex-row flex-col items-center md:justify-center ">
+        <div className="relative ">
+          <img src={AiBot} className="px-2" alt="left icon" />
+          <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded">
+            Ai Bot
+          </div>
+        </div>
+        <div className="relative">
+          <img src={VideoCallUser} className="px-2" alt="left icon" />
+          <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded">
+            Manisha
+          </div>
+        </div>
+        <div className="absolute flex  top-40 -right-12 flex-col ">
+          <div className=" flex justify-center w-full">
+            <img
+              src={LanguageIcon}
+              className="px-2 bg-[#FFEFDF]"
+              alt="left icon"
+            />
+          </div>
+          <div className="flex ">
+            <img src={ChatIcon} className="px-2" alt="left icon" />
+          </div>
+        </div>
+      </div>
+      <div className="flex justify-center py-6">
+        <img src={Caption} alt="caption" />
+      </div>
+      <div className="flex justify-center py-6">
+        <button
+          className="flex justify-center bg-[#E04747] px-3 py-2 rounded-lg text-white font-semibold"
+          onClick={() => navigate("/")}
+        >
+          End Meet
+        </button>
       </div>
     </div>
   );
