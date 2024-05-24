@@ -7,11 +7,16 @@ import AssessmentDetails from "./pages/assessments/details";
 import StartMCQTest from "./pages/assessments/mcqTest";
 import CodingTest from "./pages/assessments/codingTest";
 import VideoTest from "./pages/assessments/videoTest";
+import VerificationPage from "./pages/verificationPage";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route
+          path="/assessment/:assessmentId/invitation"
+          element={<VerificationPage />}
+        />
         <Route element={<PrivateRoute />}>
           <Route path="/" element={<CommonLayout />}>
             <Route
