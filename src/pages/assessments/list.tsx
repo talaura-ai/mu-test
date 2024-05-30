@@ -11,7 +11,7 @@ function MyAssessments () {
 
   const onNextClicked = () => {
     setDeviceConfigModal(false)
-    navigate("/assessment/1");
+    navigate("/assessment/1/share-details");
   }
 
   return (

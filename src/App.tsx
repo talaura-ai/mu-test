@@ -8,6 +8,7 @@ import StartMCQTest from "./pages/assessments/mcqTest";
 import CodingTest from "./pages/assessments/codingTest";
 import VideoTest from "./pages/assessments/videoTest";
 import VerificationPage from "./pages/verificationPage";
+import PersonNeedMoreInfo from "./pages/assessments/needMoreInfo";
 
 function App() {
   return (
@@ -22,6 +23,10 @@ function App() {
             <Route
               path="/assessment/:assessmentId/:testId"
               element={<StartMCQTest />}
+            />
+            <Route
+              path="/assessment/:assessmentId/share-details"
+              element={<PersonNeedMoreInfo />}
             />
             <Route
               path="/assessment/:assessmentId"
