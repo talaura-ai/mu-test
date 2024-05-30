@@ -10,38 +10,37 @@ import VideoTest from "./pages/assessments/videoTest";
 import VerificationPage from "./pages/verificationPage";
 import PersonNeedMoreInfo from "./pages/assessments/needMoreInfo";
 
-function App() {
+function App () {
   return (
     <BrowserRouter>
       <Routes>
         <Route
           path="/assessment/:assessmentId/invitation"
-          element={<VerificationPage />}
+          element={ <VerificationPage /> }
         />
-        <Route element={<PrivateRoute />}>
-          <Route path="/" element={<CommonLayout />}>
+        <Route element={ <PrivateRoute /> }>
+          <Route path="/" element={ <CommonLayout /> }>
             <Route
               path="/assessment/:assessmentId/:testId"
-              element={<StartMCQTest />}
+              element={ <StartMCQTest /> }
             />
             <Route
               path="/assessment/:assessmentId/share-details"
-              element={<PersonNeedMoreInfo />}
+              element={ <PersonNeedMoreInfo /> }
             />
             <Route
               path="/assessment/:assessmentId"
-              element={<AssessmentDetails />}
+              element={ <AssessmentDetails /> }
             />
             <Route
               path="/assessment/:assessmentId/coding"
-              element={<CodingTest />}
+              element={ <CodingTest /> }
             />
             <Route
               path="/assessment/:assessmentId/video"
-              element={<VideoTest />}
+              element={ <VideoTest /> }
             />
-
-            <Route path="/" element={<MyAssessments />} />
+            <Route path="/" element={ <MyAssessments /> } />
           </Route>
         </Route>
       </Routes>

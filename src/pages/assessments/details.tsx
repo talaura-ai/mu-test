@@ -1,16 +1,21 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import UnlockNextIcon from "../../assets/svg/unlockNext.svg";
 import LockNextIcon from "../../assets/svg/lockIcon.svg";
 import StartTestConfirmationModal from "../../components/startTestConfirmationModal";
-import CalenderIcon from "../../assets/svg/calenderIcon.svg"
-import DurationIcon from "../../assets/svg/durationIcon.svg"
-import ExpireIcon from "../../assets/svg/expireIcon.svg"
+import AssessmentCard from "../../components/assessmentCard";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { setAssessmentDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
+import { getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
 
 function AssessmentDetails () {
   const navigate = useNavigate();
   const [startTestModal, setStartTestModal] = React.useState(false);
   const [selectedTest, setSelectedTest] = React.useState(0);
+  const dispatcher = useAppDispatch()
+  const { assessmentId } = useParams();
+  const myAssessments = useAppSelector(getAssessmentsSelector)
+  const [selectAssessment, setSelectAssessment] = React.useState<any>({});
 
   const onNextClicked = () => {
     setStartTestModal(false);
@@ -21,50 +26,24 @@ function AssessmentDetails () {
     }
   };
 
+  React.useEffect(() => {
+    if (assessmentId && myAssessments?.length) {
+      const data = myAssessments?.filter(v => v?._id === assessmentId)
+      setSelectAssessment(data?.[0])
+    } else {
+      setSelectAssessment({})
+    }
+  }, [myAssessments, assessmentId])
+
+  React.useEffect(() => {
+    dispatcher(setAssessmentDispatcher({ userId: "6654dfb48827c464882ef847" }))
+  }, [dispatcher])
+
   return (
     <>
       <div className="sm:p-8 md:p-16 p-4">
-        <div className="flex flex-wrap items-center justify-center md:mb-12 mb-6">
-          <div className="flex md:flex-row flex-col items-center justify-around md:justify-between md:w-[50%] w-full px-4">
-            <div className="flex flex-col justify-center mb-4">
-              <span className="text-[36px] font-semibold text-[#F2BC84] self-center leading-[38px]">
-                A2
-              </span>
-              <span className="text-[18px] font-semibold text-black self-center leading-[20px]">
-                Sales Department
-              </span>
-            </div>
-            <div className="flex flex-col justify-center mb-4">
-              <img src={ CalenderIcon } className="h-[20px] w-[20px]" />
-              <span className="text-[16px] font-medium text-[#5C7CFA] leading-[18px]">
-                Started On
-              </span>
-              <span className="text-[16px] font-semibold text-black leading-[16px]">
-                Apr 28, 2024
-              </span>
-            </div>
-            <div className="flex flex-col justify-center mb-4">
-              <img src={ DurationIcon } className="h-[20px] w-[20px]" />
-              <span className="text-[16px] font-medium text-[#E9BF3E] leading-[18px]">
-                Duration
-              </span>
-              <span className="text-[16px] font-semibold text-black leading-[16px]">
-                120 minutes
-              </span>
-            </div>
-            <div className="flex flex-col justify-center mb-4">
-              <img src={ ExpireIcon } className="h-[20px] w-[20px]" />
-              <span className="text-[16px] font-medium text-[#7951E6] leading-[18px]">
-                Expires In
-              </span>
-              <span className="text-[16px] font-semibold text-black leading-[16px]">
-                1D:22H:30M
-              </span>
-            </div>
-          </div>
-        </div>
-
-        { [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
+        <AssessmentCard />
+        { selectAssessment?.module?.map((item: any) => (
           <div
             key={ item }
             className="flex flex-wrap justify-around mb-10 rounded-2xl relative py-3 bg-white"
@@ -73,7 +52,7 @@ function AssessmentDetails () {
               <div className="w-[10px] md:h-[64px] sm:h-[130px] bg-gradient-to-r from-[#E5A971] to-[rgb(243,188,132)] rounded-r-xl"></div>
             </div>
             <div className="absolute -top-6 -left-4">
-              { item % 2 !== 0 ? (
+              { !item?.isLocked ? (
                 <img src={ UnlockNextIcon } />
               ) : (
                 <img src={ LockNextIcon } />
@@ -81,9 +60,7 @@ function AssessmentDetails () {
             </div>
             <div className="flex flex-col items-center justify-center py-4 md:w-[25%] sm:w-full px-4">
               <span className="text-[22px] font-semibold text-[#F2BC84] self-center">
-                { item % 2 !== 0
-                  ? "Module 1: MCQ Test"
-                  : "Module 2: Coding" }
+                { item?.name }
               </span>
             </div>
             <div className="flex flex-col md:w-[25%] sm:w-full px-4">
@@ -99,7 +76,7 @@ function AssessmentDetails () {
                   Questions
                 </span>
                 <span className="text-[20px] font-semibold text-[#BDBDBD]">
-                  5
+                  { item?.noOfQuestion || 0 }
                 </span>
               </div>
               <div className="flex flex-col text-center items-center">
@@ -115,7 +92,7 @@ function AssessmentDetails () {
                   Duration
                 </span>
                 <span className="text-[20px] font-semibold text-[#BDBDBD]">
-                  120 min
+                  { item?.time || 0 } min
                 </span>
               </div>
             </div>

@@ -4,15 +4,28 @@ import CalenderIcon from "../../assets/svg/calenderIcon.svg"
 import DurationIcon from "../../assets/svg/durationIcon.svg"
 import ExpireIcon from "../../assets/svg/expireIcon.svg"
 import DeviceConfigTestModal from "../../components/deviceConfigTestModal";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { setAssessmentDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
+import { getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
+import moment from "moment";
+import { getExpiredIn } from "../../utils/helper";
 
 function MyAssessments () {
   const navigate = useNavigate();
   const [deviceConfigModal, setDeviceConfigModal] = React.useState(false);
+  const [selectAssessment, setSelectAssessment] = React.useState<any>({});
+  const dispatcher = useAppDispatch()
+  const myAssessments = useAppSelector(getAssessmentsSelector)
+  console.log('myAssessments=>', myAssessments)
 
   const onNextClicked = () => {
     setDeviceConfigModal(false)
-    navigate("/assessment/1/share-details");
+    navigate(`/assessment/${selectAssessment?._id}/share-details`);
   }
+
+  React.useEffect(() => {
+    dispatcher(setAssessmentDispatcher({ userId: "6654dfb48827c464882ef847" }))
+  }, [dispatcher])
 
   return (
     <>
@@ -46,7 +59,7 @@ function MyAssessments () {
             </div>
           </div>
         </div>
-        { [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
+        { myAssessments?.map((item) => (
           <div key={ item } className="flex flex-wrap items-center justify-around mb-6 rounded-2xl bg-white relative">
             <div className="w-[10px] md:h-[64px] sm:h-[130px] bg-gradient-to-r from-[#E5A971] to-[rgb(243,188,132)] rounded-r-xl absolute top-auto left-0 bottom-auto"></div>
             <div className="flex flex-col items-center justify-center py-6 md:w-[40%] sm:w-full">
@@ -64,7 +77,7 @@ function MyAssessments () {
                   Started On
                 </span>
                 <span className="text-[16px] font-semibold text-black leading-[16px]">
-                  Apr 28, 2024
+                  { moment(item?.startsAt).format("MMM DD, YYYY") }
                 </span>
               </div>
               <div className="flex flex-col justify-center">
@@ -82,12 +95,15 @@ function MyAssessments () {
                   Expires In
                 </span>
                 <span className="text-[16px] font-semibold text-black leading-[16px]">
-                  1D:22H:30M
+                  { getExpiredIn(item?.startsAt, item?.endsOn) }
                 </span>
               </div>
             </div>
             <div className="flex items-center justify-center py-6 md:w-[20%] sm:w-full">
-              <button type="button" onClick={ () => { setDeviceConfigModal(true) } } className="text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40">
+              <button type="button" onClick={ () => {
+                setDeviceConfigModal(true)
+                setSelectAssessment(item)
+              } } className="text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40">
                 Start
               </button>
             </div>
