@@ -62,22 +62,22 @@ function PersonNeedMoreInfo () {
           <div className="grid grid-cols-3 gap-y-6 gap-x-12 mb-4 pt-4">
             <div className="flex flex-col h-24">
               <label className="block mb-2 text-[18px] font-medium text-[#7D7C7C]">Name<span className="text-[#FB2121]">*</span></label>
-              <input type="text" id="error" className="bg-[#F2F1F1] border border-[#C2C2C2] text-[#222222] placeholder-[#9F9D9D] text-sm rounded-[5px] block w-full p-2.5" placeholder="Error input" />
+              <input type="text" id="error" className="bg-[#F2F1F1] border border-[#C2C2C2] text-[#222222] placeholder-[#9F9D9D] text-sm rounded-[5px] block w-full p-2.5" placeholder="Enter Name" />
               <p className="mt-1 text-sm text-[#FB2121]">Required</p>
             </div>
             <div className="flex flex-col h-24">
               <label className="block mb-2 text-[18px] font-medium text-[#7D7C7C]">Name<span className="text-[#FB2121]">*</span></label>
-              <input type="text" id="error" className="bg-[#F2F1F1] border border-[#C2C2C2] text-[#222222] placeholder-[#9F9D9D] text-sm rounded-[5px] block w-full p-2.5" placeholder="Error input" />
+              <input type="text" id="error" className="bg-[#F2F1F1] border border-[#C2C2C2] text-[#222222] placeholder-[#9F9D9D] text-sm rounded-[5px] block w-full p-2.5" placeholder="Enter Name" />
               <p className="mt-1 text-sm text-[#FB2121]">Required</p>
             </div>
             <div className="flex flex-col h-24">
               <label className="block mb-2 text-[18px] font-medium text-[#7D7C7C]">Name<span className="text-[#FB2121]">*</span></label>
-              <input type="text" id="error" className="bg-[#F2F1F1] border border-[#C2C2C2] text-[#222222] placeholder-[#9F9D9D] text-sm rounded-[5px] block w-full p-2.5" placeholder="Error input" />
+              <input type="text" id="error" className="bg-[#F2F1F1] border border-[#C2C2C2] text-[#222222] placeholder-[#9F9D9D] text-sm rounded-[5px] block w-full p-2.5" placeholder="Enter Name" />
               <p className="mt-1 text-sm text-[#FB2121]">Required</p>
             </div>
             <div className="flex flex-col h-24">
               <label className="block mb-2 text-[18px] font-medium text-[#7D7C7C]">Name<span className="text-[#FB2121]">*</span></label>
-              <input type="text" id="error" className="bg-[#F2F1F1] border border-[#C2C2C2] text-[#222222] placeholder-[#9F9D9D] text-sm rounded-[5px] block w-full p-2.5" placeholder="Error input" />
+              <input type="text" id="error" className="bg-[#F2F1F1] border border-[#C2C2C2] text-[#222222] placeholder-[#9F9D9D] text-sm rounded-[5px] block w-full p-2.5" placeholder="Enter Name" />
               <p className="mt-1 text-sm text-[#FB2121]">Required</p>
             </div>
           </div>
