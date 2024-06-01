@@ -67,7 +67,7 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-between w-full border border-b-0 ">
+    <div className="flex items-center justify-between w-full border border-b-0 font-sansation">
       <div className="flex items-center text-white  w-2/3  h-12 ">
         <div className="flex items-center text-white justify-left w-1/2  h-12  ">
           <div className="w-[8px] md:h-[64px] sm:h-[130px] bg-gradient-to-r from-[#E5A971] to-[rgb(243,188,132)]   top-auto left-0 bottom-auto"></div>

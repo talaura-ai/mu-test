@@ -28,37 +28,37 @@ function AssessmentCard () {
       <div className="flex flex-wrap items-center justify-center md:mb-12 mb-6">
         <div className="flex md:flex-row flex-col items-center justify-around md:justify-between md:w-[50%] w-full px-4">
           <div className="flex flex-col justify-center mb-4">
-            <span className="text-[36px] font-semibold text-[#F2BC84] self-center leading-[38px]">
+            <span className="text-[36px] font-semibold text-[#F2BC84] self-center leading-[38px] font-sansation">
               A2
             </span>
-            <span className="text-[18px] font-semibold text-black self-center leading-[20px]">
+            <span className="text-[18px] font-semibold text-black self-center leading-[20px] font-sansation">
               Sales Department
             </span>
           </div>
           <div className="flex flex-col justify-center mb-4">
             <img src={ CalenderIcon } className="h-[20px] w-[20px]" />
-            <span className="text-[16px] font-medium text-[#5C7CFA] leading-[18px]">
+            <span className="text-[16px] font-medium text-[#5C7CFA] leading-[18px] font-sansation">
               Started On
             </span>
-            <span className="text-[16px] font-semibold text-black leading-[16px]">
+            <span className="text-[16px] font-semibold text-black leading-[16px] font-sansation">
               { moment(selectAssessment?.startsAt).format("MMM DD, YYYY") }
             </span>
           </div>
           <div className="flex flex-col justify-center mb-4">
             <img src={ DurationIcon } className="h-[20px] w-[20px]" />
-            <span className="text-[16px] font-medium text-[#E9BF3E] leading-[18px]">
+            <span className="text-[16px] font-medium text-[#E9BF3E] leading-[18px] font-sansation">
               Duration
             </span>
-            <span className="text-[16px] font-semibold text-black leading-[16px]">
+            <span className="text-[16px] font-semibold text-black leading-[16px] font-sansation">
               120 minutes
             </span>
           </div>
           <div className="flex flex-col justify-center mb-4">
             <img src={ ExpireIcon } className="h-[20px] w-[20px]" />
-            <span className="text-[16px] font-medium text-[#7951E6] leading-[18px]">
+            <span className="text-[16px] font-medium text-[#7951E6] leading-[18px] font-sansation">
               Expires In
             </span>
-            <span className="text-[16px] font-semibold text-black leading-[16px]">
+            <span className="text-[16px] font-semibold text-black leading-[16px] font-sansation">
               { getExpiredIn(selectAssessment?.startsAt, selectAssessment?.endsOn) }
             </span>
           </div>

@@ -96,7 +96,7 @@ export default function DeviceConfigTestModal (props: any) {
         <div className="relative w-full my-6 mx-auto max-w-lg">
           <div className="border-0 rounded-xl shadow-lg relative flex flex-col w-full bg-[#F9F7F0] outline-none focus:outline-none px-6">
             <div className="relative flex items-center py-3 justify-center border-solid border-b-2 border-[#BDBDBD] rounded-t">
-              <h3 className="text-[24px] text-[#F2BC84] font-semibold">
+              <h3 className="text-[24px] text-[#F2BC84] font-semibold font-sansation">
                 Device Config Test
               </h3>
               <button
@@ -112,11 +112,11 @@ export default function DeviceConfigTestModal (props: any) {
                   <div className="w-[10px] md:h-[64px] sm:h-[130px] bg-gradient-to-r from-[#E5A971] to-[rgb(243,188,132)] rounded-r-xl absolute top-auto left-0 bottom-auto"></div>
                   <div className="flex items-center justify-center py-6 pl-2 gap-4">
                     <img src={ item?.icon } />
-                    <span className="text-[24px] font-medium text-black self-center">
+                    <span className="text-[24px] font-medium text-black self-center font-sansation">
                       { item?.name }
                     </span>
                     { item?.name === "Internet" ? <>
-                      { speedLaoding ? <><ReactLoading type={ "spin" } color="#19AA4C" height={ 24 } width={ 24 } /></> : <span className="text-[12px] font-medium text-[#BDBDBD] self-center pt-1">
+                      { speedLaoding ? <><ReactLoading type={ "spin" } color="#19AA4C" height={ 24 } width={ 24 } /></> : <span className="text-[12px] font-medium text-[#BDBDBD] self-center pt-1 font-sansation">
                         { Math.ceil(checkSpeed) } mbps
                       </span> }
                     </> : null }
@@ -128,7 +128,7 @@ export default function DeviceConfigTestModal (props: any) {
               )) }
             </div>
             <div className="flex items-center justify-center p-6">
-              <button onClick={ () => { props?.onNextClicked() } } type="button" className="text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40">
+              <button onClick={ () => { props?.onNextClicked() } } type="button" className="font-sansation text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40">
                 Next
               </button>
             </div>

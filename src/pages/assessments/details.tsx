@@ -59,39 +59,39 @@ function AssessmentDetails () {
               ) }
             </div>
             <div className="flex flex-col items-center justify-center py-4 md:w-[25%] sm:w-full px-4">
-              <span className="text-[22px] font-semibold text-[#F2BC84] self-center">
+              <span className="text-[22px] font-semibold text-[#F2BC84] self-center font-sansation">
                 { item?.name }
               </span>
             </div>
             <div className="flex flex-col md:w-[25%] sm:w-full px-4">
-              <span className="text-[20px] font-normal text-black">Skills</span>
-              <span className="text-[14px] font-medium text-[#BDBDBD]">
+              <span className="text-[20px] font-normal text-black font-sansation">Skills</span>
+              <span className="text-[14px] font-medium text-[#BDBDBD] font-sansation">
                 Objective-C/Swift Proficiency, Offline Storage & Threading,
                 Performance Tuning, RESTful APIs Integration, Cloud Messaging.
               </span>
             </div>
             <div className="flex sm:justify-around md:justify-between md:w-[35%] sm:w-full px-2">
               <div className="flex flex-col text-center">
-                <span className="text-[20px] font-normal text-black">
+                <span className="text-[20px] font-normal text-black font-sansation">
                   Questions
                 </span>
-                <span className="text-[20px] font-semibold text-[#BDBDBD]">
+                <span className="text-[20px] font-semibold text-[#BDBDBD] font-sansation">
                   { item?.noOfQuestion || 0 }
                 </span>
               </div>
               <div className="flex flex-col text-center items-center">
-                <span className="text-[20px] font-normal text-black">
+                <span className="text-[20px] font-normal text-black font-sansation">
                   Weightage
                 </span>
-                <span className="text-[20px] font-semibold text-[#BDBDBD] min-w-[50px] border-b border-[#E5A971]">
+                <span className="text-[20px] font-semibold text-[#BDBDBD] min-w-[50px] border-b border-[#E5A971] font-sansation">
                   25%
                 </span>
               </div>
               <div className="flex flex-col text-center">
-                <span className="text-[20px] font-normal text-black">
+                <span className="text-[20px] font-normal text-black font-sansation">
                   Duration
                 </span>
-                <span className="text-[20px] font-semibold text-[#BDBDBD]">
+                <span className="text-[20px] font-semibold text-[#BDBDBD] font-sansation">
                   { item?.time || 0 } min
                 </span>
               </div>
@@ -103,7 +103,7 @@ function AssessmentDetails () {
                   setStartTestModal(true);
                   setSelectedTest(item);
                 } }
-                className="text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40"
+                className="text-white bg-[#CC8448] hover:bg-[#CC8448]/80 font-sansation focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40"
               >
                 Next
               </button>

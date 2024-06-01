@@ -1,4 +1,3 @@
-import React from "react";
 import MultiUserIcon from "../../assets/svg/multiUserIcon.svg";
 import AiBot from "../../assets/AiBot.png";
 import VideoCallUser from "../../assets/VideoCallUser.png";
@@ -12,7 +11,7 @@ const VideoTest = () => {
   const noOfUser = 3;
   return (
     <div className="sm:p-6 md:p-12 p-4">
-      <div className="flex md:flex-row flex-col items-center md:justify-between mb-6 border-b-2 border-[#7d7c78] pb-4">
+      <div className="flex md:flex-row flex-col items-center md:justify-between mb-6 border-b-2 border-[#7d7c78] pb-4 font-sansation">
         <div className="flex items-center justify-start">
           <span className="font-bold text-black self-center text-2xl whitespace-nowrap md:text-[32px] ">
             Module 2: Video Round
@@ -21,47 +20,47 @@ const VideoTest = () => {
         <div className="flex items-center mt-4 md:mt-0">
           <div className="w-full flex items-center">
             <p className="text-[18px] text-black font-normal mr-10">3:24:45</p>
-            <img src={MultiUserIcon} className="px-2" alt="left icon" />
+            <img src={ MultiUserIcon } className="px-2" alt="left icon" />
             <span className="text-[24px] font-semibold text-[#a7a6a0]">
-              {noOfUser}
+              { noOfUser }
             </span>
           </div>
         </div>
       </div>
 
-      <div className=" relative flex md:flex-row flex-col items-center md:justify-center ">
+      <div className=" relative flex md:flex-row flex-col items-center md:justify-center font-sansation">
         <div className="relative ">
-          <img src={AiBot} className="px-2" alt="left icon" />
-          <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded">
+          <img src={ AiBot } className="px-2" alt="left icon" />
+          <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation">
             Ai Bot
           </div>
         </div>
         <div className="relative">
-          <img src={VideoCallUser} className="px-2" alt="left icon" />
-          <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded">
+          <img src={ VideoCallUser } className="px-2" alt="left icon" />
+          <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation">
             Manisha
           </div>
         </div>
         <div className="absolute flex  top-40 -right-12 flex-col ">
           <div className=" flex justify-center w-full">
             <img
-              src={LanguageIcon}
+              src={ LanguageIcon }
               className="px-2 bg-[#FFEFDF]"
               alt="left icon"
             />
           </div>
           <div className="flex ">
-            <img src={ChatIcon} className="px-2" alt="left icon" />
+            <img src={ ChatIcon } className="px-2" alt="left icon" />
           </div>
         </div>
       </div>
-      <div className="flex justify-center py-6">
-        <img src={Caption} alt="caption" />
+      <div className="flex justify-center py-6 font-sansation">
+        <img src={ Caption } alt="caption" />
       </div>
-      <div className="flex justify-center py-6">
+      <div className="flex justify-center py-6 font-sansation">
         <button
           className="flex justify-center bg-[#E04747] px-3 py-2 rounded-lg text-white font-semibold"
-          onClick={() => navigate("/")}
+          onClick={ () => navigate("/") }
         >
           End Meet
         </button>

@@ -83,7 +83,7 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
   };
 
   return (
-    <div className="flex flex-col relative overflow-x-hidden rounded ">
+    <div className="flex flex-col relative overflow-x-hidden rounded font-sansation">
       <PreferenceNav settings={settings} setSettings={setSettings} />
 
       <Split

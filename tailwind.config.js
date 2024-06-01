@@ -3,6 +3,9 @@ module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}', 'node_modules/flowbite-react/lib/esm/**/*.js'],
   theme: {
     extend: {
+      fontFamily: {
+        sansation: ["Sansation", "sans-serif"],
+      },
       // colors: {
       //   "dark-layer-1": "rgb(40,40,40)",
       //   "dark-layer-2": "rgb(26,26,26)",

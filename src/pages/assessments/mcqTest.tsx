@@ -11,7 +11,7 @@ function StartMCQTest () {
   return (
     <>
       <div className="sm:p-6 md:p-16 p-4">
-        <div className="flex md:flex-row flex-col items-center md:justify-between mb-6">
+        <div className="flex md:flex-row flex-col items-center md:justify-between mb-6 font-sansation">
           <div className="flex items-center justify-start">
             <span className="font-bold text-black self-center text-2xl whitespace-nowrap md:text-[32px] ">
               Module 1: MCQ Test
@@ -29,7 +29,7 @@ function StartMCQTest () {
             </div>
           </div>
         </div>
-        <div className="flex items-center mb-10 px-4">
+        <div className="flex items-center mb-10 px-4 font-sansation">
           <div className="w-full bg-[#C7C6C0] rounded-full h-2.5 mb-4 dark:bg-gray-700 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
             <div
               className="bg-gradient-to-r from-[#E5A971] to-[#F3BC84] h-2.5 rounded-full"
@@ -37,7 +37,7 @@ function StartMCQTest () {
             ></div>
           </div>
         </div>
-        <div className="mb-6 flex md:flex-row flex-col">
+        <div className="mb-6 flex md:flex-row flex-col font-sansation">
           <div className="basis-[30%] w-full">
             <div className="w-full bg-white border border-gray-200 rounded-lg shadow overflow-hidden">
               <div className="flex flex-row items-center mx-6 py-5 border-solid border-b-[3px] border-[#E6E6E6]">

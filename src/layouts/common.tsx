@@ -25,7 +25,7 @@ const CommonLayout = () => {
 					<div className="flex items-center justify-between w-full">
 						<div className="flex items-center justify-start rtl:justify-end">
 							<a href="/" className="flex md:ms-12 ms-2">
-								<span className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#E4A76F] to-[#F3BD85] self-center sm:text-2xl whitespace-nowrap">
+								<span className="text-xl font-semibold font-sansation text-transparent bg-clip-text bg-gradient-to-r from-[#E4A76F] to-[#F3BD85] self-center sm:text-2xl whitespace-nowrap">
 									TalAura
 								</span>
 							</a>
@@ -40,7 +40,7 @@ const CommonLayout = () => {
 										<span className="sr-only">Open user menu</span>
 										<img className="w-8 h-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo" />
 									</button>
-									<p className="text-sm font-semibold text-gray-900 dark:text-white ml-2" role="none">
+									<p className="text-sm font-semibold font-sansation text-gray-900 dark:text-white ml-2" role="none">
 										Neil Sims
 									</p>
 								</div>

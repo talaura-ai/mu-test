@@ -18,7 +18,7 @@ const ProblemDescription: React.FC<any> = ({ problem, _solved }) => {
   const [updating, setUpdating] = useState(false);
 
   return (
-    <div className="bg-white rounded-xl overflow-hidden border ">
+    <div className="bg-white rounded-xl overflow-hidden border font-sansation">
       {/* TAB */}
       <div className="flex w-full items-center  text-black overflow-hidden h-12 border-b">
         <div className="w-[8px] md:h-[64px] sm:h-[130px] bg-gradient-to-r from-[#E5A971] to-[rgb(243,188,132)]   top-auto left-0 bottom-auto"></div>
