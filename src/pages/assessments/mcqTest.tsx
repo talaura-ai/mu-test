@@ -7,10 +7,10 @@ import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 
 function StartMCQTest () {
   const navigate = useNavigate();
-  
+
   return (
     <>
-      <div className="sm:p-6 md:px-20 md:py-16 p-4">
+      <div className="sm:p-6 md:px-20 md:py-12 p-4">
         <div className="flex md:flex-row flex-col items-center md:justify-between mb-6 font-sansation">
           <div className="flex items-center justify-start">
             <span className="font-bold text-black self-center text-2xl whitespace-nowrap md:text-[32px] ">
@@ -88,11 +88,20 @@ function StartMCQTest () {
           </div>
           <div className="basis-[70%]">
             <div className="md:px-20 px-6 md:pt-0 pt-6">
-              <h5 className="text-[22px] font-normal text-black">
-                Q1. The area bounded by the curve y 2 = 4x and the circle x2 +
-                g2 - 2x - 3 = 0 is
-              </h5>
-              <div className=" space-y-5 mt-5">
+              <div className="flex">
+                <div>
+                  <h5 className="text-[22px] font-normal text-black">
+                    Q1.
+                  </h5>
+                </div>
+                <div>
+                  <h5 className="text-[22px] font-normal text-black pl-[10px]">
+                    The area bounded by the curve y 2 = 4x and the circle x2 +
+                    g2 - 2x - 3 = 0 is.
+                  </h5>
+                </div>
+              </div>
+              <div className="space-y-5 mt-6 ml-10">
                 { [
                   { title: "First Choice", option: "A" },
                   { title: "Second Choice", option: "B" },

@@ -8,7 +8,7 @@ const CodingTest: React.FC<any> = (props) => {
   problem.handlerFunction = problem.handlerFunction?.toString();
 
   return (
-    <div className="sm:p-6 md:px-20 md:py-16 p-4">
+    <div className="sm:p-6 md:px-20 md:py-12 p-4">
       <div className="flex md:flex-row flex-col items-center md:justify-between mb-6 font-sansation">
         <div className="flex items-center justify-start">
           <span className="font-bold text-black self-center text-2xl whitespace-nowrap md:text-[32px] ">

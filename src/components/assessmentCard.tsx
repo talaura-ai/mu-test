@@ -25,8 +25,8 @@ function AssessmentCard () {
 
   return (
     <>
-      <div className="flex flex-wrap items-center justify-center md:mb-12 mb-6">
-        <div className="flex md:flex-row flex-col items-center justify-around md:justify-between md:w-[50%] w-full px-4">
+      <div className="flex flex-wrap items-center justify-center md:mb-12 mb-6 ">
+        <div className="flex md:flex-row flex-col items-center justify-around md:justify-between md:w-[55%] w-full bg-white rounded-lg shadow-lg px-12 py-4">
           <div className="flex flex-col justify-center mb-4">
             <span className="text-[36px] font-semibold text-[#F2BC84] self-center leading-[38px] font-sansation">
               A2

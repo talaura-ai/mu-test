@@ -54,7 +54,7 @@ function PersonNeedMoreInfo () {
 
   return (
     <>
-      <div className="sm:p-8 md:px-20 md:py-16 p-4">
+      <div className="sm:p-8 md:px-20 md:py-12 p-4">
         <AssessmentCard />
         <div
           className="flex flex-col mb-10 rounded-2xl bg-white p-8 shadow-lg"
