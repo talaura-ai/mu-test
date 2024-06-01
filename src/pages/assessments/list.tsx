@@ -30,7 +30,7 @@ function MyAssessments () {
   return (
     <>
       { deviceConfigModal && <DeviceConfigTestModal onClose={ () => { setDeviceConfigModal(false) } } onNextClicked={ onNextClicked } /> }
-      <div className="sm:p-6 md:px-16 p-4">
+      <div className="sm:p-6 md:px-20 md:py-7 p-4">
         <div className="flex items-center justify-between mb-6 mt-5">
           <div className="flex items-center justify-start">
             <span className="text-xl font-semibold font-sansation text-black self-center sm:text-2xl whitespace-nowrap">

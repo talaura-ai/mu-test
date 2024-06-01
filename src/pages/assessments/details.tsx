@@ -41,7 +41,7 @@ function AssessmentDetails () {
 
   return (
     <>
-      <div className="sm:p-8 md:p-16 p-4">
+      <div className="sm:p-8 md:px-20 md:py-16 p-4">
         <AssessmentCard />
         { selectAssessment?.module?.map((item: any) => (
           <div

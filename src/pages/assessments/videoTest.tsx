@@ -10,7 +10,7 @@ const VideoTest = () => {
   const navigate = useNavigate();
   const noOfUser = 3;
   return (
-    <div className="sm:p-6 md:p-12 p-4">
+    <div className="sm:p-6 md:px-20 md:py-16 p-4">
       <div className="flex md:flex-row flex-col items-center md:justify-between mb-6 border-b-2 border-[#7d7c78] pb-4 font-sansation">
         <div className="flex items-center justify-start">
           <span className="font-bold text-black self-center text-2xl whitespace-nowrap md:text-[32px] ">
