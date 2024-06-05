@@ -39,11 +39,14 @@ function StartMCQTest () {
   }, [dispatcher])
 
   const onQuestionSelection = (option: any) => {
+    let optionValue = ""
     if (option !== selectedQuestion) {
-      setSelectedQuestion(option)
-    } else {
-      setSelectedQuestion("")
+      optionValue = option
     }
+    let updateQuestion = [...moduleQuestions]
+    updateQuestion[questionIndex] = { ...updateQuestion[questionIndex], answer: optionValue }
+    setModuleQuestions(updateQuestion)
+    setSelectedQuestion(optionValue)
   }
 
   const onPrevClicked = () => {
@@ -53,10 +56,7 @@ function StartMCQTest () {
       setDisablePrevBtn(false)
     }
     if (questionIndex) {
-      let updateQuestion = [...moduleQuestions]
-      updateQuestion[questionIndex] = { ...updateQuestion[questionIndex], answer: selectedQuestion }
-      setModuleQuestions(updateQuestion)
-      setSelectedQuestion(updateQuestion?.[questionIndex - 1 === 0 ? 0 : questionIndex - 1]?.answer || "")
+      setSelectedQuestion(moduleQuestions?.[questionIndex - 1 === 0 ? 0 : questionIndex - 1]?.answer || "")
       setQuestionIndex((prev) => {
         return prev - 1
       })
@@ -71,10 +71,7 @@ function StartMCQTest () {
       setDisableNextBtn(false)
     }
     if (moduleQuestions?.length - 1 > questionIndex) {
-      let updateQuestion = [...moduleQuestions]
-      updateQuestion[questionIndex] = { ...updateQuestion[questionIndex], answer: selectedQuestion }
-      setModuleQuestions(updateQuestion)
-      setSelectedQuestion(updateQuestion?.[moduleQuestions?.length - 1 === questionIndex ? 0 : questionIndex + 1]?.answer || "")
+      setSelectedQuestion(moduleQuestions?.[moduleQuestions?.length - 1 === questionIndex ? 0 : questionIndex + 1]?.answer || "")
       setQuestionIndex((prev) => {
         return prev + 1
       })
