@@ -90,12 +90,12 @@ function StartMCQTest () {
             <div className="md:px-20 px-6 md:pt-0 pt-6">
               <div className="flex">
                 <div>
-                  <h5 className="text-[22px] font-normal text-black">
+                  <h5 className="text-[22px] font-normal text-black select-none">
                     Q1.
                   </h5>
                 </div>
                 <div>
-                  <h5 className="text-[22px] font-normal text-black pl-[10px]">
+                  <h5 className="text-[22px] font-normal text-black pl-[10px] select-none">
                     The area bounded by the curve y 2 = 4x and the circle x2 +
                     g2 - 2x - 3 = 0 is.
                   </h5>

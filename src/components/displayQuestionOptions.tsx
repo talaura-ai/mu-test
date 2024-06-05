@@ -14,9 +14,9 @@ export default function QuestionOptionBox ({ checked, option }: any) {
         ${checked ? "border-[#E5A971]" : "border-[#B1B1B1]"}
         `}
         >
-          <p className=" text-black text-[18px] font-normal font-sansation">{ option?.option }</p>
+          <p className=" text-black text-[18px] font-normal font-sansation select-none">{ option?.option }</p>
         </div>
-        <p className=" text-black text-[18px] font-normal pl-3 font-sansation">{ option?.title }</p>
+        <p className=" text-black text-[18px] font-normal pl-3 font-sansation select-none">{ option?.title }</p>
       </div>
     </>
   );
