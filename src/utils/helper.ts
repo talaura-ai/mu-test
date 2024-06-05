@@ -10,3 +10,5 @@ export const getExpiredIn = (startDate: any, endDate: any) => {
   var formattedDuration = `${days}D:${hours}H:${minutes}M`;
   return formattedDuration
 }
+
+export const alphabetArray = [...Array(26)].map((_, i) => String.fromCharCode(65 + i));

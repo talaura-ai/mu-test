@@ -1,9 +1,13 @@
-export default function QuestionOptionBox ({ checked, option }: any) {
+import { alphabetArray } from "../utils/helper";
+
+export default function QuestionOptionBox ({ checked, option, index, onSelection }: any) {
+
   return (
     <>
       <div
+        onClick={ () => onSelection(option) }
         className={ `flex items-center w-[50%] font-normal rounded-[5px] border-[2px] border-solid py-2 px-3 cursor-pointer font-sansation
-        ${checked
+        ${checked === option
             ? "border-[#E5A971] bg-[#FAE6D1]"
             : "border-[#B1B1B1] bg-white"
           }
@@ -11,12 +15,12 @@ export default function QuestionOptionBox ({ checked, option }: any) {
       >
         <div
           className={ `w-[35px] h-[35px] flex justify-center items-center rounded-full border-solid border-[2px]
-        ${checked ? "border-[#E5A971]" : "border-[#B1B1B1]"}
+        ${checked === option ? "border-[#E5A971]" : "border-[#B1B1B1]"}
         `}
         >
-          <p className=" text-black text-[18px] font-normal font-sansation select-none">{ option?.option }</p>
+          <p className=" text-black text-[18px] font-normal font-sansation select-none">{ alphabetArray?.[index] }</p>
         </div>
-        <p className=" text-black text-[18px] font-normal pl-3 font-sansation select-none">{ option?.title }</p>
+        <p className=" text-black text-[18px] font-normal pl-3 font-sansation select-none">{ option }</p>
       </div>
     </>
   );

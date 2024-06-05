@@ -4,10 +4,100 @@ import UserIcon from "../../assets/svg/userIcon.svg";
 import QuestionNumberBox from "../../components/questionNumberBox";
 import QuestionOptionBox from "../../components/displayQuestionOptions";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
+import React from "react";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
+import { setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 
 function StartMCQTest () {
+  const dispatcher = useAppDispatch()
   const navigate = useNavigate();
+  const assessmentModule = useAppSelector(getAssessmentModuleSelector)
+  const [moduleQuestions, setModuleQuestions] = React.useState<any>([])
+  const [questionIndex, setQuestionIndex] = React.useState(0)
+  const [selectedQuestion, setSelectedQuestion] = React.useState("")
+  const [disableNextBtn, setDisableNextBtn] = React.useState(false)
+  const [disablePrevBtn, setDisablePrevBtn] = React.useState(true)
 
+  console.log('assessmentModule=>', assessmentModule)
+
+  React.useEffect(() => {
+    if (assessmentModule?.module?.question) {
+      setModuleQuestions(assessmentModule?.module?.question)
+      setQuestionIndex(0)
+    }
+  }, [assessmentModule])
+
+  React.useEffect(() => {
+    dispatcher(setAssessmentModuleDispatcher(
+      {
+        "moduleId": "665ff87f8e126e17bf3dab37",
+        "candidateId": "665ff9c88e126e17bf3dab4b",
+        "assessmentId": "665ff2d18e126e17bf3daad5"
+      }
+    ))
+  }, [dispatcher])
+
+  const onQuestionSelection = (option: any) => {
+    if (option !== selectedQuestion) {
+      setSelectedQuestion(option)
+    } else {
+      setSelectedQuestion("")
+    }
+  }
+
+  const onPrevClicked = () => {
+    if (questionIndex - 1 === 0) {
+      setDisablePrevBtn(true)
+    } else {
+      setDisablePrevBtn(false)
+    }
+    if (questionIndex) {
+      let updateQuestion = [...moduleQuestions]
+      updateQuestion[questionIndex] = { ...updateQuestion[questionIndex], answer: selectedQuestion }
+      setModuleQuestions(updateQuestion)
+      setSelectedQuestion(updateQuestion?.[questionIndex - 1 === 0 ? 0 : questionIndex - 1]?.answer || "")
+      setQuestionIndex((prev) => {
+        return prev - 1
+      })
+    }
+    setDisableNextBtn(false)
+  }
+
+  const onNextClicked = () => {
+    if (moduleQuestions?.length - 2 === questionIndex) {
+      setDisableNextBtn(true)
+    } else {
+      setDisableNextBtn(false)
+    }
+    if (moduleQuestions?.length - 1 > questionIndex) {
+      let updateQuestion = [...moduleQuestions]
+      updateQuestion[questionIndex] = { ...updateQuestion[questionIndex], answer: selectedQuestion }
+      setModuleQuestions(updateQuestion)
+      setSelectedQuestion(updateQuestion?.[moduleQuestions?.length - 1 === questionIndex ? 0 : questionIndex + 1]?.answer || "")
+      setQuestionIndex((prev) => {
+        return prev + 1
+      })
+    }
+    setDisablePrevBtn(false)
+  }
+
+  const directQuestionClicked = (index: number) => {
+    setSelectedQuestion(moduleQuestions?.[index - 1]?.answer || "")
+    setQuestionIndex(index - 1)
+    if (index === moduleQuestions?.length) {
+      setDisableNextBtn(true)
+    } else {
+      setDisableNextBtn(false)
+    }
+    if (index === 1) {
+      setDisablePrevBtn(true)
+    } else {
+      setDisablePrevBtn(false)
+    }
+  }
+
+  console.log('moduleQuestions=>', moduleQuestions)
   return (
     <>
       <div className="sm:p-6 md:px-20 md:py-12 p-4">
@@ -66,14 +156,12 @@ function StartMCQTest () {
                   </h5>
                 </div>
                 <div className=" flex flex-wrap w-full gap-5 my-5">
-                  { [
-                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                    18, 19, 20,
-                  ].map((index) => (
+                  { moduleQuestions?.map((question: any, index: number) => (
                     <QuestionNumberBox
-                      questionNo={ index }
-                      checked={ index % 2 === 0 }
-                      key={ index }
+                      questionNo={ index + 1 }
+                      checked={ question?.answer }
+                      key={ question?._id }
+                      directQuestionClicked={ directQuestionClicked }
                     />
                   )) }
                 </div>
@@ -91,30 +179,26 @@ function StartMCQTest () {
               <div className="flex">
                 <div>
                   <h5 className="text-[22px] font-normal text-black select-none">
-                    Q1.
+                    Q{ questionIndex + 1 }.
                   </h5>
                 </div>
                 <div>
                   <h5 className="text-[22px] font-normal text-black pl-[10px] select-none">
-                    The area bounded by the curve y 2 = 4x and the circle x2 +
-                    g2 - 2x - 3 = 0 is.
+                    { moduleQuestions?.[questionIndex]?.title || "" }
                   </h5>
                 </div>
               </div>
               <div className="space-y-5 mt-6 ml-10">
-                { [
-                  { title: "First Choice", option: "A" },
-                  { title: "Second Choice", option: "B" },
-                  { title: "Third Choice", option: "C" },
-                  { title: "Forth Choice", option: "D" },
-                ].map((item, index) => (
-                  <QuestionOptionBox option={ item } checked={ index % 4 === 0 } />
+                { moduleQuestions?.[questionIndex]?.options?.map((option: any, index: number) => (
+                  <QuestionOptionBox onSelection={ (v: any) => { onQuestionSelection(v) } } option={ option } index={ index } checked={ selectedQuestion } />
                 )) }
               </div>
             </div>
             <div className="flex w-full justify-between mt-20">
               <button
                 type="button"
+                disabled={ disablePrevBtn }
+                onClick={ onPrevClicked }
                 className="md:mx-20 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
               >
                 <FaArrowLeft className="mr-2" />
@@ -122,6 +206,8 @@ function StartMCQTest () {
               </button>
               <button
                 type="button"
+                disabled={ disableNextBtn }
+                onClick={ onNextClicked }
                 className="md:mx-20 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
               >
                 NEXT <FaArrowRight className="ml-2" />

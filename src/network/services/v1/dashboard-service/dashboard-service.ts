@@ -9,4 +9,8 @@ const getAssessments = async (body: any) => {
   return await AxiosService.post(Endpoints.assessmentList, body)
 }
 
-export default { getAssessments }
+const getAssessmentModules = async (body: any) => {
+  return await AxiosService.post(Endpoints.assessmentModule, body)
+}
+
+export default { getAssessments, getAssessmentModules }

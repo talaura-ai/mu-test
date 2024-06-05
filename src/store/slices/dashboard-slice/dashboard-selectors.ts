@@ -16,3 +16,10 @@ export const getLoadingSelector = createDraftSafeSelector(
     return items.loading
   },
 )
+
+export const getAssessmentModuleSelector = createDraftSafeSelector(
+  [dashboardSelector],
+  items => {
+    return items.assessmentModuleData
+  },
+)

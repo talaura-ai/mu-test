@@ -1,9 +1,10 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import { setAssessmentDispatcher } from "./dashboard-dispatchers";
+import { setAssessmentDispatcher, setAssessmentModuleDispatcher } from "./dashboard-dispatchers";
 
 const initialState: DashboardDataType = {
   assessments: [],
+  assessmentModuleData: {},
   loading: false
 };
 
@@ -23,11 +24,25 @@ export const dashboardSlice = createSlice({
       .addCase(setAssessmentDispatcher.fulfilled, (state: any, action: any) => {
         console.log('action.payload=>', action.payload)
         if (action.payload?.data?.status) {
-          state.assessments = action?.payload?.data?.getUser          
+          state.assessments = action?.payload?.data?.getUser
         }
         state.loading = false;
       })
       .addCase(setAssessmentDispatcher.rejected, (state: any) => {
+        state.loading = false;
+      })
+    builder
+      .addCase(setAssessmentModuleDispatcher.pending, (state: any) => {
+        state.loading = true;
+      })
+      .addCase(setAssessmentModuleDispatcher.fulfilled, (state: any, action: any) => {
+        console.log('action.payload=>', action.payload)
+        if (action.payload?.data?.status) {
+          state.assessmentModuleData = action?.payload?.data
+        }
+        state.loading = false;
+      })
+      .addCase(setAssessmentModuleDispatcher.rejected, (state: any) => {
         state.loading = false;
       })
   },
