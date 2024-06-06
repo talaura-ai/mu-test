@@ -1,12 +1,14 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import { setAssessmentDispatcher, setAssessmentModuleDispatcher, setAssessmentQuestionDispatcher } from "./dashboard-dispatchers";
+import { setAssessmentDispatcher, setAssessmentModuleDispatcher, setAssessmentQuestionDispatcher, getLanguagesDispatcher } from "./dashboard-dispatchers";
 
 const initialState: DashboardDataType = {
   assessments: [],
   assessmentModuleData: {},
   assessmentQuestion: {},
-  loading: false
+  programmingLang: [],
+  loading: false,
+
 };
 
 export const dashboardSlice = createSlice({
@@ -55,6 +57,21 @@ export const dashboardSlice = createSlice({
         state.loading = false;
       })
       .addCase(setAssessmentQuestionDispatcher.rejected, (state: any) => {
+        state.loading = false;
+      })
+
+
+    builder
+      .addCase(getLanguagesDispatcher.pending, (state: any) => {
+        state.loading = true;
+      })
+      .addCase(getLanguagesDispatcher.fulfilled, (state: any, action: any) => {
+        if (action.payload?.data) {
+          state.programmingLang = action?.payload?.data
+        }
+        state.loading = false;
+      })
+      .addCase(getLanguagesDispatcher.rejected, (state: any) => {
         state.loading = false;
       })
   },

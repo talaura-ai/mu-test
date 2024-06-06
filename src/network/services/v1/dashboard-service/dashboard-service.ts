@@ -1,5 +1,6 @@
 import { Endpoints } from "../../../enpoints/v1"
 import AxiosService from "../../../client-interceptor"
+import Judge0AxiosService from '../../../client-interceptor/judge0';
 
 // const Subscribers = async (query: string) => {
 //   return await AxiosService.get(Endpoints.Subscribers + query)
@@ -16,4 +17,8 @@ const getAssessmentModules = async (body: any) => {
 const getAssessmentQuestionModules = async (body: any) => {
   return await AxiosService.post(Endpoints.assessmentQuestion, body)
 }
-export default { getAssessments, getAssessmentModules, getAssessmentQuestionModules }
+
+const getProgrammingLanguage = async () => {
+  return await Judge0AxiosService.get(Endpoints.programming)
+}
+export default { getAssessments, getAssessmentModules, getAssessmentQuestionModules, getProgrammingLanguage }

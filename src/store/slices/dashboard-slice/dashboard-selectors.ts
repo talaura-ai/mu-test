@@ -29,3 +29,10 @@ export const getAssessmentQuestionSelector = createDraftSafeSelector(
     return items.assessmentQuestion
   },
 )
+
+export const getLanguageSelector = createDraftSafeSelector(
+  [dashboardSelector],
+  items => {
+    return items.programmingLang
+  },
+)

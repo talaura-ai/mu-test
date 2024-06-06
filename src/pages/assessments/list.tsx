@@ -16,7 +16,6 @@ function MyAssessments() {
   const [selectAssessment, setSelectAssessment] = React.useState<any>({});
   const dispatcher = useAppDispatch();
   const myAssessments = useAppSelector(getAssessmentsSelector);
-  console.log("myAssessments=>", myAssessments);
 
   const onNextClicked = () => {
     setDeviceConfigModal(false);

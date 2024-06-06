@@ -32,3 +32,12 @@ export const setAssessmentQuestionDispatcher: any = createAsyncThunk("assessment
     return { error: JSON.parse(JSON.stringify(e)) }
   }
 })
+
+
+export const getLanguagesDispatcher: any = createAsyncThunk("programminglanguage", async () => {
+  try {
+    return await Services.DashboardService.getProgrammingLanguage()
+  } catch (e) {
+    return { error: JSON.parse(JSON.stringify(e)) }
+  }
+})

@@ -3,6 +3,8 @@ import { ISettings } from "../Playground";
 import SettingsModal from "../../../Modals/SettingsModal";
 import Select from "react-select";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import { getLanguagesDispatcher } from "../../../../store/slices/dashboard-slice/dashboard-dispatchers";
+import { getLanguageSelector } from "../../../../store/slices/dashboard-slice/dashboard-selectors";
 
 type PreferenceNavProps = {
   settings: ISettings;
@@ -20,12 +22,12 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
   });
 
   const dispatcher = useAppDispatch();
+  const languages = useAppSelector(getLanguageSelector);
 
-  const options = [
-    { value: "Javacript", label: "Javacript" },
-    { value: "NodeJs", label: "NodeJs" },
-    { value: "AngularJs", label: "AngularJs" },
-  ];
+  const options = languages?.map((language: any) => ({
+    value: language.id,
+    label: language.name,
+  }));
 
   const handleFullScreen = () => {
     if (isFullScreen) {
@@ -69,7 +71,9 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
     // You can customize other parts of the Select component as needed
   };
 
-  useEffect(() => {}, [dispatcher]);
+  useEffect(() => {
+    dispatcher(getLanguagesDispatcher());
+  }, [dispatcher]);
 
   return (
     <div className="flex items-center justify-between w-full border border-b-0 font-sansation">
