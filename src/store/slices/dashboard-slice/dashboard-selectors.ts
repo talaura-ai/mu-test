@@ -23,3 +23,9 @@ export const getAssessmentModuleSelector = createDraftSafeSelector(
     return items.assessmentModuleData
   },
 )
+export const getAssessmentQuestionSelector = createDraftSafeSelector(
+  [dashboardSelector],
+  items => {
+    return items.assessmentQuestion
+  },
+)

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ISettings } from "../Playground";
 import SettingsModal from "../../../Modals/SettingsModal";
 import Select from "react-select";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 
 type PreferenceNavProps = {
   settings: ISettings;
@@ -17,6 +18,8 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
     value: "Javacript",
     label: "Javacript",
   });
+
+  const dispatcher = useAppDispatch();
 
   const options = [
     { value: "Javacript", label: "Javacript" },
@@ -65,6 +68,8 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
     }),
     // You can customize other parts of the Select component as needed
   };
+
+  useEffect(() => {}, [dispatcher]);
 
   return (
     <div className="flex items-center justify-between w-full border border-b-0 font-sansation">

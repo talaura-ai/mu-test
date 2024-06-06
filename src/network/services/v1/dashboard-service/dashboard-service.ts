@@ -13,4 +13,7 @@ const getAssessmentModules = async (body: any) => {
   return await AxiosService.post(Endpoints.assessmentModule, body)
 }
 
-export default { getAssessments, getAssessmentModules }
+const getAssessmentQuestionModules = async (body: any) => {
+  return await AxiosService.post(Endpoints.assessmentQuestion, body)
+}
+export default { getAssessments, getAssessmentModules, getAssessmentQuestionModules }
