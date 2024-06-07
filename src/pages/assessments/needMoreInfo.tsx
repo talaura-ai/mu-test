@@ -11,7 +11,7 @@ import {
   getAssessmentQuestionSelector,
 } from "../../store/slices/dashboard-slice/dashboard-selectors";
 
-function PersonNeedMoreInfo() {
+function PersonNeedMoreInfo () {
   const navigate = useNavigate();
   const dispatcher = useAppDispatch();
   const { assessmentId } = useParams();
@@ -79,36 +79,37 @@ function PersonNeedMoreInfo() {
             Enter your Details
           </span>
           <div className="grid grid-cols-3 gap-y-6 gap-x-12 mb-4 pt-4">
-            {assessmentQuestion?.map((v: any, index: number) => (
-              <div className="flex flex-col min-h-20" key={v?._id}>
+            { assessmentQuestion?.map((v: any, index: number) => (
+              <div className="flex flex-col min-h-20" key={ v?._id }>
                 <label className="block mb-2 text-[18px] font-medium text-[#7D7C7C] font-sansation">
-                  {v?.title}
+                  { v?.title }
                   <span className="text-[#FB2121]">*</span>
                 </label>
                 <input
-                  onChange={(e) => {
+                  defaultValue={ v?.answer }
+                  onChange={ (e) => {
                     onValueChange(e.target.value, index);
-                  }}
+                  } }
                   type="text"
                   id="error"
                   className="bg-[#F2F1F1] font-sansation border border-[#C2C2C2] text-[#222222] placeholder-[#9F9D9D] text-sm rounded-[5px] block w-full p-2.5"
-                  placeholder={`Enter ${v?.title}`}
+                  placeholder={ `Enter ${v?.title}` }
                 />
-                {v?.isValid ? (
+                { v?.isValid ? (
                   <p className="mt-1 text-sm text-[#FB2121] font-sansation">
                     Required
                   </p>
-                ) : null}
+                ) : null }
               </div>
-            ))}
+            )) }
           </div>
         </div>
         <div className="flex items-center justify-end mt-12">
           <button
             type="button"
-            onClick={() => {
+            onClick={ () => {
               onSaveClicked();
-            }}
+            } }
             className="text-white font-sansation bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40"
           >
             Save

@@ -20,8 +20,8 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
 
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [selectedOption, setSelectedOption] = useState({
-    value: languages?.[0]?.id || 1,
-    label: languages?.[0]?.name || "javascript",
+    value: languages?.[0]?.id,
+    label: languages?.[0]?.name,
   });
 
   const options = languages?.map((language: any) => ({
@@ -39,7 +39,7 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
   };
 
   useEffect(() => {
-    function exitHandler(e: any) {
+    function exitHandler (e: any) {
       if (!document.fullscreenElement) {
         setIsFullScreen(false);
         return;
@@ -84,23 +84,23 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
             Code Editor
           </div>
         </div>
-        {/* <button className="flex cursor-pointer items-center rounded focus:outline-none px-2 py-1.5 font-medium"> */}
+        {/* <button className="flex cursor-pointer items-center rounded focus:outline-none px-2 py-1.5 font-medium"> */ }
         <div className="flex items-center px-1">
           <Select
-            defaultValue={selectedOption}
-            onChange={() => setSelectedOption}
-            options={options}
+            defaultValue={ selectedOption }
+            onChange={ () => setSelectedOption }
+            options={ options }
             className="text-base text-label-2 text-gray-400 focus:outline-none outline-none  w-[180px] text-left border-0 cursor-pointer"
-            isSearchable={false}
-            styles={customStyles}
+            isSearchable={ false }
+            styles={ customStyles }
           />
         </div>
-        {/* </button> */}
+        {/* </button> */ }
       </div>
 
-      {settings.settingsModalIsOpen && (
-        <SettingsModal settings={settings} setSettings={setSettings} />
-      )}
+      { settings.settingsModalIsOpen && (
+        <SettingsModal settings={ settings } setSettings={ setSettings } />
+      ) }
     </div>
   );
 };
