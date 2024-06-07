@@ -46,7 +46,7 @@ function AssessmentDetails () {
         { selectAssessment?.module?.map((item: any) => (
           <div
             key={ item }
-            className="flex flex-wrap justify-around mb-10 rounded-2xl relative py-3 bg-white"
+            className="flex flex-wrap justify-around mb-10 rounded-2xl relative py-3 bg-white shadow-lg"
           >
             <div className="absolute top-0 left-0 bottom-auto h-full flex items-center">
               <div className="w-[10px] md:h-[64px] sm:h-[130px] bg-gradient-to-r from-[#E5A971] to-[rgb(243,188,132)] rounded-r-xl"></div>

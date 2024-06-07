@@ -10,7 +10,7 @@ import { getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashb
 import moment from "moment";
 import { getExpiredIn } from "../../utils/helper";
 
-function MyAssessments() {
+function MyAssessments () {
   const navigate = useNavigate();
   const [deviceConfigModal, setDeviceConfigModal] = React.useState(false);
   const [selectAssessment, setSelectAssessment] = React.useState<any>({});
@@ -28,14 +28,14 @@ function MyAssessments() {
 
   return (
     <>
-      {deviceConfigModal && (
+      { deviceConfigModal && (
         <DeviceConfigTestModal
-          onClose={() => {
+          onClose={ () => {
             setDeviceConfigModal(false);
-          }}
-          onNextClicked={onNextClicked}
+          } }
+          onNextClicked={ onNextClicked }
         />
-      )}
+      ) }
       <div className="sm:p-6 md:px-20 md:py-7 p-4">
         <div className="flex items-center justify-between mb-6 mt-5">
           <div className="flex items-center justify-start">
@@ -64,10 +64,10 @@ function MyAssessments() {
             </div>
           </div>
         </div>
-        {myAssessments?.map((item) => (
+        { myAssessments?.map((item) => (
           <div
-            key={item}
-            className="flex flex-wrap items-center justify-around mb-6 rounded-2xl bg-white relative"
+            key={ item }
+            className="flex flex-wrap items-center justify-around mb-6 rounded-2xl bg-white relative shadow-lg"
           >
             <div className="w-[10px] md:h-[64px] sm:h-[130px] bg-gradient-to-r from-[#E5A971] to-[rgb(243,188,132)] rounded-r-xl absolute top-auto left-0 bottom-auto"></div>
             <div className="flex flex-col items-center justify-center py-6 md:w-[40%] sm:w-full">
@@ -80,16 +80,16 @@ function MyAssessments() {
             </div>
             <div className="flex items-center sm:justify-around md:justify-between md:w-[40%] sm:w-full px-2">
               <div className="flex flex-col justify-center">
-                <img src={CalenderIcon} className="h-[20px] w-[20px]" alt="" />
+                <img src={ CalenderIcon } className="h-[20px] w-[20px]" alt="" />
                 <span className="text-[16px] font-medium text-[#5C7CFA] leading-[18px] font-sansation">
                   Started On
                 </span>
                 <span className="text-[16px] font-semibold text-black leading-[16px] font-sansation">
-                  {moment(item?.startsAt).format("MMM DD, YYYY")}
+                  { moment(item?.startsAt).format("MMM DD, YYYY") }
                 </span>
               </div>
               <div className="flex flex-col justify-center">
-                <img src={DurationIcon} className="h-[20px] w-[20px]" alt="" />
+                <img src={ DurationIcon } className="h-[20px] w-[20px]" alt="" />
                 <span className="text-[16px] font-medium text-[#E9BF3E] leading-[18px] font-sansation">
                   Duration
                 </span>
@@ -98,29 +98,29 @@ function MyAssessments() {
                 </span>
               </div>
               <div className="flex flex-col justify-center">
-                <img src={ExpireIcon} className="h-[20px] w-[20px]" alt="" />
+                <img src={ ExpireIcon } className="h-[20px] w-[20px]" alt="" />
                 <span className="text-[16px] font-medium text-[#7951E6] leading-[18px] font-sansation">
                   Expires In
                 </span>
                 <span className="text-[16px] font-semibold text-black leading-[16px] font-sansation">
-                  {getExpiredIn(item?.startsAt, item?.endsOn)}
+                  { getExpiredIn(item?.startsAt, item?.endsOn) }
                 </span>
               </div>
             </div>
             <div className="flex items-center justify-center py-6 md:w-[20%] sm:w-full">
               <button
                 type="button"
-                onClick={() => {
+                onClick={ () => {
                   setDeviceConfigModal(true);
                   setSelectAssessment(item);
-                }}
+                } }
                 className="text-white font-sansation bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40"
               >
                 Start
               </button>
             </div>
           </div>
-        ))}
+        )) }
       </div>
     </>
   );
