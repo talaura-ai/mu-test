@@ -41,3 +41,11 @@ export const getLanguagesDispatcher: any = createAsyncThunk("programminglanguage
     return { error: JSON.parse(JSON.stringify(e)) }
   }
 })
+
+export const getModuleSubmissionDispatcher: any = createAsyncThunk("submit-test", async (bode: any) => {
+  try {
+    return await Services.DashboardService.getSubmission(bode)
+  } catch (e) {
+    return { error: JSON.parse(JSON.stringify(e)) }
+  }
+})

@@ -6,8 +6,9 @@ import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 import React from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
-import { setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
+import { getModuleSubmissionDispatcher, setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import TimerCounter from "../../components/timerCounter";
+import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
 
 function StartMCQTest () {
   const dispatcher = useAppDispatch()
@@ -17,7 +18,9 @@ function StartMCQTest () {
   const [questionIndex, setQuestionIndex] = React.useState(0)
   const [selectedQuestion, setSelectedQuestion] = React.useState("")
   const [disableNextBtn, setDisableNextBtn] = React.useState(false)
+  const [submitTest, setSubmitTest] = React.useState(false)
   const [disablePrevBtn, setDisablePrevBtn] = React.useState(true)
+  const [isAllQuestionsDone, setIsAllQuestionsDone] = React.useState(false)
 
   console.log('assessmentModule=>', assessmentModule)
 
@@ -47,6 +50,13 @@ function StartMCQTest () {
     updateQuestion[questionIndex] = { ...updateQuestion[questionIndex], answer: optionValue }
     setModuleQuestions(updateQuestion)
     setSelectedQuestion(optionValue)
+    let flag = true
+    updateQuestion?.map((v: any) => {
+      if (!v?.answer) {
+        flag = false
+      }
+    })
+    setIsAllQuestionsDone(flag)
   }
 
   const onPrevClicked = () => {
@@ -104,6 +114,29 @@ function StartMCQTest () {
     return (answered * 100) / moduleQuestions?.length
   }
 
+  const onSubmission = (type: string) => {
+    if (type === "submit") {
+      console.log('DATA=>', moduleQuestions)
+      submitTestClicked()
+    }
+    setSubmitTest(false)
+  }
+
+  const submitTestClicked = async () => {
+    try {
+      const res = await dispatcher(getModuleSubmissionDispatcher({
+        moduleId: "665ff87f8e126e17bf3dab37",
+        question: moduleQuestions
+      }))
+      console.log('res=>', res)
+      if (res?.payload.data?.status) {
+        navigate(-1)
+      }
+    } catch (error) {
+      console.log('error=>', error)
+    }
+  }
+
   return (
     <>
       <div className="sm:p-6 md:px-20 md:py-12 p-4">
@@ -157,7 +190,9 @@ function StartMCQTest () {
               </div>
               <button
                 type="button"
-                className=" flex w-full text-white bg-[#CC8448] tracking-wide font-medium text-md px-12 py-2.5 text-center justify-center items-center"
+                disabled={ !isAllQuestionsDone }
+                onClick={ () => { setSubmitTest(true) } }
+                className={ `flex w-full text-white bg-[#CC8448] tracking-wide font-medium text-md px-12 py-2.5 text-center justify-center items-center ${isAllQuestionsDone ? "" : "opacity-50"}` }
               >
                 Submit Test
               </button>
@@ -205,6 +240,7 @@ function StartMCQTest () {
           </div>
         </div>
       </div>
+      { submitTest ? <ModuleConfirmationModal onPress={ (v) => { onSubmission(v) } } /> : null }
     </>
   );
 }
