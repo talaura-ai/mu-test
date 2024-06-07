@@ -137,10 +137,14 @@ function StartMCQTest () {
     }
   }
 
+  const onTimeout = () => {
+    submitTestClicked()
+  }
+
   return (
     <>
       <div className="sm:p-6 md:px-20 md:py-12 p-4">
-        <TimerCounter timestamp={ assessmentModule.module?.time || 0 } title={ assessmentModule.module?.name } />
+        <TimerCounter timestamp={ assessmentModule.module?.time || 0 } title={ assessmentModule.module?.name } onTimeout={ onTimeout } />
         <div className="flex items-center mb-10 px-4 font-sansation">
           <div className="w-full bg-[#C7C6C0] rounded-full h-2.5 mb-4 dark:bg-gray-700 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
             <div
