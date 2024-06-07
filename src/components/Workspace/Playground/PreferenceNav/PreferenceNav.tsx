@@ -20,8 +20,8 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
 
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [selectedOption, setSelectedOption] = useState({
-    value: languages?.[0].id,
-    label: languages?.[0].name,
+    value: languages?.[0]?.id || 1,
+    label: languages?.[0]?.name || "javascript",
   });
 
   const options = languages?.map((language: any) => ({
