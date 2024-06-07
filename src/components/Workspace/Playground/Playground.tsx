@@ -5,11 +5,13 @@ import CodeMirror from "@uiw/react-codemirror";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import { javascript } from "@codemirror/lang-javascript";
 import { whiteLight } from "@uiw/codemirror-theme-white";
-import EditorFooter from "./EditorFooter";
 import { toast } from "react-toastify";
 import { problems } from "../../../utils/problems";
 import { IoIosArrowDown } from "react-icons/io";
-
+import { FaPlay } from "react-icons/fa6";
+import { Base64 } from "js-base64";
+import { useAppDispatch } from "../../../store/hooks";
+import { getSendSubmissionDispatcher, getSubmissionStatusDispatcher } from "../../../store/slices/dashboard-slice/dashboard-dispatchers";
 export interface ISettings {
   fontSize: string;
   settingsModalIsOpen: boolean;
@@ -19,7 +21,8 @@ export interface ISettings {
 const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
   const [activeTestCaseId, setActiveTestCaseId] = useState<number>(0);
   let [userCode, setUserCode] = useState<string>(problem?.starterCode);
-
+  let [codeOutput, setCodeOutput] = useState<string>("");
+  const dispatcher = useAppDispatch()
   const fontSize = "16px";
 
   const [settings, setSettings] = useState<ISettings>({
@@ -29,46 +32,36 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
   });
   const pid = "";
   const handleSubmit = async () => {
+    setCodeOutput("")
     try {
-      userCode = userCode.slice(userCode.indexOf(problem?.starterFunctionName));
-      const cb = new Function(`return ${userCode}`)();
-      const handler = problems[pid as string].handlerFunction;
+      let base64Encoded1 = Base64.encode(userCode);
+      console.log(base64Encoded1);
+      const res = await dispatcher(getSendSubmissionDispatcher(
+        {
+          "language_id": 93,
+          "source_code": base64Encoded1,
+        }
+      ))
+      console.log('res=>', res)
 
-      if (typeof handler === "function") {
-        const success = handler(cb);
-        if (success) {
-          toast.success("Congrats! All tests passed!", {
-            position: "top-center",
-            autoClose: 3000,
-            theme: "dark",
-          });
-          setSuccess(true);
-          setTimeout(() => {
-            setSuccess(false);
-          }, 4000);
-
-          setSolved(true);
+      if (res?.payload?.data?.token) {
+        const stats = await dispatcher(getSubmissionStatusDispatcher(`${res?.payload?.data?.token}?base64_encoded=true&fields=*`))
+        console.log('stats=>', stats)
+        if (stats?.payload?.data?.stdout) {
+          let decodedString = Base64.decode(stats?.payload?.data?.stdout);
+          console.log(decodedString);
+          setCodeOutput(decodedString)
+        } else {
+          setCodeOutput("N/A")
+        }
+        if (stats?.payload?.data?.stderr) {
+          let decodedString = Base64.decode(stats?.payload?.data?.stderr);
+          console.log(decodedString);
+          setCodeOutput(decodedString)
         }
       }
     } catch (error: any) {
-      console.log(error.message);
-      if (
-        error.message.startsWith(
-          "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:"
-        )
-      ) {
-        toast.error("Oops! One or more test cases failed", {
-          position: "top-center",
-          autoClose: 3000,
-          theme: "dark",
-        });
-      } else {
-        toast.error(error.message, {
-          position: "top-center",
-          autoClose: 3000,
-          theme: "dark",
-        });
-      }
+      console.log(error);
     }
   };
 
@@ -84,26 +77,26 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
 
   return (
     <div className="flex flex-col relative overflow-x-hidden rounded font-sansation">
-      <PreferenceNav settings={settings} setSettings={setSettings} />
+      <PreferenceNav settings={ settings } setSettings={ setSettings } />
 
       <Split
         className="h-[calc(100vh-108px)]"
         direction="vertical"
-        sizes={[60, 40]}
-        minSize={60}
+        sizes={ [60, 40] }
+        minSize={ 60 }
       >
         <div className="w-full overflow-auto bg-white border">
           <CodeMirror
-            value={userCode}
-            theme={whiteLight}
-            onChange={onChange}
-            basicSetup={{ foldGutter: false }}
-            extensions={[javascript()]}
-            style={{ fontSize: settings.fontSize, backgroundColor: "white" }}
+            value={ userCode }
+            theme={ whiteLight }
+            onChange={ onChange }
+            basicSetup={ { foldGutter: false } }
+            extensions={ [javascript()] }
+            style={ { fontSize: settings.fontSize, backgroundColor: "white" } }
           />
         </div>
         <div className="w-full px-5 overflow-auto border">
-          {/* testcase heading */}
+          {/* testcase heading */ }
           <div className="flex h-10 items-center space-x-6">
             <div className="relative flex h-full flex-col justify-center cursor-pointer">
               <div className="text-base font-medium leading-5 text-black">
@@ -124,38 +117,56 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
           </div>
 
           <div className="flex">
-            {problem?.examples?.map((example: any, index: number) => (
+            { problem?.examples?.map((example: any, index: number) => (
               <div
                 className="mr-2 items-start mt-2 "
-                key={example?.id}
-                onClick={() => setActiveTestCaseId(index)}
+                key={ example?.id }
+                onClick={ () => setActiveTestCaseId(index) }
               >
                 <div className="flex flex-wrap items-center gap-y-4">
                   <div
-                    className={`font-medium items-center transition-all focus:outline-none inline-flex bg-dark-fill-3 hover:bg-dark-fill-2 relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
+                    className={ `font-medium items-center transition-all focus:outline-none inline-flex bg-dark-fill-3 hover:bg-dark-fill-2 relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
 										${activeTestCaseId === index ? "text-black" : "text-gray-500"}
 									`}
                   >
-                    Case {index + 1}
+                    Case { index + 1 }
                   </div>
                 </div>
               </div>
-            ))}
+            )) }
           </div>
 
           <div className="font-semibold my-4">
             <p className="text-sm font-medium mt-4 text-black">Input:</p>
             <div className="w-full cursor-text rounded-lg border px-3 py-[10px] border-transparent text-black mt-2">
-              {problem?.examples?.[activeTestCaseId]?.inputText}
+              { problem?.examples?.[activeTestCaseId]?.inputText }
             </div>
             <p className="text-sm font-medium mt-4 text-black">Output:</p>
             <div className="w-full cursor-text rounded-lg border px-3 py-[10px] border-transparent text-black mt-2">
-              {problem?.examples?.[activeTestCaseId]?.outputText}
+              <pre>{ codeOutput }</pre>
             </div>
           </div>
         </div>
       </Split>
-      <EditorFooter handleSubmit={handleSubmit} />
+      <div className="flex absolute bottom-0 z-10 w-full font-sansation">
+        <div className="mx-5 my-[10px] flex justify-between w-full">
+          <div className="ml-auto flex items-center space-x-4">
+            <button
+              className="px-3 py-1.5 text-base font-medium items-center whitespace-nowrap transition-all focus:outline-none inline-flex bg-dark-fill-3  hover:bg-dark-fill-2 text-[#19aa4a] border rounded gap-2"
+              onClick={ () => handleSubmit() }
+            >
+              <FaPlay />
+              Run Code
+            </button>
+            <button
+              className=" w-[100px] justify-center px-3 py-1.5 font-medium items-center transition-all focus:outline-none inline-flex text-base text-white bg-[#19aa4c] hover:bg-green-800 rounded"
+              onClick={ () => handleSubmit() }
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

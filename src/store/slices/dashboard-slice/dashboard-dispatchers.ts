@@ -49,3 +49,19 @@ export const getModuleSubmissionDispatcher: any = createAsyncThunk("submit-test"
     return { error: JSON.parse(JSON.stringify(e)) }
   }
 })
+
+export const getSendSubmissionDispatcher: any = createAsyncThunk("code-submission", async (bode: any) => {
+  try {
+    return await Services.DashboardService.codeSubmission(bode)
+  } catch (e) {
+    return { error: JSON.parse(JSON.stringify(e)) }
+  }
+})
+
+export const getSubmissionStatusDispatcher: any = createAsyncThunk("submission-status", async (query: any) => {
+  try {
+    return await Services.DashboardService.submissionStatus(query)
+  } catch (e) {
+    return { error: JSON.parse(JSON.stringify(e)) }
+  }
+})

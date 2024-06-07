@@ -10,15 +10,10 @@ AxiosService.interceptors.request.use(
   async function (request) {
     if (request?.url === Endpoints.submitTest) {
       const token = localStorage.getItem("talaura-test-crs");
-      console.log('request=>', token)
       if (token) {
         request.headers['Authorization'] = `Bearer ${token}`
       }
     }
-    // const isLoggedIn = localStorage.getItem("talaura-crs-token");
-    // if (isLoggedIn) {
-    //   request.headers['Authorization'] = `Bearer ${isLoggedIn}`
-    // }
     return request
   },
   async function (error) { return await Promise.reject(error) }

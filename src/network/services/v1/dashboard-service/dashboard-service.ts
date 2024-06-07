@@ -25,4 +25,10 @@ const getProgrammingLanguage = async () => {
 const getSubmission = async (body: any) => {
   return await AxiosService.post(Endpoints.submitTest, body)
 }
-export default { getAssessments, getAssessmentModules, getAssessmentQuestionModules, getProgrammingLanguage, getSubmission }
+const codeSubmission = async (body: any) => {
+  return await Judge0AxiosService.post(Endpoints.codeSubmission, body)
+}
+const submissionStatus = async (query: any) => {
+  return await Judge0AxiosService.get(Endpoints.submissionStatus + query)
+}
+export default { getAssessments, getAssessmentModules, getAssessmentQuestionModules, getProgrammingLanguage, getSubmission, codeSubmission, submissionStatus }

@@ -3,5 +3,7 @@ export const Endpoints = {
   assessmentModule: "/candidate/module/getModule",
   assessmentQuestion: "candidate/updateQuestion",
   programming: "/languages",
-  submitTest: "/candidate/module/submitModule"
+  submitTest: "/candidate/module/submitModule",
+  codeSubmission: "/submissions?base64_encoded=true&wait=true&fields=*",
+  submissionStatus: "/submissions/"
 }
