@@ -15,15 +15,15 @@ export default function ModuleConfirmationModal (props: ModuleConfirmationModalP
               <div className="flex justify-center items-center py-4">
                 <AiOutlineInfoCircle size={ 96 } color={ "#CC8448" } />
               </div>
-              <p className="text-blueGray-500 leading-relaxed py-4 font-nunito font-bold text-[18px] text-center">
+              <p className="text-blueGray-500 leading-relaxed py-4 font-sansation font-bold text-[18px] text-center">
                 Are you sure, You want to submit the test?
               </p>
             </div>
             <div className="flex items-center justify-between px-6 pb-6 gap-4">
-              <button onClick={ () => { props?.onPress("submit") } } type="button" className="text-white ml-2 bg-[#CC8448] font-medium rounded-md text-lg w-40 py-2.5 text-center inline-flex items-center justify-center">
+              <button onClick={ () => { props?.onPress("submit") } } type="button" className="text-white ml-2 bg-[#CC8448] font-medium font-sansation rounded-md text-lg w-40 py-2.5 text-center inline-flex items-center justify-center">
                 Submit Test
               </button>
-              <button onClick={ () => { props?.onPress("cancel") } } type="button" className="text-[#7A8A94] border-[#CCC] border mr-2 font-medium rounded-md text-lg w-40 py-2.5 text-center inline-flex items-center justify-center">
+              <button onClick={ () => { props?.onPress("cancel") } } type="button" className="text-[#7A8A94] border-[#CCC] border mr-2 font-medium font-sansation rounded-md text-lg w-40 py-2.5 text-center inline-flex items-center justify-center">
                 Cancel
               </button>
             </div>

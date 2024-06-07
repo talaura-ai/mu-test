@@ -140,7 +140,7 @@ function StartMCQTest () {
   return (
     <>
       <div className="sm:p-6 md:px-20 md:py-12 p-4">
-        <TimerCounter timestamp={ assessmentModule.module?.time || 0 } />
+        <TimerCounter timestamp={ assessmentModule.module?.time || 0 } title={ assessmentModule.module?.name } />
         <div className="flex items-center mb-10 px-4 font-sansation">
           <div className="w-full bg-[#C7C6C0] rounded-full h-2.5 mb-4 dark:bg-gray-700 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
             <div
@@ -192,7 +192,7 @@ function StartMCQTest () {
                 type="button"
                 disabled={ !isAllQuestionsDone }
                 onClick={ () => { setSubmitTest(true) } }
-                className={ `flex w-full text-white bg-[#CC8448] tracking-wide font-medium text-md px-12 py-2.5 text-center justify-center items-center ${isAllQuestionsDone ? "" : "opacity-50"}` }
+                className={ `flex w-full text-white bg-[#CC8448] tracking-wide font-medium text-md px-12 py-2.5 text-center justify-center items-center font-sansation ${isAllQuestionsDone ? "cursor-pointer" : "opacity-50 cursor-not-allowed"}` }
               >
                 Submit Test
               </button>
