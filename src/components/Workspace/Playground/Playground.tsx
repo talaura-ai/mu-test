@@ -1,29 +1,55 @@
 import { useState, useEffect } from "react";
-import PreferenceNav from "./PreferenceNav/PreferenceNav";
 import Split from "react-split";
+import Select from "react-select";
 import CodeMirror from "@uiw/react-codemirror";
-import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import { javascript } from "@codemirror/lang-javascript";
+import { java } from "@codemirror/lang-java";
+import { python } from "@codemirror/lang-python";
+import { cpp } from "@codemirror/lang-cpp";
 import { whiteLight } from "@uiw/codemirror-theme-white";
 import { toast } from "react-toastify";
-import { problems } from "../../../utils/problems";
 import { IoIosArrowDown } from "react-icons/io";
 import { FaPlay } from "react-icons/fa6";
 import { Base64 } from "js-base64";
-import { useAppDispatch } from "../../../store/hooks";
-import { getSendSubmissionDispatcher, getSubmissionStatusDispatcher } from "../../../store/slices/dashboard-slice/dashboard-dispatchers";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getLanguagesDispatcher, getSendSubmissionDispatcher, getSubmissionStatusDispatcher } from "../../../store/slices/dashboard-slice/dashboard-dispatchers";
+import { getLanguageSelector } from "../../../store/slices/dashboard-slice/dashboard-selectors";
+import { selectiveLanguages } from "../../../constants";
 export interface ISettings {
   fontSize: string;
   settingsModalIsOpen: boolean;
   dropdownIsOpen: boolean;
 }
 
+const customStyles = {
+  control: (provided: any) => ({
+    ...provided,
+    border: "none",
+    boxShadow: "none",
+    "&:hover": {
+      border: "none",
+    },
+  }),
+  indicatorSeparator: (provided: any) => ({
+    ...provided,
+    display: "none",
+  }),
+};
+
 const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
-  const [activeTestCaseId, setActiveTestCaseId] = useState<number>(0);
+  const [activeTestCase, setActiveTestCase] = useState<boolean>(true);
   let [userCode, setUserCode] = useState<string>(problem?.starterCode);
   let [codeOutput, setCodeOutput] = useState<string>("");
+  let [outputError, setOutputError] = useState<string>("");
   const dispatcher = useAppDispatch()
+  const languages = useAppSelector(getLanguageSelector);
   const fontSize = "16px";
+  const [selectedOption, setSelectedOption] = useState<any>(selectiveLanguages?.[4]);
+
+  const options = languages?.map((language: any) => ({
+    value: language.id,
+    label: language.name,
+  }));
 
   const [settings, setSettings] = useState<ISettings>({
     fontSize: fontSize,
@@ -33,12 +59,14 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
   const pid = "";
   const handleSubmit = async () => {
     setCodeOutput("")
+    setOutputError("")
+    setActiveTestCase(true)
     try {
       let base64Encoded1 = Base64.encode(userCode);
       console.log(base64Encoded1);
       const res = await dispatcher(getSendSubmissionDispatcher(
         {
-          "language_id": 93,
+          "language_id": selectedOption?.value,
           "source_code": base64Encoded1,
         }
       ))
@@ -51,13 +79,13 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
           let decodedString = Base64.decode(stats?.payload?.data?.stdout);
           console.log(decodedString);
           setCodeOutput(decodedString)
-        } else {
-          setCodeOutput("N/A")
-        }
-        if (stats?.payload?.data?.stderr) {
+        } else if (stats?.payload?.data?.stderr) {
           let decodedString = Base64.decode(stats?.payload?.data?.stderr);
           console.log(decodedString);
-          setCodeOutput(decodedString)
+          setOutputError(decodedString)
+          setActiveTestCase(false)
+        } else {
+          setCodeOutput("N/A")
         }
       }
     } catch (error: any) {
@@ -66,8 +94,8 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
   };
 
   useEffect(() => {
-    const code = localStorage.getItem(`code-${pid}`);
-  }, [pid, problem?.starterCode]);
+    dispatcher(getLanguagesDispatcher());
+  }, [dispatcher]);
 
   const onChange = (value: string) => {
     setUserCode(value);
@@ -77,7 +105,26 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
 
   return (
     <div className="flex flex-col relative overflow-x-hidden rounded font-sansation">
-      <PreferenceNav settings={ settings } setSettings={ setSettings } />
+      <div className="flex items-center justify-between w-full border border-b-0 font-sansation">
+        <div className="flex items-center text-white  w-2/3  h-12 ">
+          <div className="flex items-center text-white justify-left w-1/2  h-12  ">
+            <div className="w-[8px] md:h-[64px] sm:h-[130px] bg-gradient-to-r from-[#E5A971] to-[rgb(243,188,132)]   top-auto left-0 bottom-auto"></div>
+            <div className="text-2xl font-semibold text-label-2 text-black mx-4">
+              Code Editor
+            </div>
+          </div>
+          <div className="flex items-center px-1">
+            <Select
+              defaultValue={ selectedOption }
+              onChange={ (v) => { setSelectedOption(v) } }
+              options={ selectiveLanguages }
+              className="text-base text-label-2 text-black focus:outline-none outline-none  w-[180px] text-left border-0 cursor-pointer"
+              isSearchable={ false }
+              styles={ customStyles }
+            />
+          </div>
+        </div>
+      </div>
 
       <Split
         className="h-[calc(100vh-108px)]"
@@ -91,32 +138,22 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
             theme={ whiteLight }
             onChange={ onChange }
             basicSetup={ { foldGutter: false } }
-            extensions={ [javascript()] }
+            extensions={ [javascript(), java(), python(), cpp()] }
             style={ { fontSize: settings.fontSize, backgroundColor: "white" } }
           />
         </div>
         <div className="w-full px-5 overflow-auto border">
-          {/* testcase heading */ }
-          <div className="flex h-10 items-center space-x-6">
-            <div className="relative flex h-full flex-col justify-center cursor-pointer">
-              <div className="text-base font-medium leading-5 text-black">
-                Testcases
-              </div>
-              <hr className="absolute bottom-0 h-0.5 w-full rounded-full border-none bg-black" />
-            </div>
-            <div className="mr-2 flex flex-1 flex-nowrap items-center space-x-4">
-              <div className="relative flex h-full flex-col justify-center cursor-pointer">
-                <button className="px-3 py-1.5 font-base items-center transition-all inline-flex bg-dark-fill-3 text-base hover:bg-dark-fill-2 text-dark-label-2 rounded-lg pl-3 pr-2  ">
-                  Console
-                  <div className="ml-1 transform transition flex items-center">
-                    <IoIosArrowDown className="fill-gray-6 mx-1 fill-dark-gray-6" />
-                  </div>
-                </button>
-              </div>
-            </div>
+          <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200">
+            <ul className="flex flex-wrap -mb-px">
+              <li className="me-2 cursor-pointer" onClick={ () => { setActiveTestCase(true) } }>
+                <a className={ `inline-block p-4 border-b-2 border-transparent rounded-t-lg text-base font-medium leading-5 text-black font-sansation ${activeTestCase ? "text-blue-600 border-b-2 border-blue-600 font-semibold" : ""}` }>TestCases</a>
+              </li>
+              <li className="me-2 cursor-pointer" onClick={ () => { setActiveTestCase(false) } }>
+                <a className={ `inline-block p-4 rounded-t-lg text-base font-medium leading-5 font-sansation ${activeTestCase ? "" : "text-blue-600 border-b-2 border-blue-600 font-semibold"}` } aria-current="page">Output</a>
+              </li>
+            </ul>
           </div>
-
-          <div className="flex">
+          {/* <div className="flex">
             { problem?.examples?.map((example: any, index: number) => (
               <div
                 className="mr-2 items-start mt-2 "
@@ -134,39 +171,46 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
                 </div>
               </div>
             )) }
-          </div>
+          </div> */}
 
-          <div className="font-semibold my-4">
+          { activeTestCase ? <div className="font-semibold mt-4 border rounded-lg p-4 min-h-[220px] flex-wrap text-wrap">
             <p className="text-sm font-medium mt-4 text-black">Input:</p>
             <div className="w-full cursor-text rounded-lg border px-3 py-[10px] border-transparent text-black mt-2">
-              { problem?.examples?.[activeTestCaseId]?.inputText }
+              { problem?.examples?.[0]?.inputText }
             </div>
             <p className="text-sm font-medium mt-4 text-black">Output:</p>
-            <div className="w-full cursor-text rounded-lg border px-3 py-[10px] border-transparent text-black mt-2">
+            <div className="text-wrap flex-shrink-0 cursor-text rounded-lg border px-3 py-[10px] border-transparent text-black mt-2">
               <pre>{ codeOutput }</pre>
             </div>
+          </div> : null }
+
+          { !activeTestCase ? <div className="font-semibold mt-4 border rounded-lg p-4 min-h-[220px]">
+            <pre>{ outputError }</pre>
+          </div> : null }
+
+          <div className="flex bottom-0 z-10 w-full font-sansation justify-end">
+            <div className=" my-[10px] flex justify-between w-full">
+              <div className="ml-auto flex items-center space-x-4">
+                <button
+                  className="px-3 py-1.5 text-base font-medium items-center whitespace-nowrap transition-all focus:outline-none inline-flex bg-dark-fill-3  hover:bg-dark-fill-2 text-[#19aa4a] border rounded gap-2"
+                  onClick={ () => handleSubmit() }
+                >
+                  <FaPlay />
+                  Run Code
+                </button>
+                <button
+                  className=" w-[100px] justify-center px-3 py-1.5 font-medium items-center transition-all focus:outline-none inline-flex text-base text-white bg-[#19aa4c] hover:bg-green-800 rounded"
+                  onClick={ () => handleSubmit() }
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
           </div>
+
         </div>
       </Split>
-      <div className="flex absolute bottom-0 z-10 w-full font-sansation">
-        <div className="mx-5 my-[10px] flex justify-between w-full">
-          <div className="ml-auto flex items-center space-x-4">
-            <button
-              className="px-3 py-1.5 text-base font-medium items-center whitespace-nowrap transition-all focus:outline-none inline-flex bg-dark-fill-3  hover:bg-dark-fill-2 text-[#19aa4a] border rounded gap-2"
-              onClick={ () => handleSubmit() }
-            >
-              <FaPlay />
-              Run Code
-            </button>
-            <button
-              className=" w-[100px] justify-center px-3 py-1.5 font-medium items-center transition-all focus:outline-none inline-flex text-base text-white bg-[#19aa4c] hover:bg-green-800 rounded"
-              onClick={ () => handleSubmit() }
-            >
-              Confirm
-            </button>
-          </div>
-        </div>
-      </div>
+
     </div>
   );
 };
