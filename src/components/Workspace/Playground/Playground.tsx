@@ -63,11 +63,13 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
     setActiveTestCase(true)
     try {
       let base64Encoded1 = Base64.encode(userCode);
+      let std = Base64.encode("51");
       console.log(base64Encoded1);
       const res = await dispatcher(getSendSubmissionDispatcher(
         {
           "language_id": selectedOption?.value,
           "source_code": base64Encoded1,
+          stdin: std
         }
       ))
       console.log('res=>', res)
@@ -85,7 +87,7 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
           setOutputError(decodedString)
           setActiveTestCase(false)
         } else {
-          setCodeOutput("N/A")
+          setCodeOutput("No output")
         }
       }
     } catch (error: any) {

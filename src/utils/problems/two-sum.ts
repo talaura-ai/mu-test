@@ -1,9 +1,17 @@
 import assert from "assert";
 import { Problem } from "../types/problem";
 
-const starterCodeTwoSum = `function twoSum(nums,target){
-  // Write your code here
-};`;
+const starterCodeTwoSum = `function twoSum(nums){
+  console.log(nums)
+};
+let input = ""
+process.stdin.on("data", function(chunk){
+  input+=chunk;
+})
+process.stdin.on("end", function(chunk){
+  twoSum(input)
+})
+`;
 
 // checks if the user has the correct code
 const handlerTwoSum = (fn: any) => {
