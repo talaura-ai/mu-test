@@ -20,7 +20,6 @@ function StartMCQTest () {
   const [disableNextBtn, setDisableNextBtn] = React.useState(false)
   const [submitTest, setSubmitTest] = React.useState(false)
   const [disablePrevBtn, setDisablePrevBtn] = React.useState(true)
-  const [isAllQuestionsDone, setIsAllQuestionsDone] = React.useState(false)
 
   console.log('assessmentModule=>', assessmentModule)
 
@@ -50,13 +49,6 @@ function StartMCQTest () {
     updateQuestion[questionIndex] = { ...updateQuestion[questionIndex], answer: optionValue }
     setModuleQuestions(updateQuestion)
     setSelectedQuestion(optionValue)
-    let flag = true
-    updateQuestion?.map((v: any) => {
-      if (!v?.answer) {
-        flag = false
-      }
-    })
-    setIsAllQuestionsDone(flag)
   }
 
   const onPrevClicked = () => {
@@ -194,9 +186,8 @@ function StartMCQTest () {
               </div>
               <button
                 type="button"
-                disabled={ !isAllQuestionsDone }
                 onClick={ () => { setSubmitTest(true) } }
-                className={ `flex w-full text-white bg-[#CC8448] tracking-wide font-medium text-md px-12 py-2.5 text-center justify-center items-center font-sansation ${isAllQuestionsDone ? "cursor-pointer" : "opacity-50 cursor-not-allowed"}` }
+                className={ `flex w-full text-white bg-[#CC8448] tracking-wide font-medium text-md px-12 py-2.5 text-center justify-center items-center font-sansation cursor-pointer` }
               >
                 Submit Test
               </button>
