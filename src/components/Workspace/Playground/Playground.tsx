@@ -14,7 +14,7 @@ import { Base64 } from "js-base64";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getLanguagesDispatcher, getSendSubmissionDispatcher, getSubmissionStatusDispatcher } from "../../../store/slices/dashboard-slice/dashboard-dispatchers";
 import { getLanguageSelector } from "../../../store/slices/dashboard-slice/dashboard-selectors";
-import { selectiveLanguages } from "../../../constants";
+import { selectiveLanguages, submissionStatuses, submissionStatusesColours } from "../../../constants";
 export interface ISettings {
   fontSize: string;
   settingsModalIsOpen: boolean;
@@ -41,6 +41,7 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
   let [userCode, setUserCode] = useState<string>(problem?.starterCode);
   let [codeOutput, setCodeOutput] = useState<string>("");
   let [outputError, setOutputError] = useState<string>("");
+  let [submissionStatus, setSubmissionStatus] = useState(0);
   const dispatcher = useAppDispatch()
   const languages = useAppSelector(getLanguageSelector);
   const fontSize = "16px";
@@ -61,15 +62,18 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
     setCodeOutput("")
     setOutputError("")
     setActiveTestCase(true)
+    setSubmissionStatus(0)
     try {
       let base64Encoded1 = Base64.encode(userCode);
-      let std = Base64.encode("51");
+      let std = Base64.encode("50");
+      let stdOut = Base64.encode("50");
       console.log(base64Encoded1);
       const res = await dispatcher(getSendSubmissionDispatcher(
         {
           "language_id": selectedOption?.value,
           "source_code": base64Encoded1,
-          stdin: std
+          stdin: std,
+          expected_output: stdOut
         }
       ))
       console.log('res=>', res)
@@ -77,10 +81,15 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
       if (res?.payload?.data?.token) {
         const stats = await dispatcher(getSubmissionStatusDispatcher(`${res?.payload?.data?.token}?base64_encoded=true&fields=*`))
         console.log('stats=>', stats)
+        setSubmissionStatus(stats?.payload?.data?.status_id || 0)
         if (stats?.payload?.data?.stdout) {
-          let decodedString = Base64.decode(stats?.payload?.data?.stdout);
-          console.log(decodedString);
-          setCodeOutput(decodedString)
+          let ans = Base64.decode(stats?.payload?.data?.stdout);
+          let input = Base64.decode(stats?.payload?.data?.stdin);
+          let expected_output = Base64.decode(stats?.payload?.data?.expected_output);
+          console.log("ans", ans);
+          console.log("input", input);
+          console.log("expected_output", expected_output);
+          setCodeOutput(ans)
         } else if (stats?.payload?.data?.stderr) {
           let decodedString = Base64.decode(stats?.payload?.data?.stderr);
           console.log(decodedString);
@@ -104,6 +113,7 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
     console.log(value);
     localStorage.setItem(`code-${pid}`, JSON.stringify(value));
   };
+  console.log('submissionStatus=>', submissionStatus)
 
   return (
     <div className="flex flex-col relative overflow-x-hidden rounded font-sansation">
@@ -144,8 +154,8 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
             style={ { fontSize: settings.fontSize, backgroundColor: "white" } }
           />
         </div>
-        <div className="w-full px-5 overflow-auto border">
-          <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200">
+        <div className="w-full px-5 border h-[100%]">
+          <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 h-[15%]">
             <ul className="flex flex-wrap -mb-px">
               <li className="me-2 cursor-pointer" onClick={ () => { setActiveTestCase(true) } }>
                 <a className={ `inline-block p-4 border-b-2 border-transparent rounded-t-lg text-base font-medium leading-5 text-black font-sansation ${activeTestCase ? "text-blue-600 border-b-2 border-blue-600 font-semibold" : ""}` }>TestCases</a>
@@ -155,42 +165,48 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
               </li>
             </ul>
           </div>
-          {/* <div className="flex">
-            { problem?.examples?.map((example: any, index: number) => (
-              <div
-                className="mr-2 items-start mt-2 "
-                key={ example?.id }
-                onClick={ () => setActiveTestCaseId(index) }
-              >
-                <div className="flex flex-wrap items-center gap-y-4">
-                  <div
-                    className={ `font-medium items-center transition-all focus:outline-none inline-flex bg-dark-fill-3 hover:bg-dark-fill-2 relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
-										${activeTestCaseId === index ? "text-black" : "text-gray-500"}
+
+          <div className="h-[70%] overflow-scroll">
+            <div className="flex">
+              { problem?.examples?.map((example: any, index: number) => (
+                <div
+                  className="mr-2 items-start mt-2 "
+                  key={ example?.id }
+                // onClick={ () => setActiveTestCaseId(index) }
+                >
+                  <div className="flex flex-wrap items-center gap-y-4">
+                    <div
+                      className={ `font-medium items-center transition-all focus:outline-none inline-flex bg-dark-fill-3 hover:bg-dark-fill-2 relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
+										${0 === index ? "text-black" : "text-gray-500"}
 									`}
-                  >
-                    Case { index + 1 }
+                    >
+                      Case { index + 1 }
+                    </div>
                   </div>
                 </div>
+              )) }
+            </div>
+            { activeTestCase ? <div className="font-semibold rounded-lg px-4 min-h-[220px] flex-wrap text-wrap">
+              <p className="text-sm font-medium mt-4 text-black">Input:</p>
+              <div className="w-full cursor-text rounded-lg border px-3 py-[10px] border-transparent text-black mt-2">
+                { problem?.examples?.[0]?.inputText }
               </div>
-            )) }
-          </div> */}
+              <p className="text-sm font-medium mt-4 text-black">Output:</p>
 
-          { activeTestCase ? <div className="font-semibold mt-4 border rounded-lg p-4 min-h-[220px] flex-wrap text-wrap">
-            <p className="text-sm font-medium mt-4 text-black">Input:</p>
-            <div className="w-full cursor-text rounded-lg border px-3 py-[10px] border-transparent text-black mt-2">
-              { problem?.examples?.[0]?.inputText }
-            </div>
-            <p className="text-sm font-medium mt-4 text-black">Output:</p>
-            <div className="text-wrap flex-shrink-0 cursor-text rounded-lg border px-3 py-[10px] border-transparent text-black mt-2">
-              <pre>{ codeOutput }</pre>
-            </div>
-          </div> : null }
+              <div className={ `text-wrap flex-shrink-0 cursor-text rounded-lg border px-3 py-[10px] border-transparent text-[#${submissionStatusesColours[submissionStatus]}] mt-2` }>
+                { submissionStatuses[submissionStatus] }
+              </div>
+              <div className="text-wrap flex-shrink-0 cursor-text rounded-lg border px-3 py-[10px] border-transparent text-black mt-2">
+                <pre>{ codeOutput }</pre>
+              </div>
+            </div> : null }
 
-          { !activeTestCase ? <div className="font-semibold mt-4 border rounded-lg p-4 min-h-[220px]">
-            <pre>{ outputError }</pre>
-          </div> : null }
+            { !activeTestCase ? <div className="font-semibold mt-4 rounded-lg p-4 min-h-[220px]">
+              <pre>{ outputError }</pre>
+            </div> : null }
+          </div>
 
-          <div className="flex bottom-0 z-10 w-full font-sansation justify-end">
+          <div className="flex bottom-0 z-10 w-full font-sansation justify-end h-[15%]">
             <div className=" my-[10px] flex justify-between w-full">
               <div className="ml-auto flex items-center space-x-4">
                 <button

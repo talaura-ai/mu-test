@@ -10,3 +10,38 @@ export const selectiveLanguages = [
   { value: "94", label: "TypeScript" },
   { value: "68", label: "PHP" },
 ]
+
+export const submissionStatuses: any = {
+  1: "In Queue",
+  2: "Processing",
+  3: "Accepted",
+  4: "Wrong Answer",
+  5: "Time Limit Exceeded",
+  6: "Compilation Error",
+  7: "Runtime Error",
+  8: "Runtime Error",
+  9: "Runtime Error",
+  10: "Runtime Error",
+  11: "Runtime Error",
+  12: "Runtime Error",
+  13: "Internal Error",
+  14: "Exec Format Error",
+}
+
+export const submissionStatusesColours: any = {
+  0: `000`,
+  1: `E5A971`,
+  2: `E5A971`,
+  3: `19aa4c`,
+  4: `F00`,
+  5: `F00`,
+  6: `F00`,
+  7: `F00`,
+  8: `F00`,
+  9: `F00`,
+  10: `F00`,
+  11: `F00`,
+  12: `F00`,
+  13: `F00`,
+  14: `F00`,
+}
