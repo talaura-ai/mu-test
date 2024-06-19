@@ -1,19 +1,58 @@
 import React from "react";
-// import { EditorState, convertToRaw } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
 import draftToHtml from "draftjs-to-html";
 import { EditorState, convertToRaw } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
+import { setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
+import { useSpeechSynthesis } from "react-speech-kit";
 
 const VoiceToText = () => {
+  const dispatcher = useAppDispatch()
+  const navigate = useNavigate();
+  const { assessmentId, testId } = useParams();
+  const assessmentModule = useAppSelector(getAssessmentModuleSelector)
+  const [moduleQuestions, setModuleQuestions] = React.useState<any>([])
+  const onEnd = () => {
+    console.log('ENDED')
+  };
+  const { speak, voices, cancel } = useSpeechSynthesis({
+    onEnd
+  });
+  // const voice = voices[ 0 ] || null;
+  // speak({ text: text, voice, rate: 0.7, pitch: 0.5 });
+  // cancel()
+
+  console.log('assessmentModule---TEXT', assessmentModule)
+
+  React.useEffect(() => {
+    if (assessmentModule?.module?.question) {
+      setModuleQuestions(assessmentModule?.module?.question)
+    }
+  }, [assessmentModule])
+
+  React.useEffect(() => {
+    dispatcher(setAssessmentModuleDispatcher(
+      {
+        "moduleId": testId,
+        "candidateId": "6671852aabe0110fa47d7903",
+        "assessmentId": assessmentId
+      }
+    ))
+  }, [dispatcher, assessmentId, testId])
+
   const [editorState, seteditorState] = React.useState(
     EditorState.createEmpty()
   );
+
   const onEditorStateChange = (stats: any) => {
     seteditorState(stats);
     console.log(convertToRaw(stats.getCurrentContent()));
     console.log(draftToHtml(convertToRaw(stats.getCurrentContent())));
   };
+
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4 bg-[#F9F7F0] h-screen">
       <div className="flex md:flex-row flex-col items-center md:justify-between mb-4 border-b-2 border-[#7d7c78] pb-4 font-sansation">
@@ -41,7 +80,7 @@ const VoiceToText = () => {
           <div className="flex md:w-2/5 w-full   h-[280px] md:h-full bg-[#474646] justify-center items-center rounded border border-[#E5A971]">
             <div className="flex bg-white  h-10 w-10 md:h-40 md:w-40 rounded-full justify-center items-center">
               <span className="text-[#E5A971]  text-[20px] md:text-[60px] font-semibold font-sansation">
-                Ai{" "}
+                Ai{ " " }
               </span>
             </div>
           </div>
@@ -51,15 +90,15 @@ const VoiceToText = () => {
                 toolbarClassName="toolbarClassName"
                 wrapperClassName="wrapperClassName"
                 editorClassName="editorClassName"
-                wrapperStyle={{ width: "100%" }}
-                editorStyle={{
+                wrapperStyle={ { width: "100%" } }
+                editorStyle={ {
                   paddingLeft: 20,
                   paddingRight: 20,
                   width: "100%",
                   border: "1px solid #f2f2f2",
                   borderRadius: "4px",
-                }}
-                onEditorStateChange={onEditorStateChange}
+                } }
+                onEditorStateChange={ onEditorStateChange }
               />
             </div>
           </div>
@@ -67,9 +106,9 @@ const VoiceToText = () => {
 
         <div className="flex items-center justify-center p-6 w-full">
           <button
-            onClick={() => {
+            onClick={ () => {
               //   props?.onNextClicked();
-            }}
+            } }
             type="button"
             className="font-sansation text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40"
           >
