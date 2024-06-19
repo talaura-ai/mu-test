@@ -7,7 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import { setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
-import { useSpeechSynthesis } from "react-speech-kit";
+// import { useSpeechSynthesis } from "react-speech-kit";
 
 const VoiceToText = () => {
   const dispatcher = useAppDispatch()
@@ -18,9 +18,9 @@ const VoiceToText = () => {
   const onEnd = () => {
     console.log('ENDED')
   };
-  const { speak, voices, cancel } = useSpeechSynthesis({
-    onEnd
-  });
+  // const { speak, voices, cancel } = useSpeechSynthesis({
+  //   onEnd
+  // });
   // const voice = voices[ 0 ] || null;
   // speak({ text: text, voice, rate: 0.7, pitch: 0.5 });
   // cancel()

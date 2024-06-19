@@ -35,7 +35,6 @@
     "react-router-dom": "^6.23.1",
     "react-scripts": "5.0.1",
     "react-select": "^5.8.0",
-    "react-speech-kit": "^3.0.1",
     "react-split": "^2.0.14",
     "react-timer-hook": "^3.0.7",
     "react-toastify": "^10.0.5",
