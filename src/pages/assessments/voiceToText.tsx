@@ -9,21 +9,26 @@ import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/
 import { setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 // import { useSpeechSynthesis } from "react-speech-kit";
 import ModuletestStartModal from "../../components/Modals/testStartModal";
-import TextToSpeech from "../../components/textToSpeech";
+import TextToSpeech, {
+  TextToSpeechHandle,
+} from "../../components/textToSpeech";
 // import { useSpeechSynthesis } from "react-speech-kit";
 
 const VoiceToText = () => {
-  const [value, setValue] = React.useState("");
   const dispatcher = useAppDispatch();
   const navigate = useNavigate();
   const { assessmentId, testId } = useParams();
   const assessmentModule = useAppSelector(getAssessmentModuleSelector);
   const [moduleQuestions, setModuleQuestions] = React.useState<any>([]);
   const [startTest, setStartTest] = React.useState(false);
+  const ttsRef = React.useRef<TextToSpeechHandle>(null);
+  const [text, setText] = React.useState(
+    assessmentModule?.module?.question?.[0]?.title
+  );
 
-  const onEnd = () => {
-    console.log("ENDED");
-  };
+  //   const onEnd = () => {
+  //     console.log("ENDED");
+  //   };
   // const { speak, voices, cancel } = useSpeechSynthesis({
   //   onEnd
   // });
@@ -31,7 +36,10 @@ const VoiceToText = () => {
   // speak({ text: text, voice, rate: 0.7, pitch: 0.5 });
   // cancel()
 
-  console.log("assessmentModule---TEXT", assessmentModule);
+  console.log(
+    "assessmentModule---TEXT",
+    assessmentModule?.module?.question?.[0]?.title
+  );
 
   React.useEffect(() => {
     if (assessmentModule?.module?.question) {
@@ -61,20 +69,21 @@ const VoiceToText = () => {
 
   const onSubmission = (type: string) => {
     if (type === "start") {
-      handleSpeak(0);
+      //   handleSpeak(0);
+      handlePlayClick();
     }
     setStartTest(false);
   };
 
-  const handleSpeak = (i: any) => {
-    console.log("AAA", moduleQuestions);
-    // speak({
-    //   text: " hi,i am ",
-    //   voice,
-    //   rate: 1,
-    //   pitch: 1,
-    // });
-  };
+  //   const handleSpeak = (i: any) => {
+  //     console.log("AAA", moduleQuestions);
+  // speak({
+  //   text: " hi,i am ",
+  //   voice,
+  //   rate: 1,
+  //   pitch: 1,
+  // });
+  //   };
 
   useEffect(() => {
     let timer = setTimeout(() => {
@@ -84,8 +93,15 @@ const VoiceToText = () => {
     // The cleanup function should return a function that clears the timeout
     return () => clearTimeout(timer);
   }, []);
-  const text =
-    "Text-to-speech feature is now available on relatively any website or blog. It's a game changer that you can listen to the content instead of reading it. Especially effective for people with visual or cognitive impairments or on the go. I came up with the idea to implement it for my blog, so this is how I started researching this topic which ended up being a tutorial for you. So in this tutorial, we will go through the process of building a text-to-speech component in React. We will use the `Web Speech API` to implement the text-to-speech functionality.";
+  const handlePlayClick = () => {
+    if (ttsRef.current) {
+      ttsRef.current.play();
+    }
+  };
+
+  const onNextClicked=()=>{
+    
+  }
 
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4 bg-[#F9F7F0] h-screen">
@@ -150,7 +166,7 @@ const VoiceToText = () => {
           </button>
           <button
             onClick={() => {
-              //  onNextClicked();
+               onNextClicked();
             }}
             type="button"
             className="font-sansation text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40"
@@ -168,7 +184,7 @@ const VoiceToText = () => {
         />
       ) : null}
 
-      <TextToSpeech text={text} />
+      <TextToSpeech ref={ttsRef} text={text} />
     </div>
   );
 };

@@ -1,55 +1,70 @@
-import React, { useState, useEffect } from "react";
+// import React, { useState, useEffect } from "react";
 
-const TextToSpeech = ({ text }: any) => {
-  const [isPaused, setIsPaused] = useState(false);
-  const [utterance, setUtterance] = useState<any>(null);
+// const TextToSpeech = (props: any) => {
+//   const [utterance, setUtterance] = useState<any>(null);
+//   const { text, handlePlay } = props;
 
-  useEffect(() => {
+//   useEffect(() => {
+//     const synth = window.speechSynthesis;
+//     const u = new SpeechSynthesisUtterance(text);
+
+//     setUtterance(u);
+
+//     return () => {
+//       synth.cancel();
+//     };
+//   }, [text]);
+
+//   const handlePlay = () => {
+//     const synth = window.speechSynthesis;
+//     synth.speak(utterance);
+//   };
+// };
+
+// export default TextToSpeech;
+
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
+
+interface TextToSpeechProps {
+  text: string;
+}
+
+export interface TextToSpeechHandle {
+  play: () => void;
+}
+const TextToSpeech = forwardRef<TextToSpeechHandle, TextToSpeechProps>(
+  (props, ref) => {
+    const [utterance, setUtterance] = useState(null);
+    const { text } = props;
     const synth = window.speechSynthesis;
-    const u = new SpeechSynthesisUtterance(text);
 
-    setUtterance(u);
+    useEffect(() => {
+      const u: any = new SpeechSynthesisUtterance(text);
+      setUtterance(u);
 
-    return () => {
-      synth.cancel();
+      return () => {
+        synth.cancel();
+      };
+    }, [text, synth]);
+
+    const handlePlay = () => {
+      if (utterance) {
+        synth.speak(utterance);
+      }
     };
-  }, [text]);
 
-  const handlePlay = () => {
-    const synth = window.speechSynthesis;
+    useImperativeHandle(ref, () => ({
+      play: handlePlay,
+    }));
 
-    if (isPaused) {
-      synth.resume();
-    }
-
-    synth.speak(utterance);
-
-    setIsPaused(false);
-  };
-
-  const handlePause = () => {
-    const synth = window.speechSynthesis;
-
-    synth.pause();
-
-    setIsPaused(true);
-  };
-
-  const handleStop = () => {
-    const synth = window.speechSynthesis;
-
-    synth.cancel();
-
-    setIsPaused(false);
-  };
-
-  return (
-    <div>
-      <button onClick={handlePlay}>{isPaused ? "Resume" : "Play"}</button>
-      <button onClick={handlePause}>Pause</button>
-      <button onClick={handleStop}>Stop</button>
-    </div>
-  );
-};
+    return null;
+  }
+);
 
 export default TextToSpeech;
