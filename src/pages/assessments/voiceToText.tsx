@@ -7,9 +7,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import { setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
-import { useSpeechSynthesis } from "react-speech-kit";
+// import { useSpeechSynthesis } from "react-speech-kit";
 import ModuletestStartModal from "../../components/Modals/testStartModal";
 import TextToSpeech from "../../components/textToSpeech";
+// import { useSpeechSynthesis } from "react-speech-kit";
 
 const VoiceToText = () => {
   const [value, setValue] = React.useState("");
@@ -23,10 +24,12 @@ const VoiceToText = () => {
   const onEnd = () => {
     console.log("ENDED");
   };
-  const { speak, voices, cancel } = useSpeechSynthesis({
-    onEnd,
-  });
-  const voice = voices[0];
+  // const { speak, voices, cancel } = useSpeechSynthesis({
+  //   onEnd
+  // });
+  // const voice = voices[ 0 ] || null;
+  // speak({ text: text, voice, rate: 0.7, pitch: 0.5 });
+  // cancel()
 
   console.log("assessmentModule---TEXT", assessmentModule);
 
@@ -40,7 +43,7 @@ const VoiceToText = () => {
     dispatcher(
       setAssessmentModuleDispatcher({
         moduleId: testId,
-        candidateId: "6671852aabe0110fa47d7903",
+        candidateId: "6672c49c3301a6048a286467",
         assessmentId: assessmentId,
       })
     );
