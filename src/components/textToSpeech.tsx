@@ -42,12 +42,14 @@ const TextToSpeech = forwardRef<TextToSpeechHandle, TextToSpeechProps>(
   (props, ref) => {
     const [utterance, setUtterance] = useState(null);
     const { text } = props;
+    console.log("text=>", text);
     const synth = window.speechSynthesis;
 
     useEffect(() => {
-      const u: any = new SpeechSynthesisUtterance(text);
-      setUtterance(u);
-
+      if (text) {
+        const u: any = new SpeechSynthesisUtterance(text);
+        setUtterance(u);
+      }
       return () => {
         synth.cancel();
       };

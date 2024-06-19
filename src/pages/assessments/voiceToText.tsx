@@ -23,8 +23,7 @@ const VoiceToText = () => {
   const [startTest, setStartTest] = React.useState(false);
   const ttsRef = React.useRef<TextToSpeechHandle>(null);
   const [text, setText] = React.useState(
-    "hello i am mad aadami"
-    // assessmentModule?.module?.question?.[0]?.title
+    assessmentModule?.module?.question?.[0]?.title
   );
 
   //   const onEnd = () => {
@@ -45,6 +44,7 @@ const VoiceToText = () => {
   React.useEffect(() => {
     if (assessmentModule?.module?.question) {
       setModuleQuestions(assessmentModule?.module?.question);
+      setText(assessmentModule?.module?.question?.[0]?.title);
     }
   }, [assessmentModule]);
 
@@ -69,8 +69,11 @@ const VoiceToText = () => {
   };
 
   const onSubmission = (type: string) => {
-    if (type === "start") {
+    if (type === "start" && text?.length > 0) {
       //   handleSpeak(0);
+      //   setText()
+      setText(() => assessmentModule?.module?.question?.[0]?.title);
+      console.log("rrrr", assessmentModule?.module?.question?.[0]?.title);
       handlePlayClick();
     }
     setStartTest(false);
@@ -87,6 +90,10 @@ const VoiceToText = () => {
   //   };
 
   useEffect(() => {
+    // onSubmission();
+  }, [text]);
+
+  useEffect(() => {
     let timer = setTimeout(() => {
       setStartTest(true);
     }, 500);
@@ -95,6 +102,7 @@ const VoiceToText = () => {
   }, []);
   const handlePlayClick = () => {
     if (ttsRef.current) {
+        console.log('CALLED')
       ttsRef.current.play();
     }
   };
