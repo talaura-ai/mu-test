@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import UserIcon from "../../assets/svg/userIcon.svg";
 import QuestionNumberBox from "../../components/questionNumberBox";
 import QuestionOptionBox from "../../components/displayQuestionOptions";
@@ -20,8 +20,7 @@ function StartMCQTest () {
   const [disableNextBtn, setDisableNextBtn] = React.useState(false)
   const [submitTest, setSubmitTest] = React.useState(false)
   const [disablePrevBtn, setDisablePrevBtn] = React.useState(true)
-
-  console.log('assessmentModule=>', assessmentModule)
+  const { assessmentId, testId } = useParams();
 
   React.useEffect(() => {
     if (assessmentModule?.module?.question) {
@@ -33,12 +32,12 @@ function StartMCQTest () {
   React.useEffect(() => {
     dispatcher(setAssessmentModuleDispatcher(
       {
-        "moduleId": "6671741cf6523582a2253ee9",
+        "moduleId": testId,
         "candidateId": "6671852aabe0110fa47d7903",
-        "assessmentId": "66716cae21292014904615c4"
+        "assessmentId": assessmentId
       }
     ))
-  }, [dispatcher])
+  }, [dispatcher, assessmentId, testId])
 
   const onQuestionSelection = (option: any) => {
     let optionValue = ""
@@ -117,10 +116,9 @@ function StartMCQTest () {
   const submitTestClicked = async () => {
     try {
       const res = await dispatcher(getModuleSubmissionDispatcher({
-        moduleId: "665ff87f8e126e17bf3dab37",
+        moduleId: testId,
         question: moduleQuestions
       }))
-      console.log('res=>', res)
       if (res?.payload.data?.status) {
         navigate(-1)
       }

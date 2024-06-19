@@ -1,11 +1,38 @@
+import React from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Workspace from "../../components/Workspace/Workspace";
 import { problems } from "../../utils/problems";
 import TimeLeftIcon from "../../assets/svg/timeLeftIcon.svg";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
+import { getModuleSubmissionDispatcher, setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 
 const CodingTest: React.FC<any> = (props) => {
   const problem = problems["two-sum"];
-
   problem.handlerFunction = problem.handlerFunction?.toString();
+  const dispatcher = useAppDispatch()
+  const navigate = useNavigate();
+  const { assessmentId, testId } = useParams();
+  const assessmentModule = useAppSelector(getAssessmentModuleSelector)
+  const [moduleQuestions, setModuleQuestions] = React.useState<any>([])
+
+  console.log('assessmentModule---', assessmentModule)
+
+  React.useEffect(() => {
+    if (assessmentModule?.module?.question) {
+      setModuleQuestions(assessmentModule?.module?.question?.[0])
+    }
+  }, [assessmentModule])
+
+  React.useEffect(() => {
+    dispatcher(setAssessmentModuleDispatcher(
+      {
+        "moduleId": testId,
+        "candidateId": "6671852aabe0110fa47d7903",
+        "assessmentId": assessmentId
+      }
+    ))
+  }, [dispatcher, assessmentId, testId])
 
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4">
@@ -35,7 +62,7 @@ const CodingTest: React.FC<any> = (props) => {
           ></div>
         </div>
       </div>
-      <Workspace problem={ problem } />
+      <Workspace problem={ moduleQuestions } />
     </div>
   );
 };

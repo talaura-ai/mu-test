@@ -65,8 +65,8 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
     setSubmissionStatus(0)
     try {
       let base64Encoded1 = Base64.encode(userCode);
-      let std = Base64.encode("50");
-      let stdOut = Base64.encode("50");
+      let std = Base64.encode(problem?.stdIn);
+      let stdOut = Base64.encode(problem?.expectedAnswer);
       console.log(base64Encoded1);
       const res = await dispatcher(getSendSubmissionDispatcher(
         {
@@ -94,7 +94,6 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
           let decodedString = Base64.decode(stats?.payload?.data?.stderr);
           console.log(decodedString);
           setOutputError(decodedString)
-          setActiveTestCase(false)
         } else {
           setCodeOutput("No output")
         }
@@ -160,9 +159,9 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
               <li className="me-2 cursor-pointer" onClick={ () => { setActiveTestCase(true) } }>
                 <a className={ `inline-block p-4 border-b-2 border-transparent rounded-t-lg text-base font-medium leading-5 text-black font-sansation ${activeTestCase ? "text-blue-600 border-b-2 border-blue-600 font-semibold" : ""}` }>TestCases</a>
               </li>
-              <li className="me-2 cursor-pointer" onClick={ () => { setActiveTestCase(false) } }>
+              {/* <li className="me-2 cursor-pointer" onClick={ () => { setActiveTestCase(false) } }>
                 <a className={ `inline-block p-4 rounded-t-lg text-base font-medium leading-5 font-sansation ${activeTestCase ? "" : "text-blue-600 border-b-2 border-blue-600 font-semibold"}` } aria-current="page">Output</a>
-              </li>
+              </li> */}
             </ul>
           </div>
 
@@ -188,21 +187,25 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
             </div>
             { activeTestCase ? <div className="font-semibold rounded-lg px-4 min-h-[220px] flex-wrap text-wrap">
               <p className="text-sm font-medium mt-4 text-black">Input:</p>
-              <div className="w-full cursor-text rounded-lg border px-3 py-[10px] border-transparent text-black mt-2">
-                { problem?.examples?.[0]?.inputText }
+              <div className="w-full cursor-text rounded-lg border px-3 py-[5px] border-transparent text-black mt-2">
+                { problem?.stdIn }
               </div>
               <p className="text-sm font-medium mt-4 text-black">Output:</p>
-
-              <div className={ `text-wrap flex-shrink-0 cursor-text rounded-lg border px-3 py-[10px] border-transparent text-[#${submissionStatusesColours[submissionStatus]}] mt-2` }>
-                { submissionStatuses[submissionStatus] }
+              <div className="w-full cursor-text rounded-lg border px-3 py-[5px] border-transparent text-black mt-2">
+                { problem?.expectedAnswer }
               </div>
-              <div className="text-wrap flex-shrink-0 cursor-text rounded-lg border px-3 py-[10px] border-transparent text-black mt-2">
-                <pre>{ codeOutput }</pre>
+              { submissionStatus > 0 ? <><div className="text-sm font-medium mt-4 text-black flex">Expected Output:
+                <div className={ `text-wrap flex-shrink-0 cursor-text border border-transparent font-semibold ml-2 ${submissionStatus === 3 ? "text-[#19aa4c]" : "text-[#F00]"}` }>
+                  { submissionStatuses[submissionStatus] }
+                </div>
               </div>
-            </div> : null }
-
-            { !activeTestCase ? <div className="font-semibold mt-4 rounded-lg p-4 min-h-[220px]">
-              <pre>{ outputError }</pre>
+                { codeOutput && <div className="text-wrap flex-shrink-0 cursor-text rounded-lg border px-3 py-[10px] border-transparent text-black mt-2">
+                  <pre>{ codeOutput }</pre>
+                </div> }
+                { outputError && <div className="font-semibold mt-4 rounded-lg p-4 min-h-[220px]">
+                  <pre>{ outputError }</pre>
+                </div> }
+              </> : null }
             </div> : null }
           </div>
 

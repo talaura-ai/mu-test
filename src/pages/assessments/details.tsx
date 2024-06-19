@@ -11,7 +11,7 @@ import { getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashb
 function AssessmentDetails () {
   const navigate = useNavigate();
   const [startTestModal, setStartTestModal] = React.useState(false);
-  const [selectedTest, setSelectedTest] = React.useState(0);
+  const [selectedTest, setSelectedTest] = React.useState<any>({});
   const dispatcher = useAppDispatch()
   const { assessmentId } = useParams();
   const myAssessments = useAppSelector(getAssessmentsSelector)
@@ -19,10 +19,17 @@ function AssessmentDetails () {
 
   const onNextClicked = () => {
     setStartTestModal(false);
-    if (selectedTest % 2 !== 0) {
-      navigate("/assessment/1/1");
-    } else {
-      navigate("/assessment/1/coding");
+    console.log(selectedTest)
+    if (selectedTest?.type === "Quiz") {
+      navigate(`/assessment/66716cae21292014904615c4/${selectedTest?._id}`);
+    } else if (selectedTest?.type === "Sandbox") {
+      navigate(`/assessment/66716cae21292014904615c4/${selectedTest?._id}/coding`);
+    } else if (selectedTest?.type === "Voice To Voice") {
+      navigate(`/assessment/66716cae21292014904615c4/${selectedTest?._id}/voice-to-text`);
+    } else if (selectedTest?.type === "Voice to Text") {
+      navigate(`/assessment/66716cae21292014904615c4/${selectedTest?._id}/voice-to-text`);
+    } else if (selectedTest?.type === "AI Video Interview") {
+      navigate(`/assessment/66716cae21292014904615c4/${selectedTest?._id}/video-interview`);
     }
   };
 
