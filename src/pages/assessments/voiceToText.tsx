@@ -37,7 +37,7 @@ const VoiceToText = () => {
     dispatcher(setAssessmentModuleDispatcher(
       {
         "moduleId": testId,
-        "candidateId": "6671852aabe0110fa47d7903",
+        "candidateId": "6672c49c3301a6048a286467",
         "assessmentId": assessmentId
       }
     ))

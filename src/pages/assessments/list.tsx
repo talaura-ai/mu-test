@@ -23,7 +23,7 @@ function MyAssessments () {
   };
 
   React.useEffect(() => {
-    dispatcher(setAssessmentDispatcher({ userId: "6671852aabe0110fa47d7903" }));
+    dispatcher(setAssessmentDispatcher({ userId: "6672c49c3301a6048a286467" }));
   }, [dispatcher]);
 
   return (
