@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import draftToHtml from "draftjs-to-html";
 import { EditorState, convertToRaw } from "draft-js";
@@ -8,40 +8,43 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import { setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import { useSpeechSynthesis } from "react-speech-kit";
+import ModuletestStartModal from "../../components/Modals/testStartModal";
+import TextToSpeech from "../../components/textToSpeech";
 
 const VoiceToText = () => {
-  const dispatcher = useAppDispatch()
+  const [value, setValue] = React.useState("");
+  const dispatcher = useAppDispatch();
   const navigate = useNavigate();
   const { assessmentId, testId } = useParams();
-  const assessmentModule = useAppSelector(getAssessmentModuleSelector)
-  const [moduleQuestions, setModuleQuestions] = React.useState<any>([])
+  const assessmentModule = useAppSelector(getAssessmentModuleSelector);
+  const [moduleQuestions, setModuleQuestions] = React.useState<any>([]);
+  const [startTest, setStartTest] = React.useState(false);
+
   const onEnd = () => {
-    console.log('ENDED')
+    console.log("ENDED");
   };
   const { speak, voices, cancel } = useSpeechSynthesis({
-    onEnd
+    onEnd,
   });
-  // const voice = voices[ 0 ] || null;
-  // speak({ text: text, voice, rate: 0.7, pitch: 0.5 });
-  // cancel()
+  const voice = voices[0];
 
-  console.log('assessmentModule---TEXT', assessmentModule)
+  console.log("assessmentModule---TEXT", assessmentModule);
 
   React.useEffect(() => {
     if (assessmentModule?.module?.question) {
-      setModuleQuestions(assessmentModule?.module?.question)
+      setModuleQuestions(assessmentModule?.module?.question);
     }
-  }, [assessmentModule])
+  }, [assessmentModule]);
 
   React.useEffect(() => {
-    dispatcher(setAssessmentModuleDispatcher(
-      {
-        "moduleId": testId,
-        "candidateId": "6671852aabe0110fa47d7903",
-        "assessmentId": assessmentId
-      }
-    ))
-  }, [dispatcher, assessmentId, testId])
+    dispatcher(
+      setAssessmentModuleDispatcher({
+        moduleId: testId,
+        candidateId: "6671852aabe0110fa47d7903",
+        assessmentId: assessmentId,
+      })
+    );
+  }, [dispatcher, assessmentId, testId]);
 
   const [editorState, seteditorState] = React.useState(
     EditorState.createEmpty()
@@ -52,6 +55,34 @@ const VoiceToText = () => {
     console.log(convertToRaw(stats.getCurrentContent()));
     console.log(draftToHtml(convertToRaw(stats.getCurrentContent())));
   };
+
+  const onSubmission = (type: string) => {
+    if (type === "start") {
+      handleSpeak(0);
+    }
+    setStartTest(false);
+  };
+
+  const handleSpeak = (i: any) => {
+    console.log("AAA", moduleQuestions);
+    // speak({
+    //   text: " hi,i am ",
+    //   voice,
+    //   rate: 1,
+    //   pitch: 1,
+    // });
+  };
+
+  useEffect(() => {
+    let timer = setTimeout(() => {
+      setStartTest(true);
+    }, 500);
+
+    // The cleanup function should return a function that clears the timeout
+    return () => clearTimeout(timer);
+  }, []);
+  const text =
+    "Text-to-speech feature is now available on relatively any website or blog. It's a game changer that you can listen to the content instead of reading it. Especially effective for people with visual or cognitive impairments or on the go. I came up with the idea to implement it for my blog, so this is how I started researching this topic which ended up being a tutorial for you. So in this tutorial, we will go through the process of building a text-to-speech component in React. We will use the `Web Speech API` to implement the text-to-speech functionality.";
 
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4 bg-[#F9F7F0] h-screen">
@@ -80,7 +111,7 @@ const VoiceToText = () => {
           <div className="flex md:w-2/5 w-full   h-[280px] md:h-full bg-[#474646] justify-center items-center rounded border border-[#E5A971]">
             <div className="flex bg-white  h-10 w-10 md:h-40 md:w-40 rounded-full justify-center items-center">
               <span className="text-[#E5A971]  text-[20px] md:text-[60px] font-semibold font-sansation">
-                Ai{ " " }
+                Ai{" "}
               </span>
             </div>
           </div>
@@ -90,32 +121,51 @@ const VoiceToText = () => {
                 toolbarClassName="toolbarClassName"
                 wrapperClassName="wrapperClassName"
                 editorClassName="editorClassName"
-                wrapperStyle={ { width: "100%" } }
-                editorStyle={ {
+                wrapperStyle={{ width: "100%" }}
+                editorStyle={{
                   paddingLeft: 20,
                   paddingRight: 20,
                   width: "100%",
                   border: "1px solid #f2f2f2",
                   borderRadius: "4px",
-                } }
-                onEditorStateChange={ onEditorStateChange }
+                }}
+                onEditorStateChange={onEditorStateChange}
               />
             </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-center p-6 w-full">
+        <div className="flex items-center justify-between p-6  px-10 w-3/5 self-end">
           <button
-            onClick={ () => {
+            onClick={() => {
               //   props?.onNextClicked();
-            } }
+            }}
             type="button"
             className="font-sansation text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40"
           >
             Submit Test
           </button>
+          <button
+            onClick={() => {
+              //  onNextClicked();
+            }}
+            type="button"
+            className="font-sansation text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40"
+          >
+            Next
+          </button>
         </div>
       </div>
+
+      {startTest ? (
+        <ModuletestStartModal
+          onPress={(v) => {
+            onSubmission(v);
+          }}
+        />
+      ) : null}
+
+      <TextToSpeech text={text} />
     </div>
   );
 };
