@@ -1,2 +1,5 @@
 declare module 'react-use'
 declare module 'react-internet-meter'
+declare module 'react-draft-wysiwyg'
+declare module 'draftjs-to-html'
+declare module 'draft-js'

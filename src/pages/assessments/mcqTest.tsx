@@ -33,9 +33,9 @@ function StartMCQTest () {
   React.useEffect(() => {
     dispatcher(setAssessmentModuleDispatcher(
       {
-        "moduleId": "665ff87f8e126e17bf3dab37",
-        "candidateId": "665ff9c88e126e17bf3dab4b",
-        "assessmentId": "665ff2d18e126e17bf3daad5"
+        "moduleId": "6671741cf6523582a2253ee9",
+        "candidateId": "6671852aabe0110fa47d7903",
+        "assessmentId": "66716cae21292014904615c4"
       }
     ))
   }, [dispatcher])

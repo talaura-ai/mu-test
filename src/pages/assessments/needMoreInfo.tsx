@@ -33,7 +33,7 @@ function PersonNeedMoreInfo () {
     if (flag) {
       dispatcher(
         setAssessmentQuestionDispatcher({
-          userId: "665ff9c88e126e17bf3dab4b",
+          userId: "6671852aabe0110fa47d7903",
           question: updateAssessmentQuestion,
         })
       );
@@ -56,7 +56,7 @@ function PersonNeedMoreInfo () {
   }, [myAssessments, assessmentId]);
 
   React.useEffect(() => {
-    dispatcher(setAssessmentDispatcher({ userId: "665ff9c88e126e17bf3dab4b" }));
+    dispatcher(setAssessmentDispatcher({ userId: "6671852aabe0110fa47d7903" }));
   }, [dispatcher]);
 
   const onValueChange = (value: string, index: number) => {

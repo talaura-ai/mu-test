@@ -36,7 +36,7 @@ function AssessmentDetails () {
   }, [myAssessments, assessmentId])
 
   React.useEffect(() => {
-    dispatcher(setAssessmentDispatcher({ userId: "665ff9c88e126e17bf3dab4b" }))
+    dispatcher(setAssessmentDispatcher({ userId: "6671852aabe0110fa47d7903" }))
   }, [dispatcher])
 
   return (
