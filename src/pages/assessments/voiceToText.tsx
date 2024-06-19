@@ -1,18 +1,12 @@
 import React, { useEffect } from "react";
-import { Editor } from "react-draft-wysiwyg";
-import draftToHtml from "draftjs-to-html";
-import { EditorState, convertToRaw } from "draft-js";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
-import { setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
-// import { useSpeechSynthesis } from "react-speech-kit";
 import ModuletestStartModal from "../../components/Modals/testStartModal";
-import TextToSpeech, {
-  TextToSpeechHandle,
-} from "../../components/textToSpeech";
-// import { useSpeechSynthesis } from "react-speech-kit";
+import {
+  getModuleSubmissionDispatcher,
+  setAssessmentModuleDispatcher,
+} from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 
 const VoiceToText = () => {
   const dispatcher = useAppDispatch();
@@ -21,30 +15,13 @@ const VoiceToText = () => {
   const assessmentModule = useAppSelector(getAssessmentModuleSelector);
   const [moduleQuestions, setModuleQuestions] = React.useState<any>([]);
   const [startTest, setStartTest] = React.useState(false);
-  const ttsRef = React.useRef<TextToSpeechHandle>(null);
-  const [text, setText] = React.useState(
-    assessmentModule?.module?.question?.[0]?.title
-  );
+  const [currentIndex, setCurrentIndex] = React.useState<any>(0);
 
-  //   const onEnd = () => {
-  //     console.log("ENDED");
-  //   };
-  // const { speak, voices, cancel } = useSpeechSynthesis({
-  //   onEnd
-  // });
-  // const voice = voices[ 0 ] || null;
-  // speak({ text: text, voice, rate: 0.7, pitch: 0.5 });
-  // cancel()
-
-  console.log(
-    "assessmentModule---TEXT",
-    assessmentModule?.module?.question?.[0]?.title
-  );
+  console.log("assessmentModule---TEXT", moduleQuestions);
 
   React.useEffect(() => {
     if (assessmentModule?.module?.question) {
       setModuleQuestions(assessmentModule?.module?.question);
-      setText(assessmentModule?.module?.question?.[0]?.title);
     }
   }, [assessmentModule]);
 
@@ -58,56 +35,76 @@ const VoiceToText = () => {
     );
   }, [dispatcher, assessmentId, testId]);
 
-  const [editorState, seteditorState] = React.useState(
-    EditorState.createEmpty()
-  );
-
-  const onEditorStateChange = (stats: any) => {
-    seteditorState(stats);
-    console.log(convertToRaw(stats.getCurrentContent()));
-    console.log(draftToHtml(convertToRaw(stats.getCurrentContent())));
-  };
-
   const onSubmission = (type: string) => {
-    if (type === "start" && text?.length > 0) {
-      //   handleSpeak(0);
-      //   setText()
-      setText(() => assessmentModule?.module?.question?.[0]?.title);
-      console.log("rrrr", assessmentModule?.module?.question?.[0]?.title);
-      handlePlayClick();
+    if (type === "start") {
+      playText(moduleQuestions?.[currentIndex]?.title);
     }
     setStartTest(false);
   };
-
-  //   const handleSpeak = (i: any) => {
-  //     console.log("AAA", moduleQuestions);
-  // speak({
-  //   text: " hi,i am ",
-  //   voice,
-  //   rate: 1,
-  //   pitch: 1,
-  // });
-  //   };
-
-  useEffect(() => {
-    // onSubmission();
-  }, [text]);
 
   useEffect(() => {
     let timer = setTimeout(() => {
       setStartTest(true);
     }, 500);
-    // The cleanup function should return a function that clears the timeout
     return () => clearTimeout(timer);
   }, []);
-  const handlePlayClick = () => {
-    if (ttsRef.current) {
-        console.log('CALLED')
-      ttsRef.current.play();
+
+  const textToSpeech = (text: string) => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1; // Speed of speech
+    utterance.pitch = 1; // Pitch of the voice
+    utterance.volume = 1; // Volume of the voice
+    utterance.onend = () => {
+      console.log("Speech synthesis finished.");
+    };
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const playText = (text: string) => {
+    if (!("speechSynthesis" in window)) {
+      console.error("Text-to-Speech not supported in this browser.");
+    } else {
+      console.log("Text-to-Speech is supported in this browser.");
+      textToSpeech(text);
     }
   };
 
-  const onNextClicked = () => {};
+  const onNextClicked = (i: any) => {
+    console.log(i + 1, moduleQuestions?.length - 1);
+    const index = i + 1;
+    if (index < moduleQuestions?.length) {
+      playText(moduleQuestions?.[index]?.title);
+      setCurrentIndex((prev: any) => index);
+    } else {
+      console.log("RREEE", index, moduleQuestions?.length);
+      submitTest();
+    }
+  };
+
+  const onChange = (e: any) => {
+    let questions = [...moduleQuestions];
+    questions[currentIndex] = {
+      ...questions[currentIndex],
+      answer: e.target.value,
+    };
+    setModuleQuestions(questions);
+  };
+
+  const submitTest = async () => {
+    try {
+      const res = await dispatcher(
+        getModuleSubmissionDispatcher({
+          moduleId: testId,
+          question: moduleQuestions,
+        })
+      );
+      if (res?.payload.data?.status) {
+        navigate(-1);
+      }
+    } catch (error) {
+      console.log("error=>", error);
+    }
+  };
 
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4 bg-[#F9F7F0] h-screen">
@@ -140,21 +137,15 @@ const VoiceToText = () => {
               </span>
             </div>
           </div>
-          <div className="flex md:w-3/5 w-full  h-full justify-center items-center rounded bg-white  py-4 px-8">
+          <div className="flex md:w-3/5 w-full  h-full justify-center items-center rounded bg-white">
             <div className="w-full  h-full  flex  overflow-hidden">
-              <Editor
-                toolbarClassName="toolbarClassName"
-                wrapperClassName="wrapperClassName"
-                editorClassName="editorClassName"
-                wrapperStyle={{ width: "100%" }}
-                editorStyle={{
-                  paddingLeft: 20,
-                  paddingRight: 20,
-                  width: "100%",
-                  border: "1px solid #f2f2f2",
-                  borderRadius: "4px",
+              <textarea
+                className="bg-gray-100 w-full h-full rounded-lg p-4"
+                placeholder="Write your answer here..."
+                onChange={(v) => {
+                  onChange(v);
                 }}
-                onEditorStateChange={onEditorStateChange}
+                value={moduleQuestions?.[currentIndex]?.answer || ""}
               />
             </div>
           </div>
@@ -163,7 +154,7 @@ const VoiceToText = () => {
         <div className="flex items-center justify-between p-6  px-10 w-3/5 self-end">
           <button
             onClick={() => {
-              //   props?.onNextClicked();
+              submitTest();
             }}
             type="button"
             className="font-sansation text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40"
@@ -172,7 +163,7 @@ const VoiceToText = () => {
           </button>
           <button
             onClick={() => {
-              onNextClicked();
+              onNextClicked(currentIndex);
             }}
             type="button"
             className="font-sansation text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40"
@@ -189,8 +180,6 @@ const VoiceToText = () => {
           }}
         />
       ) : null}
-
-      <TextToSpeech ref={ttsRef} text={text} />
     </div>
   );
 };
