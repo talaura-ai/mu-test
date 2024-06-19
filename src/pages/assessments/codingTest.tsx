@@ -6,6 +6,7 @@ import TimeLeftIcon from "../../assets/svg/timeLeftIcon.svg";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import { getModuleSubmissionDispatcher, setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
+import TimerCounter from "../../components/timerCounter";
 
 const CodingTest: React.FC<any> = (props) => {
   const problem = problems["two-sum"];
@@ -34,9 +35,14 @@ const CodingTest: React.FC<any> = (props) => {
     ))
   }, [dispatcher, assessmentId, testId])
 
+  const onTimeout = () => {
+    navigate(-1)
+  }
+
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4">
-      <div className="flex md:flex-row flex-col items-center md:justify-between mb-6 font-sansation">
+      <TimerCounter timestamp={ assessmentModule.module?.time || 0 } title={ assessmentModule.module?.name } onTimeout={ onTimeout } />
+      {/* <div className="flex md:flex-row flex-col items-center md:justify-between mb-6 font-sansation">
         <div className="flex items-center justify-start">
           <span className="font-bold text-black self-center text-2xl whitespace-nowrap md:text-[32px] ">
             Module 2: Coding
@@ -53,7 +59,7 @@ const CodingTest: React.FC<any> = (props) => {
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
       <div className="flex items-center mb-6 px-4 font-sansation">
         <div className="w-full bg-[#C7C6C0] rounded-full h-2.5 mb-4 dark:bg-gray-700 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
           <div
