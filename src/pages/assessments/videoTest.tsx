@@ -31,6 +31,7 @@ const VideoTest = () => {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
   );
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [isRecording, setIsRecording] = useState(true);
 
   // //Disable Right click
@@ -90,13 +91,17 @@ const VideoTest = () => {
         console.log("connect_error", error);
       });
       socket.on("audioData", (arrayBuffer) => {
+        setIsSpeaking(true)
         setIsRecording(false);
         console.log('audioData')
         const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
         const audioUrl = URL.createObjectURL(blob);
 
         const audioElement = new Audio(audioUrl);
-        audioElement.onended = () => setIsRecording(true);
+        audioElement.onended = () => {
+          setIsRecording(true)
+          setIsSpeaking(false)
+        }
         audioElement.play();
       });
       // openFullscreen()
@@ -332,23 +337,29 @@ const VideoTest = () => {
           Case Study
         </span>
       </div>
-      <div className="flex md:flex-row flex-col  md:justify-center gap-4">
-        <div className="flex flex-col w-[80%] h-1/2 md:flex-row justify-between ">
-          <div className="flex relative h-1/2 w-1/2 ">
-            <img src={ AiBot } className="px-2" alt="left icon" />
+      <div className="flex md:flex-row flex-col md:justify-center">
+        <div className="flex flex-col w-[80%] h-1/2 md:flex-row justify-between">
+          <div className="relative flex w-[50%] h-[470px] bg-[#474646] justify-center items-center rounded-xl border border-[#E5A971] mr-4">
+            <div className="flex justify-center items-center">
+              <div className={ `h-10 w-10 md:h-40 md:w-40 bg-white text-[#E5A971] rounded-full text-[20px] md:text-[60px] font-semibold font-sansation flex justify-center items-center ${isSpeaking ? "animation-pulse" : ""}` }>
+                Ai
+              </div>
+            </div>
             <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation">
               Ai Bot
             </div>
-            <div className="absolute right-10 bottom-4  text-white  px-4 py-1  ">
+            <div className="absolute right-2 bottom-4 text-white  px-4 py-1  ">
               <img src={ MicIcon } className="h-8 w-10" alt="mic" />
             </div>
           </div>
-          <div className="flex relative h-1/2 w-1/2 ">
-            <div className="flex rounded-xl w-full overflow-hidden h-full">
+          {/* <div className="flex relative h-1/2 w-1/2 ">            
+          </div>  */}
+          <div className="flex relative h-1/2 w-[50%] rounded-xl overflow-hidden">
+            <div className="flex rounded-xl w-full overflow-hidden h-[470px]">
               {/* <img src={ VideoCallUser } className="px-2" alt="left icon" /> */ }
               <Webcam
                 ref={ webcamRef }
-                className="w-full h-full"
+                className="overflow-hidden rounded-xl bg-gray-200 mr-4"
               // style={ {
               //   // position: "absolute",
               //   // marginLeft: "auto",
@@ -409,16 +420,16 @@ const VideoTest = () => {
                   } }
                 /> */}
               </div>
-              <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation">
+              <div className="absolute left-10 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation">
                 Manisha
               </div>
-              <div className="absolute right-6 bottom-4  text-white  px-4 py-1  ">
+              <div className="absolute right-6 bottom-4 text-white  px-4 py-1  ">
                 <img src={ MicIcon } className="h-8 w-10" alt="mic" />
               </div>
             </div>
           </div>
         </div>
-        <div className="flex flex-col w-[20%]  bg-white shadow rounded-lg p-4">
+        <div className="flex flex-col w-[20%] bg-white shadow rounded-lg p-4">
           {/* <div className=" flex justify-center w-full">
             <img
               src={ LanguageIcon }

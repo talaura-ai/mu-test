@@ -146,10 +146,10 @@ const VoiceToText = () => {
 
         <div className="flex justify-between flex-col md:flex-row w-full gap-4 p-2 h-[500px]">
           <div className="flex md:w-2/5 w-full h-[500px] md:h-full bg-[#474646] justify-center items-center rounded border border-[#E5A971]">
-            <div className="flex bg-white h-10 w-10 md:h-40 md:w-40 rounded-full justify-center items-center">
-              <span className="text-[#E5A971]  text-[20px] md:text-[60px] font-semibold font-sansation">
-                Ai{ " " }
-              </span>
+            <div className="flex justify-center items-center">
+              <div className={ `h-10 w-10 md:h-40 md:w-40 bg-white text-[#E5A971] rounded-full text-[20px] md:text-[60px] font-semibold font-sansation flex justify-center items-center ${isSpeaking ? "animation-pulse" : ""}` }>
+                Ai
+              </div>
             </div>
           </div>
           <div className="flex md:w-3/5 w-full h-full rounded bg-white">
