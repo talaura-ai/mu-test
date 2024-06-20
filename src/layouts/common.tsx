@@ -5,13 +5,14 @@ import React from "react";
 import TimerLoading from "../assets/Deadline.png"
 import MiddleLogo from "../assets/middleLogo.png"
 import { useAppSelector } from "../store/hooks";
-import { getLoadingSelector } from "../store/slices/dashboard-slice/dashboard-selectors";
+import { getAssessmentsSelector, getLoadingSelector } from "../store/slices/dashboard-slice/dashboard-selectors";
 
 const CommonLayout = () => {
 	let location = useLocation();
 	const { userId } = useParams();
 	const [active, setActive] = React.useState(true);
 	const loading = useAppSelector(getLoadingSelector)
+	const myAssessments = useAppSelector(getAssessmentsSelector);
 
 	React.useEffect(() => {
 		if (location?.pathname) {
@@ -52,7 +53,7 @@ const CommonLayout = () => {
 										<img className="w-8 h-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo" />
 									</button>
 									<p className="text-sm font-semibold font-sansation text-gray-900 ml-2" role="none">
-										Neil Sims
+										{ myAssessments && myAssessments?.[0]?.name || "" }
 									</p>
 								</div>
 							</div>
