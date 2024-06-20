@@ -5,6 +5,7 @@ import { MdError } from "react-icons/md";
 import CloseIcon from "../assets/svg/closeIcon.svg"
 import CheckedIcon from "../assets/svg/checkedIcon.svg"
 import WifiIcon from "../assets/svg/wifiIcon.svg"
+import ScreenSharing from "../assets/svg/screenSharing.svg"
 import CameraIcon from "../assets/svg/cameraIcon.svg"
 import MicIcon from "../assets/svg/micIcon.svg"
 import React from "react";
@@ -13,7 +14,8 @@ import { ReactInternetSpeedMeter } from "react-internet-meter";
 const data = [
   { name: "Mic", icon: MicIcon },
   { name: "Camera", icon: CameraIcon },
-  { name: "Internet", icon: WifiIcon }
+  { name: "Internet", icon: WifiIcon },
+  { name: "Screen Sharing", icon: ScreenSharing }
 ]
 
 export default function DeviceConfigTestModal (props: any) {
@@ -69,6 +71,9 @@ export default function DeviceConfigTestModal (props: any) {
     }
     if (name === "Internet") {
       return networkChecking
+    }
+    if (name === "Screen Sharing") {
+      return 1
     }
     return 0
   }
@@ -126,8 +131,13 @@ export default function DeviceConfigTestModal (props: any) {
                   </div>
                 </div>
               )) }
+              <div className="flex items-center">
+                <input type="checkbox" value="" className="w-5 h-5 text-[#CC8448] bg-gray-100 border-gray-200 rounded accent-[#CC8448]" />
+                <label className="ms-2 font-medium text-[14px] text-black font-sansation">I Agree, to allow access to my these above elements</label>
+              </div>
             </div>
-            <div className="flex items-center justify-center p-6">
+
+            <div className="flex items-center justify-center px-6 pb-6">
               <button onClick={ () => { props?.onNextClicked() } } type="button" className="font-sansation text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center">
                 Next
               </button>

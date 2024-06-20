@@ -8,7 +8,7 @@ const Workspace: React.FC<any> = ({ problem }) => {
   const [solved, setSolved] = useState(false);
 
   return (
-    <Split className="split" minSize={0}>
+    <Split className="split mt-6" minSize={0}>
       <ProblemDescription problem={problem} _solved={solved} />
       <div className="bg-white rounded-xl overflow-hidden ">
         <Playground

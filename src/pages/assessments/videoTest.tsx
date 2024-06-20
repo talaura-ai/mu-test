@@ -10,6 +10,7 @@ import { io } from "socket.io-client";
 import Webcam from 'react-webcam';
 import { toast } from "react-toastify";
 import usePageVisibility from "../../hooks/tabDetection";
+import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
 // import * as cocoSsd from "@tensorflow-models/coco-ssd";
 // import "@tensorflow/tfjs";
 var count_facedetect = 0;
@@ -299,10 +300,12 @@ const VideoTest = () => {
       elem.msRequestFullscreen();
     }
   }
-
+  const onTimeout = () => {
+    navigate(-1)
+  }
   return (
-    <div id="MyFullScreenView" ref={ elementRef } className="sm:p-6 md:px-20 md:py-12 p-4">
-      <div className="flex md:flex-row flex-col items-center md:justify-between mb-6 border-b-2 border-[#7d7c78] pb-4 font-sansation">
+    <div className="sm:p-6 md:px-20 md:py-12 p-4">
+      {/* <div className="flex md:flex-row flex-col items-center md:justify-between mb-6 border-b-2 border-[#7d7c78] pb-4 font-sansation">
         <div className="flex items-center justify-start">
           <span className="font-bold text-black self-center text-2xl whitespace-nowrap md:text-[32px] ">
             Module 2: Video Round
@@ -317,8 +320,18 @@ const VideoTest = () => {
             </span>
           </div>
         </div>
+      </div> */}
+      <TimerCounterWithProgress timestamp={ 20 || 0 } title={ "Video Round" } onTimeout={ onTimeout } />
+      <div className="flex">
+        <span className="text-md text-black">
+          The AI will pose the question out loud, and the candidate must response.
+        </span>
       </div>
-
+      <div className="flex mb-3">
+        <span className="text-[32px] font-semibold font-sansation text-[#CC8448]">
+          Case Study
+        </span>
+      </div>
       <div className="flex md:flex-row flex-col  md:justify-center gap-4">
         <div className="flex flex-col w-[80%] h-1/2 md:flex-row justify-between ">
           <div className="flex relative h-1/2 w-1/2 ">
@@ -434,9 +447,9 @@ const VideoTest = () => {
       {/* <div className="flex justify-center py-6 font-sansation">
         <img src={ Caption } alt="caption" />
       </div> */}
-      <div className="flex justify-center py-6 font-sansation">
+      <div className="flex justify-center py-6 mt-4 font-sansation">
         <button
-          className="flex justify-center bg-[#E04747] px-3 py-2 rounded-lg text-white font-semibold"
+          className="flex justify-center bg-[#E04747] px-6 py-2 rounded-lg text-white font-semibold"
           onClick={ () => navigate(`/assessment/${userId}/dashboard`) }
         >
           End Meet

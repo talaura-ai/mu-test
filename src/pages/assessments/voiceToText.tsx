@@ -8,6 +8,8 @@ import {
   setAssessmentModuleDispatcher,
 } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import { toast } from "react-toastify";
+import TimerCounter from "../../components/timerCounter";
+import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
 
 const VoiceToText = () => {
   const dispatcher = useAppDispatch();
@@ -59,7 +61,7 @@ const VoiceToText = () => {
   const textToSpeech = (text: string) => {
     setIsSpeaking(true)
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1; // Speed of speech
+    utterance.rate = 0.6; // Speed of speech
     utterance.pitch = 1; // Pitch of the voice
     utterance.volume = 1; // Volume of the voice
     utterance.onend = () => {
@@ -121,41 +123,40 @@ const VoiceToText = () => {
     }
   };
 
-  return (
-    <div className="sm:p-6 md:px-20 md:py-12 p-4 bg-[#F9F7F0] h-screen">
-      <div className="flex md:flex-row flex-col items-center md:justify-between mb-4 border-b-2 border-[#7d7c78] pb-4 font-sansation">
-        <div className="flex items-center justify-start">
-          <span className="font-bold text-black self-center text-2xl whitespace-nowrap md:text-[32px] ">
-            { assessmentModule?.module?.name }
-          </span>
-        </div>
-      </div>
+  const onTimeout = () => {
+    if (Number(assessmentModule.module?.time) > 0) {
+      submitTest()
+    }
+  }
 
-      <div className="flex items-start justify-start flex-col w-[100%]  md:px-10  h-[100%] ">
+  return (
+    <div className="sm:p-6 md:px-20 md:py-12 p-4">
+      <TimerCounterWithProgress timestamp={ assessmentModule.module?.time || 0 } title={ assessmentModule.module?.name } onTimeout={ onTimeout } />
+      <div className="flex items-start justify-start flex-col w-[100%] h-[100%] ">
         <div className="flex">
           <span className="text-md text-black">
             The AI will pose the question out loud, and the candidate must
             provide a typed response.
           </span>
         </div>
-        <div className="flex my-4">
-          <span className="text-[40px] font-semibold font-sansation text-[#CC8448] border-b-4 border-[#CC8448]">
+        <div className="flex mb-2">
+          <span className="text-[32px] font-semibold font-sansation text-[#CC8448]">
             Case Study
           </span>
         </div>
 
-        <div className="flex justify-between items-center  flex-col  md:flex-row w-full gap-4 p-2 md:h-2/3  h-full">
-          <div className="flex md:w-2/5 w-full   h-[280px] md:h-full bg-[#474646] justify-center items-center rounded border border-[#E5A971]">
-            <div className="flex bg-white  h-10 w-10 md:h-40 md:w-40 rounded-full justify-center items-center">
+        <div className="flex justify-between flex-col md:flex-row w-full gap-4 p-2 h-[500px]">
+          <div className="flex md:w-2/5 w-full h-[500px] md:h-full bg-[#474646] justify-center items-center rounded border border-[#E5A971]">
+            <div className="flex bg-white h-10 w-10 md:h-40 md:w-40 rounded-full justify-center items-center">
               <span className="text-[#E5A971]  text-[20px] md:text-[60px] font-semibold font-sansation">
                 Ai{ " " }
               </span>
             </div>
           </div>
-          <div className="flex md:w-3/5 w-full  h-full justify-center items-center rounded bg-white">
-            <div className="w-full  h-full  flex  overflow-hidden">
+          <div className="flex md:w-3/5 w-full h-full rounded bg-white">
+            <div className="w-full h-full flex overflow-hidden">
               <textarea
-                className="bg-gray-100 w-full h-full rounded-lg p-4"
+                className="bg-gray-100 w-full h-full rounded-lg p-4 border"
                 placeholder="Write your answer here..."
                 onChange={ (v) => {
                   onChange(v);
@@ -166,7 +167,7 @@ const VoiceToText = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between p-6  px-10 w-3/5 self-end">
+        <div className="flex items-center justify-between py-6 px-2 w-3/5 self-end  ">
           <button
             onClick={ () => {
               submitTest();

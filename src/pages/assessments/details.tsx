@@ -69,18 +69,18 @@ function AssessmentDetails () {
                 <img src={ LockNextIcon } />
               ) }
             </div>
-            <div className="flex flex-col items-center justify-center py-4 md:w-[25%] sm:w-full px-4">
-              <span className="text-[22px] font-semibold text-[#F2BC84] self-center font-sansation">
+            <div className="flex flex-col justify-center py-4 md:w-[30%] sm:w-full pr-4 pl-7">
+              <span className="text-[22px] font-semibold text-[#F2BC84] font-sansation">
                 { item?.name }
               </span>
             </div>
-            <div className="flex flex-col md:w-[25%] sm:w-full px-4">
+            <div className="flex flex-col md:w-[20%] sm:w-full px-4 justify-center ">
               <span className="text-[20px] font-normal text-black font-sansation">Skills</span>
               <span className="text-[14px] font-medium text-[#BDBDBD] font-sansation">
                 { item?.skills?.join(", ") }
               </span>
             </div>
-            <div className="flex sm:justify-around md:justify-between md:w-[35%] sm:w-full px-2">
+            <div className="flex sm:justify-around md:justify-between md:w-[35%] items-center justify-center sm:w-full px-2">
               <div className="flex flex-col text-center">
                 <span className="text-[20px] font-normal text-black font-sansation">
                   Questions
