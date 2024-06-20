@@ -10,10 +10,10 @@ const CommonLayout = () => {
 
 	React.useEffect(() => {
 		if (location?.pathname) {
-			if (location?.pathname?.includes("assessment")) {
-				setActive(false);
-			} else {
+			if (location?.pathname?.includes("dashboard")) {
 				setActive(true);
+			} else {
+				setActive(false);
 			}
 		}
 	}, [location?.pathname]);

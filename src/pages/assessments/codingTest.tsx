@@ -13,7 +13,7 @@ const CodingTest: React.FC<any> = (props) => {
   problem.handlerFunction = problem.handlerFunction?.toString();
   const dispatcher = useAppDispatch()
   const navigate = useNavigate();
-  const { assessmentId, testId } = useParams();
+  const { assessmentId, testId, userId } = useParams();
   const assessmentModule = useAppSelector(getAssessmentModuleSelector)
   const [moduleQuestions, setModuleQuestions] = React.useState<any>([])
 
@@ -29,11 +29,11 @@ const CodingTest: React.FC<any> = (props) => {
     dispatcher(setAssessmentModuleDispatcher(
       {
         "moduleId": testId,
-        "candidateId": "6672c49c3301a6048a286467",
+        "candidateId": userId,
         "assessmentId": assessmentId
       }
     ))
-  }, [dispatcher, assessmentId, testId])
+  }, [dispatcher, assessmentId, testId, userId])
 
   const onTimeout = () => {
     navigate(-1)

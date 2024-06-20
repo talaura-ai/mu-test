@@ -15,35 +15,39 @@ function App () {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
+        {/* <Route
           path="/assessment/:assessmentId/invitation"
           element={ <VerificationPage /> }
-        />
+        /> */}
         <Route element={ <PrivateRoute /> }>
           <Route path="/" element={ <CommonLayout /> }>
             <Route
-              path="/assessment/:assessmentId/share-details"
+              path="/assessment/:userId/:assessmentId/share-details"
               element={ <PersonNeedMoreInfo /> }
             />
             <Route
-              path="/assessment/:assessmentId/:testId/coding"
+              path="/assessment/:userId/:assessmentId/:testId/coding"
               element={ <CodingTest /> }
             />
             <Route
-              path="/assessment/:assessmentId/:testId/video-interview"
+              path="/assessment/:userId/:assessmentId/:testId/video-interview"
               element={ <VideoTest /> }
             />
             <Route
-              path="/assessment/:assessmentId/:testId/voice-to-text"
+              path="/assessment/:userId/:assessmentId/:testId/voice-to-text"
               element={ <VoiceToText /> }
             />
             <Route
-              path="/assessment/:assessmentId/:testId"
+              path="/assessment/:userId/:assessmentId/:testId"
               element={ <StartMCQTest /> }
             />
             <Route
-              path="/assessment/:assessmentId"
+              path="/assessment/:userId/:assessmentId/modules"
               element={ <AssessmentDetails /> }
+            />
+            <Route
+              path="/assessment/:userId/dashboard"
+              element={ <MyAssessments /> }
             />
             <Route path="/" element={ <MyAssessments /> } />
           </Route>

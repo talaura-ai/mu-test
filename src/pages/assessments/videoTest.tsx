@@ -14,6 +14,7 @@ var count_facedetect = 0;
 
 const VideoTest = () => {
   const webcamRef = useRef<any>(null);
+  const elementRef = useRef<any>(null);
   let videoRef = useRef<any>();
   let canvasRef = useRef<any>();
   // const webcamRef=useRef(null);
@@ -31,6 +32,7 @@ const VideoTest = () => {
   //     e.preventDefault();
   //   }, false);
   // }
+
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
@@ -262,12 +264,11 @@ const VideoTest = () => {
   }
 
   return (
-    <div className="sm:p-6 md:px-20 md:py-12 p-4">
+    <div ref={ elementRef } className="sm:p-6 md:px-20 md:py-12 p-4">
       <div className="flex md:flex-row flex-col items-center md:justify-between mb-6 border-b-2 border-[#7d7c78] pb-4 font-sansation">
         <div className="flex items-center justify-start">
           <span className="font-bold text-black self-center text-2xl whitespace-nowrap md:text-[32px] ">
             Module 2: Video Round
-            <div>{ isRecording ? "Listening..." : "Speaking..." }</div>
           </span>
         </div>
         <div className="flex items-center mt-4 md:mt-0">
@@ -293,7 +294,7 @@ const VideoTest = () => {
             </div>
           </div>
           <div className="flex relative h-1/2 w-1/2 ">
-            <div className="flex rounded-xl bg-red-400 w-full overflow-hidden h-full">
+            <div className="flex rounded-xl w-full overflow-hidden h-full">
               {/* <img src={ VideoCallUser } className="px-2" alt="left icon" /> */ }
               <Webcam
                 ref={ webcamRef }

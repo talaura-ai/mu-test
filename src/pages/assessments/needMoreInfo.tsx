@@ -14,7 +14,7 @@ import {
 function PersonNeedMoreInfo () {
   const navigate = useNavigate();
   const dispatcher = useAppDispatch();
-  const { assessmentId } = useParams();
+  const { assessmentId, userId } = useParams();
   const myAssessments = useAppSelector(getAssessmentsSelector);
   const myassessmentQuestion = useAppSelector(getAssessmentQuestionSelector);
   const [selectAssessment, setSelectAssessment] = React.useState<any>({});
@@ -33,12 +33,12 @@ function PersonNeedMoreInfo () {
     if (flag) {
       dispatcher(
         setAssessmentQuestionDispatcher({
-          userId: "6672c49c3301a6048a286467",
+          userId,
           question: updateAssessmentQuestion,
         })
       );
 
-      navigate(`/assessment/${assessmentId}`);
+      navigate(`/assessment/${userId}/${assessmentId}/modules`);
     } else {
       setAssessmentQuestion(updateAssessmentQuestion);
     }
@@ -56,8 +56,10 @@ function PersonNeedMoreInfo () {
   }, [myAssessments, assessmentId]);
 
   React.useEffect(() => {
-    dispatcher(setAssessmentDispatcher({ userId: "6672c49c3301a6048a286467" }));
-  }, [dispatcher]);
+    if (userId) {
+      dispatcher(setAssessmentDispatcher({ userId }));
+    }
+  }, [dispatcher, userId]);
 
   const onValueChange = (value: string, index: number) => {
     const updatedQuestions = {

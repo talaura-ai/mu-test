@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CalenderIcon from "../../assets/svg/calenderIcon.svg";
 import DurationIcon from "../../assets/svg/durationIcon.svg";
 import ExpireIcon from "../../assets/svg/expireIcon.svg";
@@ -12,6 +12,7 @@ import { getExpiredIn } from "../../utils/helper";
 
 function MyAssessments () {
   const navigate = useNavigate();
+  const { userId } = useParams();
   const [deviceConfigModal, setDeviceConfigModal] = React.useState(false);
   const [selectAssessment, setSelectAssessment] = React.useState<any>({});
   const dispatcher = useAppDispatch();
@@ -19,12 +20,14 @@ function MyAssessments () {
 
   const onNextClicked = () => {
     setDeviceConfigModal(false);
-    navigate(`/assessment/${selectAssessment?._id}/share-details`);
+    navigate(`/assessment/${userId}/${selectAssessment?._id}/share-details`);
   };
 
   React.useEffect(() => {
-    dispatcher(setAssessmentDispatcher({ userId: "6672c49c3301a6048a286467" }));
-  }, [dispatcher]);
+    if (userId) {
+      dispatcher(setAssessmentDispatcher({ userId }));
+    }
+  }, [dispatcher, userId]);
 
   return (
     <>

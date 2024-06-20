@@ -20,7 +20,7 @@ function StartMCQTest () {
   const [disableNextBtn, setDisableNextBtn] = React.useState(false)
   const [submitTest, setSubmitTest] = React.useState(false)
   const [disablePrevBtn, setDisablePrevBtn] = React.useState(true)
-  const { assessmentId, testId } = useParams();
+  const { assessmentId, testId, userId } = useParams();
 
   React.useEffect(() => {
     if (assessmentModule?.module?.question) {
@@ -33,11 +33,11 @@ function StartMCQTest () {
     dispatcher(setAssessmentModuleDispatcher(
       {
         "moduleId": testId,
-        "candidateId": "6672c49c3301a6048a286467",
+        "candidateId": userId,
         "assessmentId": assessmentId
       }
     ))
-  }, [dispatcher, assessmentId, testId])
+  }, [dispatcher, assessmentId, testId, userId])
 
   const onQuestionSelection = (option: any) => {
     let optionValue = ""
