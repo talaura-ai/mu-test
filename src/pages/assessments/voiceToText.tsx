@@ -18,7 +18,7 @@ const VoiceToText = () => {
   const [moduleQuestions, setModuleQuestions] = React.useState<any>([]);
   const [startTest, setStartTest] = React.useState(false);
   const [currentIndex, setCurrentIndex] = React.useState<any>(0);
-  const [isSpeaking, setIsSpeaking] = React.useState<boolean>(!false);
+  const [isSpeaking, setIsSpeaking] = React.useState<boolean>(false);
 
   console.log("assessmentModule---TEXT", assessmentModule);
 
@@ -49,7 +49,7 @@ const VoiceToText = () => {
 
   useEffect(() => {
     let timer = setTimeout(() => {
-    //   setStartTest(true);
+      setStartTest(true);
     }, 500);
     return () => {
       window?.speechSynthesis?.cancel?.();
