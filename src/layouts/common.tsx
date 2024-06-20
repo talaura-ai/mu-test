@@ -1,12 +1,17 @@
 import { Outlet } from "react-router-dom";
 import DashboardIcon from "../assets/svg/DashboardLayoutIcon.svg"
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import React from "react";
-// import MiddleLogo from "../assets/svg/middleLogo.svg"
+import TimerLoading from "../assets/Deadline.png"
 import MiddleLogo from "../assets/middleLogo.png"
+import { useAppSelector } from "../store/hooks";
+import { getLoadingSelector } from "../store/slices/dashboard-slice/dashboard-selectors";
+
 const CommonLayout = () => {
 	let location = useLocation();
+	const { userId } = useParams();
 	const [active, setActive] = React.useState(true);
+	const loading = useAppSelector(getLoadingSelector)
 
 	React.useEffect(() => {
 		if (location?.pathname) {
@@ -24,7 +29,7 @@ const CommonLayout = () => {
 				<div className="px-3 lg:px-5 lg:pl-3 flex w-full items-center h-16">
 					<div className="flex items-center justify-between w-full">
 						<div className="flex items-center justify-start rtl:justify-end">
-							<a href="/" className="flex md:ms-12 ms-2">
+							<a href={ `/assessment/${userId}/dashboard` } className="flex md:ms-12 ms-2">
 								<span className="text-xl font-semibold font-sansation text-transparent bg-clip-text bg-gradient-to-r from-[#E4A76F] to-[#F3BD85] self-center sm:text-2xl whitespace-nowrap">
 									TalAura
 								</span>
@@ -67,6 +72,18 @@ const CommonLayout = () => {
 					<Outlet />
 				</div>
 			</div>
+			{ loading ? <>
+				<div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+					<div className="relative my-6 mx-auto w-[350px]">
+						<div className="border-0 rounded-3xl shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
+							<div className="flex items-center justify-center py-16">
+								<img src={ TimerLoading } />
+							</div>
+						</div>
+					</div>
+				</div>
+				<div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+			</> : null }
 		</>
 	);
 };

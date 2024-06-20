@@ -4,6 +4,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
+import { ToastContainer, Bounce } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -11,6 +13,19 @@ const root = ReactDOM.createRoot(
 root.render(
   <Provider store={ store }>
     <App />
+    <ToastContainer
+      position="top-center"
+      autoClose={ 5000 }
+      hideProgressBar
+      newestOnTop
+      closeOnClick
+      rtl={ false }
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="colored"
+      transition={ Bounce }
+    />
   </Provider>
 );
 

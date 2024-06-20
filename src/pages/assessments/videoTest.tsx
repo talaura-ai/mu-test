@@ -3,7 +3,7 @@ import AiBot from "../../assets/AiBot.png";
 import VideoCallUser from "../../assets/VideoCallUser.png";
 import VoiceIcon from "../../assets/Group 171.png";
 import MicIcon from "../../assets/svg/micIcon2.svg";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 // import * as posenet from '@tensorflow-models/posenet';
@@ -20,6 +20,8 @@ const VideoTest = () => {
   // const webcamRef=useRef(null);
   // const canvasRef=useRef(null);
   const navigate = useNavigate();
+  const { userId } = useParams();
+
   const noOfUser = 3;
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
@@ -400,7 +402,7 @@ const VideoTest = () => {
       <div className="flex justify-center py-6 font-sansation">
         <button
           className="flex justify-center bg-[#E04747] px-3 py-2 rounded-lg text-white font-semibold"
-          onClick={ () => navigate("/") }
+          onClick={ () => navigate(`/assessment/${userId}/dashboard`) }
         >
           End Meet
         </button>

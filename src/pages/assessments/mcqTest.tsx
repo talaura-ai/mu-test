@@ -9,6 +9,7 @@ import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/
 import { getModuleSubmissionDispatcher, setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import TimerCounter from "../../components/timerCounter";
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
+import { toast } from "react-toastify";
 
 function StartMCQTest () {
   const dispatcher = useAppDispatch()
@@ -120,10 +121,14 @@ function StartMCQTest () {
         question: moduleQuestions
       }))
       if (res?.payload.data?.status) {
+        toast.success(`${assessmentModule.module?.name} completed successfully!`, {});
         navigate(-1)
+      } else {
+        toast.error("Oops! Failed", {});
       }
     } catch (error) {
       console.log('error=>', error)
+      toast.error("Oops! Internal server error", {});
     }
   }
 

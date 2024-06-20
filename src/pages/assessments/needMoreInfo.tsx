@@ -10,6 +10,7 @@ import {
   getAssessmentsSelector,
   getAssessmentQuestionSelector,
 } from "../../store/slices/dashboard-slice/dashboard-selectors";
+import { toast } from "react-toastify";
 
 function PersonNeedMoreInfo () {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ function PersonNeedMoreInfo () {
           question: updateAssessmentQuestion,
         })
       );
-
+      toast.success("User detail has saved successfully!", {});
       navigate(`/assessment/${userId}/${assessmentId}/modules`);
     } else {
       setAssessmentQuestion(updateAssessmentQuestion);

@@ -21,7 +21,7 @@ export const dashboardSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(setAssessmentDispatcher.pending, (state: any) => {
-        state.loading = true;
+        // state.loading = true;
       })
       .addCase(setAssessmentDispatcher.fulfilled, (state: any, action: any) => {
         if (action.payload?.data?.status) {
@@ -34,7 +34,7 @@ export const dashboardSlice = createSlice({
       })
     builder
       .addCase(setAssessmentModuleDispatcher.pending, (state: any) => {
-        state.loading = true;
+        // state.loading = true;
       })
       .addCase(setAssessmentModuleDispatcher.fulfilled, (state: any, action: any) => {
         if (action.payload?.data?.status) {
@@ -48,7 +48,7 @@ export const dashboardSlice = createSlice({
       })
     builder
       .addCase(setAssessmentQuestionDispatcher.pending, (state: any) => {
-        state.loading = true;
+        // state.loading = true;
       })
       .addCase(setAssessmentQuestionDispatcher.fulfilled, (state: any, action: any) => {
         if (action.payload?.data?.status) {
@@ -61,7 +61,7 @@ export const dashboardSlice = createSlice({
       })
     builder
       .addCase(getLanguagesDispatcher.pending, (state: any) => {
-        state.loading = true;
+        // state.loading = true;
       })
       .addCase(getLanguagesDispatcher.fulfilled, (state: any, action: any) => {
         if (action.payload?.data) {

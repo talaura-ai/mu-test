@@ -7,6 +7,7 @@ import {
   getModuleSubmissionDispatcher,
   setAssessmentModuleDispatcher,
 } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
+import { toast } from "react-toastify";
 
 const VoiceToText = () => {
   const dispatcher = useAppDispatch();
@@ -18,7 +19,7 @@ const VoiceToText = () => {
   const [currentIndex, setCurrentIndex] = React.useState<any>(0);
   const [isSpeaking, setIsSpeaking] = React.useState<boolean>(false);
 
-  console.log("assessmentModule---TEXT", moduleQuestions);
+  console.log("assessmentModule---TEXT", assessmentModule);
 
   React.useEffect(() => {
     if (assessmentModule?.module?.question) {
@@ -39,6 +40,8 @@ const VoiceToText = () => {
   const onSubmission = (type: string) => {
     if (type === "start") {
       playText(moduleQuestions?.[currentIndex]?.title);
+    } else {
+      navigate(-1)
     }
     setStartTest(false);
   };
@@ -105,9 +108,13 @@ const VoiceToText = () => {
         })
       );
       if (res?.payload.data?.status) {
-        navigate(-1);
+        toast.success(`${assessmentModule?.module?.name} completed successfully!`, {});
+        navigate(-1)
+      } else {
+        toast.error("Oops! Failed", {});
       }
     } catch (error) {
+      toast.error("Oops! Internal server error", {});
       console.log("error=>", error);
     }
   };
