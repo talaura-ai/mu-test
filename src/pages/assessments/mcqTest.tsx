@@ -7,9 +7,9 @@ import React from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import { getModuleSubmissionDispatcher, setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
-import TimerCounter from "../../components/timerCounter";
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
 import { toast } from "react-toastify";
+import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
 
 function StartMCQTest () {
   const dispatcher = useAppDispatch()
@@ -141,16 +141,16 @@ function StartMCQTest () {
   return (
     <>
       <div className="sm:p-6 md:px-20 md:py-12 p-4">
-        <TimerCounter timestamp={ assessmentModule.module?.time || 0 } title={ assessmentModule.module?.name } onTimeout={ onTimeout } />
-        <div className="flex items-center mb-10 px-4 font-sansation">
+        <TimerCounterWithProgress timestamp={ assessmentModule.module?.time || 0 } title={ assessmentModule.module?.name } onTimeout={ onTimeout } />
+        {/* <div className="flex items-center mb-10 px-4 font-sansation">
           <div className="w-full bg-[#C7C6C0] rounded-full h-2.5 mb-4 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
             <div
               className="bg-gradient-to-r from-[#E5A971] to-[#F3BC84] h-2.5 rounded-full"
               style={ { width: `${getProgress()}%` } }
             ></div>
           </div>
-        </div>
-        <div className="mb-6 flex md:flex-row flex-col font-sansation">
+        </div> */}
+        <div className="mb-6 flex md:flex-row flex-col font-sansation mt-10">
           <div className="basis-[30%] w-full">
             <div className="w-full bg-white border border-gray-200 rounded-lg shadow overflow-hidden">
               <div className="flex flex-row items-center mx-6 py-5 border-solid border-b-[3px] border-[#E6E6E6]">

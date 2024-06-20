@@ -6,7 +6,6 @@ import TimeLeftIcon from "../../assets/svg/timeLeftIcon.svg";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import { getModuleSubmissionDispatcher, setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
-import TimerCounter from "../../components/timerCounter";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
 
 const CodingTest: React.FC<any> = (props) => {

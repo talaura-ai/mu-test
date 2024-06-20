@@ -8,7 +8,6 @@ import {
   setAssessmentModuleDispatcher,
 } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import { toast } from "react-toastify";
-import TimerCounter from "../../components/timerCounter";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
 
 const VoiceToText = () => {
