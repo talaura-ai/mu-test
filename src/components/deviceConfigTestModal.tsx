@@ -57,7 +57,7 @@ export default function DeviceConfigTestModal (props: any) {
   };
 
   const renderIcons: any = {
-    0: <ReactLoading type={ "spin" } color="#19AA4C" height={ 24 } width={ 24 } />,
+    0: <ReactLoading type={ "spin" } color="#CC8448" height={ 24 } width={ 24 } />,
     1: <img src={ CheckedIcon } />,
     2: <MdError color="#F00" size={ 28 } />
   }
@@ -121,7 +121,7 @@ export default function DeviceConfigTestModal (props: any) {
                       { item?.name }
                     </span>
                     { item?.name === "Internet" ? <>
-                      { speedLaoding ? <><ReactLoading type={ "spin" } color="#19AA4C" height={ 24 } width={ 24 } /></> : <span className="text-[12px] font-medium text-[#BDBDBD] self-center pt-1 font-sansation">
+                      { speedLaoding ? <><ReactLoading type={ "spin" } color="#CC8448" height={ 24 } width={ 24 } /></> : <span className="text-[12px] font-medium text-[#BDBDBD] self-center pt-1 font-sansation">
                         { Math.ceil(checkSpeed) } mbps
                       </span> }
                     </> : null }
