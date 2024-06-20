@@ -44,19 +44,19 @@ function MyAssessments () {
             </span>
           </div>
           <div className="flex items-center">
-            <div className="w-[150px] text-gray-900 dark:text-gray-100">
+            <div className="w-[150px] text-gray-900">
               <div className="relative w-full group">
                 <button className="py-2.5 px-3 w-full md:text-sm text-site bg-white border border-dimmed focus:border-brand focus:outline-none focus:ring-0 peer flex items-center justify-between rounded font-semibold font-sansation">
                   Active
                 </button>
-                <div className="absolute z-[99] top-[100%] left-[50%] translate-x-[-50%] rounded-md overflow-hidden shadow-lg min-w-[150px] opacity-0 invisible w-max peer-focus:visible peer-focus:opacity-100 duration-200 p-1 bg-gray-100 dark:bg-gray-800  border border-dimmed text-xs md:text-sm">
-                  <div className="font-sansation w-full block cursor-pointer hover:bg-white dark:hover:bg-gray-900 dark:bg-gray-800 hover:text-link px-3 py-2 rounded-md">
+                <div className="absolute z-[99] top-[100%] left-[50%] translate-x-[-50%] rounded-md overflow-hidden shadow-lg min-w-[150px] opacity-0 invisible w-max peer-focus:visible peer-focus:opacity-100 duration-200 p-1 bg-gray-100 border border-dimmed text-xs md:text-sm">
+                  <div className="font-sansation w-full block cursor-pointer hover:bg-white hover:text-link px-3 py-2 rounded-md">
                     All
                   </div>
-                  <div className="font-sansation w-full block cursor-pointer hover:bg-white dark:hover:bg-gray-900 dark:bg-gray-800 hover:text-link px-3 py-2 rounded-md">
+                  <div className="font-sansation w-full block cursor-pointer hover:bg-white hover:text-link px-3 py-2 rounded-md">
                     Active
                   </div>
-                  <div className="font-sansation w-full block cursor-pointer hover:bg-white dark:hover:bg-gray-900 dark:bg-gray-800 hover:text-link px-3 py-2 rounded-md">
+                  <div className="font-sansation w-full block cursor-pointer hover:bg-white hover:text-link px-3 py-2 rounded-md">
                     Completed
                   </div>
                 </div>
@@ -114,7 +114,7 @@ function MyAssessments () {
                   setDeviceConfigModal(true);
                   setSelectAssessment(item);
                 } }
-                className="text-white font-sansation bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40"
+                className="text-white font-sansation bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center"
               >
                 Start
               </button>

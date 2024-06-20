@@ -16,6 +16,7 @@ const VoiceToText = () => {
   const [moduleQuestions, setModuleQuestions] = React.useState<any>([]);
   const [startTest, setStartTest] = React.useState(false);
   const [currentIndex, setCurrentIndex] = React.useState<any>(0);
+  const [isSpeaking, setIsSpeaking] = React.useState<boolean>(false);
 
   console.log("assessmentModule---TEXT", moduleQuestions);
 
@@ -46,16 +47,21 @@ const VoiceToText = () => {
     let timer = setTimeout(() => {
       setStartTest(true);
     }, 500);
-    return () => clearTimeout(timer);
+    return () => {
+      window?.speechSynthesis?.cancel?.();
+      clearTimeout(timer)
+    }
   }, []);
 
   const textToSpeech = (text: string) => {
+    setIsSpeaking(true)
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 1; // Speed of speech
     utterance.pitch = 1; // Pitch of the voice
     utterance.volume = 1; // Volume of the voice
     utterance.onend = () => {
       console.log("Speech synthesis finished.");
+      setIsSpeaking(false)
     };
     window.speechSynthesis.speak(utterance);
   };
@@ -133,7 +139,7 @@ const VoiceToText = () => {
           <div className="flex md:w-2/5 w-full   h-[280px] md:h-full bg-[#474646] justify-center items-center rounded border border-[#E5A971]">
             <div className="flex bg-white  h-10 w-10 md:h-40 md:w-40 rounded-full justify-center items-center">
               <span className="text-[#E5A971]  text-[20px] md:text-[60px] font-semibold font-sansation">
-                Ai{" "}
+                Ai{ " " }
               </span>
             </div>
           </div>
@@ -142,10 +148,10 @@ const VoiceToText = () => {
               <textarea
                 className="bg-gray-100 w-full h-full rounded-lg p-4"
                 placeholder="Write your answer here..."
-                onChange={(v) => {
+                onChange={ (v) => {
                   onChange(v);
-                }}
-                value={moduleQuestions?.[currentIndex]?.answer || ""}
+                } }
+                value={ moduleQuestions?.[currentIndex]?.answer || "" }
               />
             </div>
           </div>
@@ -153,33 +159,34 @@ const VoiceToText = () => {
 
         <div className="flex items-center justify-between p-6  px-10 w-3/5 self-end">
           <button
-            onClick={() => {
+            onClick={ () => {
               submitTest();
-            }}
+            } }
             type="button"
-            className="font-sansation text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40"
+            className="font-sansation text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2.5 text-center inline-flex items-center"
           >
             Submit Test
           </button>
           <button
-            onClick={() => {
+            onClick={ () => {
               onNextClicked(currentIndex);
-            }}
+            } }
+            disabled={ isSpeaking }
             type="button"
-            className="font-sansation text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40"
+            className={ `font-sansation text-white hover:bg-[#CC8448]/80 ${isSpeaking ? "bg-[#CC8448]/60" : "bg-[#CC8448]"} focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2.5 text-center inline-flex items-center` }
           >
             Next
           </button>
         </div>
       </div>
 
-      {startTest ? (
+      { startTest ? (
         <ModuletestStartModal
-          onPress={(v) => {
+          onPress={ (v) => {
             onSubmission(v);
-          }}
+          } }
         />
-      ) : null}
+      ) : null }
     </div>
   );
 };

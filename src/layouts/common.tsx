@@ -20,7 +20,7 @@ const CommonLayout = () => {
 
 	return (
 		<>
-			<nav className="fixed top-0 z-50 w-full h-16 bg-white dark:bg-gray-800">
+			<nav className="fixed top-0 z-50 w-full h-16 bg-white">
 				<div className="px-3 lg:px-5 lg:pl-3 flex w-full items-center h-16">
 					<div className="flex items-center justify-between w-full">
 						<div className="flex items-center justify-start rtl:justify-end">
@@ -36,11 +36,11 @@ const CommonLayout = () => {
 						<div className="flex items-center">
 							<div className="flex items-center md:mr-8">
 								<div className="flex items-center">
-									<button type="button" className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
+									<button type="button" className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300" aria-expanded="false" data-dropdown-toggle="dropdown-user">
 										<span className="sr-only">Open user menu</span>
 										<img className="w-8 h-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo" />
 									</button>
-									<p className="text-sm font-semibold font-sansation text-gray-900 dark:text-white ml-2" role="none">
+									<p className="text-sm font-semibold font-sansation text-gray-900 ml-2" role="none">
 										Neil Sims
 									</p>
 								</div>
@@ -50,11 +50,11 @@ const CommonLayout = () => {
 				</div>
 			</nav>
 
-			{ active && <aside id="logo-sidebar" className="fixed top-0 left-0 z-40 w-16 h-screen pt-20 transition-transform -translate-x-full bg-white sm:translate-x-0 dark:bg-gray-800" aria-label="Sidebar">
-				<div className="h-full pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+			{ active && <aside id="logo-sidebar" className="fixed top-0 left-0 z-40 w-16 h-screen pt-20 transition-transform -translate-x-full bg-white sm:translate-x-0" aria-label="Sidebar">
+				<div className="h-full pb-4 overflow-y-auto bg-white">
 					<ul className="space-y-2 font-medium mt-[95px]">
 						<li className="bg-[#FFEFDF] flex justify-center">
-							<a href="#" className="flex items-center py-3 text-[#e4a76f] rounded-lg dark:text-white group">
+							<a href="#" className="flex items-center py-3 text-[#e4a76f] rounded-lg group">
 								<img src={ DashboardIcon }></img>
 							</a>
 						</li>

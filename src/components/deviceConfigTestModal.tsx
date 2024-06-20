@@ -128,7 +128,7 @@ export default function DeviceConfigTestModal (props: any) {
               )) }
             </div>
             <div className="flex items-center justify-center p-6">
-              <button onClick={ () => { props?.onNextClicked() } } type="button" className="font-sansation text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center dark:hover:bg-[#CC8448]/80 dark:focus:ring-[#CC8448]/40">
+              <button onClick={ () => { props?.onNextClicked() } } type="button" className="font-sansation text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center">
                 Next
               </button>
             </div>

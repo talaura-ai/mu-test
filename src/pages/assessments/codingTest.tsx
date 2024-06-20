@@ -61,7 +61,7 @@ const CodingTest: React.FC<any> = (props) => {
         </div>
       </div> */}
       <div className="flex items-center mb-6 px-4 font-sansation">
-        <div className="w-full bg-[#C7C6C0] rounded-full h-2.5 mb-4 dark:bg-gray-700 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
+        <div className="w-full bg-[#C7C6C0] rounded-full h-2.5 mb-4 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
           <div
             className="bg-gradient-to-r from-[#E5A971] to-[#F3BC84] h-2.5 rounded-full"
             style={ { width: `${50}%` } }
