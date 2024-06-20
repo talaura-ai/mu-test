@@ -18,7 +18,7 @@ const VoiceToText = () => {
   const [moduleQuestions, setModuleQuestions] = React.useState<any>([]);
   const [startTest, setStartTest] = React.useState(false);
   const [currentIndex, setCurrentIndex] = React.useState<any>(0);
-  const [isSpeaking, setIsSpeaking] = React.useState<boolean>(false);
+  const [isSpeaking, setIsSpeaking] = React.useState<boolean>(!false);
 
   console.log("assessmentModule---TEXT", assessmentModule);
 
@@ -49,7 +49,7 @@ const VoiceToText = () => {
 
   useEffect(() => {
     let timer = setTimeout(() => {
-      setStartTest(true);
+    //   setStartTest(true);
     }, 500);
     return () => {
       window?.speechSynthesis?.cancel?.();
@@ -146,7 +146,7 @@ const VoiceToText = () => {
 
         <div className="flex justify-between flex-col md:flex-row w-full gap-4 p-2 h-[500px]">
           <div className="flex md:w-2/5 w-full h-[500px] md:h-full bg-[#474646] justify-center items-center overflow-hidden border border-[#E5A971] rounded-xl">
-            <div className="flex justify-center items-center overflow-hidden">
+            <div className="flex justify-center items-center">
               <div className={ `h-10 w-10 md:h-40 md:w-40 bg-white text-[#E5A971] rounded-full text-[20px] md:text-[60px] font-semibold font-sansation flex justify-center items-center ${isSpeaking ? "animation-pulse" : ""}` }>
                 Ai
               </div>

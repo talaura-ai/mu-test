@@ -359,7 +359,7 @@ const VideoTest = () => {
               {/* <img src={ VideoCallUser } className="px-2" alt="left icon" /> */ }
               <Webcam
                 ref={ webcamRef }
-                className="overflow-hidden rounded-xl bg-gray-200 mr-4"
+                className="overflow-hidden rounded-xl bg-gray-200 mr-4 object-cover"
               // style={ {
               //   // position: "absolute",
               //   // marginLeft: "auto",
