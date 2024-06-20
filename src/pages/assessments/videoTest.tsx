@@ -6,10 +6,10 @@ import MicIcon from "../../assets/svg/micIcon2.svg";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
-import * as posenet from '@tensorflow-models/posenet';
+// import * as posenet from '@tensorflow-models/posenet';
 import Webcam from 'react-webcam';
-import * as cocoSsd from "@tensorflow-models/coco-ssd";
-import "@tensorflow/tfjs";
+// import * as cocoSsd from "@tensorflow-models/coco-ssd";
+// import "@tensorflow/tfjs";
 var count_facedetect = 0;
 
 const VideoTest = () => {
@@ -91,177 +91,177 @@ const VideoTest = () => {
     }
   }, [isRecording, mediaRecorder]);
 
-  useEffect(() => {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      const webCamPromise = navigator.mediaDevices
-        .getUserMedia({
-          audio: false,
-          video: {
-            facingMode: "user",
-            width: 500,
-            height: 300
-          }
-        })
-        .then(stream => {
-          window.stream = stream;
-          videoRef.current.srcObject = stream;
-          return new Promise((resolve, reject) => {
-            videoRef.current.onloadedmetadata = () => {
-              resolve(true);
-            };
-          });
-        });
-      const modelPromise = cocoSsd.load();
-      Promise.all([modelPromise, webCamPromise])
-        .then(values => {
-          detectFrame(videoRef.current, values[0]);
-        })
-        .catch(error => {
-          //console.error(error);
-        });
-    }
-  }, [])
+  // useEffect(() => {
+  //   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  //     const webCamPromise = navigator.mediaDevices
+  //       .getUserMedia({
+  //         audio: false,
+  //         video: {
+  //           facingMode: "user",
+  //           width: 500,
+  //           height: 300
+  //         }
+  //       })
+  //       .then(stream => {
+  //         window.stream = stream;
+  //         videoRef.current.srcObject = stream;
+  //         return new Promise((resolve, reject) => {
+  //           videoRef.current.onloadedmetadata = () => {
+  //             resolve(true);
+  //           };
+  //         });
+  //       });
+  //     const modelPromise = cocoSsd.load();
+  //     Promise.all([modelPromise, webCamPromise])
+  //       .then(values => {
+  //         detectFrame(videoRef.current, values[0]);
+  //       })
+  //       .catch(error => {
+  //         //console.error(error);
+  //       });
+  //   }
+  // }, [])
 
-  const detectFrame = (video: any, model: any) => {
-    model.detect(video).then((predictions: any) => {
-      if (canvasRef.current) {
+  // const detectFrame = (video: any, model: any) => {
+  //   model.detect(video).then((predictions: any) => {
+  //     if (canvasRef.current) {
 
-        renderPredictions(predictions);
-        requestAnimationFrame(() => {
-          detectFrame(video, model);
-        });
-      } else {
-        return false;
-      }
-    });
-  };
-
-  const renderPredictions = (predictions: any) => {
-    //var count=100;
-    const ctx = canvasRef.current.getContext("2d");
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    // Font options.
-    const font = "16px sans-serif";
-    ctx.font = font;
-    ctx.textBaseline = "top";
-    predictions.forEach((prediction: any) => {
-
-      const x = prediction.bbox[0];
-      const y = prediction.bbox[1];
-      const width = prediction.bbox[2];
-      const height = prediction.bbox[3];
-      // Draw the bounding box.
-      ctx.strokeStyle = "#00FFFF";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(x, y, width, height);
-      // Draw the label background.
-      ctx.fillStyle = "#00FFFF";
-      const textWidth = ctx.measureText(prediction.class).width;
-      const textHeight = parseInt(font, 10); // base 10
-      ctx.fillRect(x, y, textWidth + 8, textHeight + 8);
-
-      var multiple_face = 0;
-      for (let i = 0; i < predictions.length; i++) {
-
-        //Face,object detection
-        if (predictions[i].class === "cell phone") {
-          console.log("Cell Phone Detected", "Action has been Recorded", "error");
-          count_facedetect = count_facedetect + 1;
-        }
-        else if (predictions[i].class === "book") {
-          console.log("Object Detected", "Action has been Recorded", "error");
-          count_facedetect = count_facedetect + 1;
-        }
-        else if (predictions[i].class === "laptop") {
-          console.log("Object Detected", "Action has been Recorded", "error");
-          count_facedetect = count_facedetect + 1;
-        }
-        else if (predictions[i].class !== "person") {
-          console.log("Face Not Visible", "Action has been Recorded", "error");
-          count_facedetect = count_facedetect + 1;
-        }
-      }
-    });
-
-    predictions.forEach((prediction: any) => {
-      const x = prediction.bbox[0];
-      const y = prediction.bbox[1];
-      //console.log(predictions)
-      // Draw the text last to ensure it's on top.
-      ctx.fillStyle = "#000000";
-      //console.log(prediction.class);
-
-      if (prediction.class === "person" || prediction.class === "cell phone" || prediction.class === "book" || prediction.class === "laptop") {
-        ctx.fillText(prediction.class, x, y);
-      }
-    });
-    //console.log("final")
-    console.log(count_facedetect)
-    // sessionStorage.setItem("count_facedetect", count_facedetect);
-
-  };
-
-  //  Load posenet
-  const runPosenet = async () => {
-    const net = await posenet.load({
-      architecture: 'ResNet50',
-      quantBytes: 2,
-      inputResolution: { width: 640, height: 480 },
-      outputStride: 16
-      // scale: 1,
-    });
-    //
-    setInterval(() => {
-      detect(net);
-    }, 1000);
-  };
-
-  const detect = async (net: any) => {
-    if (
-      typeof webcamRef.current !== "undefined" &&
-      webcamRef.current !== null &&
-      webcamRef.current.video.readyState === 4
-    ) {
-      // Get Video Properties
-      const video = webcamRef.current.video;
-      const videoWidth = webcamRef.current.video.videoWidth;
-      const videoHeight = webcamRef.current.video.videoHeight;
-
-      // Set video width
-      webcamRef.current.video.width = videoWidth;
-      webcamRef.current.video.height = videoHeight;
-
-      // Make Detections
-      const pose = await net.estimateSinglePose(video);
-      // console.log(pose);
-
-      EarsDetect(pose["keypoints"], 0.8);
-
-      // drawCanvas(pose, video, videoWidth, videoHeight, canvasRef);
-    }
-  };
-
-  // const drawCanvas = (pose, video, videoWidth, videoHeight, canvas) => {
-  //   const ctx = canvas.current.getContext("2d");
-  //   canvas.current.width = videoWidth;
-  //   canvas.current.height = videoHeight;
-
-  //   drawKeypoints(pose["keypoints"], 0.6, ctx);
-  //   drawSkeleton(pose["keypoints"], 0.7, ctx);
+  //       renderPredictions(predictions);
+  //       requestAnimationFrame(() => {
+  //         detectFrame(video, model);
+  //       });
+  //     } else {
+  //       return false;
+  //     }
+  //   });
   // };
 
-  const EarsDetect = (keypoints: any, minConfidence: any) => {
-    //console.log("Checked")
-    const keypointEarR = keypoints[3];
-    const keypointEarL = keypoints[4];
+  // const renderPredictions = (predictions: any) => {
+  //   //var count=100;
+  //   const ctx = canvasRef.current.getContext("2d");
+  //   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  //   // Font options.
+  //   const font = "16px sans-serif";
+  //   ctx.font = font;
+  //   ctx.textBaseline = "top";
+  //   predictions.forEach((prediction: any) => {
 
-    if (keypointEarL.score < minConfidence) {
-      console.log("You looked away from the Screen (To the Right)")
-    }
-    if (keypointEarR.score < minConfidence) {
-      console.log("You looked away from the Screen (To the Left)")
-    }
-  }
+  //     const x = prediction.bbox[0];
+  //     const y = prediction.bbox[1];
+  //     const width = prediction.bbox[2];
+  //     const height = prediction.bbox[3];
+  //     // Draw the bounding box.
+  //     ctx.strokeStyle = "#00FFFF";
+  //     ctx.lineWidth = 2;
+  //     ctx.strokeRect(x, y, width, height);
+  //     // Draw the label background.
+  //     ctx.fillStyle = "#00FFFF";
+  //     const textWidth = ctx.measureText(prediction.class).width;
+  //     const textHeight = parseInt(font, 10); // base 10
+  //     ctx.fillRect(x, y, textWidth + 8, textHeight + 8);
+
+  //     var multiple_face = 0;
+  //     for (let i = 0; i < predictions.length; i++) {
+
+  //       //Face,object detection
+  //       if (predictions[i].class === "cell phone") {
+  //         console.log("Cell Phone Detected", "Action has been Recorded", "error");
+  //         count_facedetect = count_facedetect + 1;
+  //       }
+  //       else if (predictions[i].class === "book") {
+  //         console.log("Object Detected", "Action has been Recorded", "error");
+  //         count_facedetect = count_facedetect + 1;
+  //       }
+  //       else if (predictions[i].class === "laptop") {
+  //         console.log("Object Detected", "Action has been Recorded", "error");
+  //         count_facedetect = count_facedetect + 1;
+  //       }
+  //       else if (predictions[i].class !== "person") {
+  //         console.log("Face Not Visible", "Action has been Recorded", "error");
+  //         count_facedetect = count_facedetect + 1;
+  //       }
+  //     }
+  //   });
+
+  //   predictions.forEach((prediction: any) => {
+  //     const x = prediction.bbox[0];
+  //     const y = prediction.bbox[1];
+  //     //console.log(predictions)
+  //     // Draw the text last to ensure it's on top.
+  //     ctx.fillStyle = "#000000";
+  //     //console.log(prediction.class);
+
+  //     if (prediction.class === "person" || prediction.class === "cell phone" || prediction.class === "book" || prediction.class === "laptop") {
+  //       ctx.fillText(prediction.class, x, y);
+  //     }
+  //   });
+  //   //console.log("final")
+  //   console.log(count_facedetect)
+  //   // sessionStorage.setItem("count_facedetect", count_facedetect);
+
+  // };
+
+  // //  Load posenet
+  // const runPosenet = async () => {
+  //   const net = await posenet.load({
+  //     architecture: 'ResNet50',
+  //     quantBytes: 2,
+  //     inputResolution: { width: 640, height: 480 },
+  //     outputStride: 16
+  //     // scale: 1,
+  //   });
+  //   //
+  //   setInterval(() => {
+  //     detect(net);
+  //   }, 1000);
+  // };
+
+  // const detect = async (net: any) => {
+  //   if (
+  //     typeof webcamRef.current !== "undefined" &&
+  //     webcamRef.current !== null &&
+  //     webcamRef.current.video.readyState === 4
+  //   ) {
+  //     // Get Video Properties
+  //     const video = webcamRef.current.video;
+  //     const videoWidth = webcamRef.current.video.videoWidth;
+  //     const videoHeight = webcamRef.current.video.videoHeight;
+
+  //     // Set video width
+  //     webcamRef.current.video.width = videoWidth;
+  //     webcamRef.current.video.height = videoHeight;
+
+  //     // Make Detections
+  //     const pose = await net.estimateSinglePose(video);
+  //     // console.log(pose);
+
+  //     EarsDetect(pose["keypoints"], 0.8);
+
+  //     // drawCanvas(pose, video, videoWidth, videoHeight, canvasRef);
+  //   }
+  // };
+
+  // // const drawCanvas = (pose, video, videoWidth, videoHeight, canvas) => {
+  // //   const ctx = canvas.current.getContext("2d");
+  // //   canvas.current.width = videoWidth;
+  // //   canvas.current.height = videoHeight;
+
+  // //   drawKeypoints(pose["keypoints"], 0.6, ctx);
+  // //   drawSkeleton(pose["keypoints"], 0.7, ctx);
+  // // };
+
+  // const EarsDetect = (keypoints: any, minConfidence: any) => {
+  //   //console.log("Checked")
+  //   const keypointEarR = keypoints[3];
+  //   const keypointEarL = keypoints[4];
+
+  //   if (keypointEarL.score < minConfidence) {
+  //     console.log("You looked away from the Screen (To the Right)")
+  //   }
+  //   if (keypointEarR.score < minConfidence) {
+  //     console.log("You looked away from the Screen (To the Left)")
+  //   }
+  // }
 
   return (
     <div ref={ elementRef } className="sm:p-6 md:px-20 md:py-12 p-4">
