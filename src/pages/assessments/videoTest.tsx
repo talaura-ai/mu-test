@@ -8,6 +8,8 @@ import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 // import * as posenet from '@tensorflow-models/posenet';
 import Webcam from 'react-webcam';
+import { toast } from "react-toastify";
+import usePageVisibility from "../../hooks/tabDetection";
 // import * as cocoSsd from "@tensorflow-models/coco-ssd";
 // import "@tensorflow/tfjs";
 var count_facedetect = 0;
@@ -15,6 +17,8 @@ var count_facedetect = 0;
 const VideoTest = () => {
   const webcamRef = useRef<any>(null);
   const elementRef = useRef<any>(null);
+  const visibility = usePageVisibility()
+  console.log('visibility=>', visibility)
   let videoRef = useRef<any>();
   let canvasRef = useRef<any>();
   // const webcamRef=useRef(null);
@@ -34,6 +38,26 @@ const VideoTest = () => {
   //     e.preventDefault();
   //   }, false);
   // }
+
+  // Alert on Tab Changed within the Same browser Window
+  function handleVisibilityChange () {
+    if (document.hidden) {
+      console.log("Tab Change Detected", "Action has been Recorded", "error");
+      // the page is hidden
+    } else {
+      console.log("ACTIVE")
+      // the page is visible
+    }
+  }
+
+  //   document.addEventListener("visibilitychange", handleVisibilityChange, false);
+
+  useEffect(() => {
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
 
   useEffect(() => {
@@ -74,7 +98,7 @@ const VideoTest = () => {
         audioElement.onended = () => setIsRecording(true);
         audioElement.play();
       });
-
+      // openFullscreen()
       return () => {
         console.log('RETURNED')
         socket.disconnect(); // Clean up the socket connection on component unmount
@@ -265,8 +289,19 @@ const VideoTest = () => {
   //   }
   // }
 
+  function openFullscreen () {
+    let elem: any = document.getElementById("MyFullScreenView");
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) { /* Safari */
+      elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) { /* IE11 */
+      elem.msRequestFullscreen();
+    }
+  }
+
   return (
-    <div ref={ elementRef } className="sm:p-6 md:px-20 md:py-12 p-4">
+    <div id="MyFullScreenView" ref={ elementRef } className="sm:p-6 md:px-20 md:py-12 p-4">
       <div className="flex md:flex-row flex-col items-center md:justify-between mb-6 border-b-2 border-[#7d7c78] pb-4 font-sansation">
         <div className="flex items-center justify-start">
           <span className="font-bold text-black self-center text-2xl whitespace-nowrap md:text-[32px] ">
