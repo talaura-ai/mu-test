@@ -20,7 +20,7 @@ function MyAssessments () {
 
   const onNextClicked = () => {
     setDeviceConfigModal(false);
-    navigate(`/assessment/${userId}/${selectAssessment?._id}/share-details`);
+    navigate(`/assessment/${userId}/${selectAssessment?.assessmentId}/share-details`);
   };
 
   React.useEffect(() => {

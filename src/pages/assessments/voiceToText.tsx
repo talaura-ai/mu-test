@@ -86,7 +86,9 @@ const VoiceToText = () => {
       setCurrentIndex((prev: any) => index);
     } else {
       console.log("RREEE", index, moduleQuestions?.length);
-      submitTest();
+      if (moduleQuestions?.length > 0) {
+        submitTest();
+      }
     }
   };
 
@@ -124,7 +126,7 @@ const VoiceToText = () => {
       <div className="flex md:flex-row flex-col items-center md:justify-between mb-4 border-b-2 border-[#7d7c78] pb-4 font-sansation">
         <div className="flex items-center justify-start">
           <span className="font-bold text-black self-center text-2xl whitespace-nowrap md:text-[32px] ">
-            Module 2: Case Bssed
+            { assessmentModule?.module?.name }
           </span>
         </div>
       </div>

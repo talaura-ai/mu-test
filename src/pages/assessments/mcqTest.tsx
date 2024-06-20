@@ -133,7 +133,9 @@ function StartMCQTest () {
   }
 
   const onTimeout = () => {
-    submitTestClicked()
+    if (Number(assessmentModule.module?.time) > 0) {
+      submitTestClicked()
+    }
   }
 
   return (

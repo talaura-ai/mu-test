@@ -6,3 +6,7 @@ declare module 'draft-js'
 interface Window {
   stream?: MediaStream; // Adjust the type `MediaStream` to the appropriate type for your use case
 }
+interface Document {
+  msHidden?: any;
+  webkitHidden?: any;
+}

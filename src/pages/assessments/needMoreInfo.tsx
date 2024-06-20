@@ -47,7 +47,7 @@ function PersonNeedMoreInfo () {
 
   React.useEffect(() => {
     if (assessmentId && myAssessments?.length) {
-      const data = myAssessments?.filter((v) => v?._id === assessmentId);
+      const data = myAssessments?.filter((v) => v?.assessmentId === assessmentId);
       setSelectAssessment(data?.[0]);
       setAssessmentQuestion(data?.[0]?.question);
     } else {

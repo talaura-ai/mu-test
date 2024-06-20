@@ -23,6 +23,12 @@ const CommonLayout = () => {
 		}
 	}, [location?.pathname]);
 
+	React.useEffect(() => {
+		if (userId) {
+			localStorage.setItem("talaura-x-u-r", userId)
+		}
+	}, [userId]);
+
 	return (
 		<>
 			<nav className="fixed top-0 z-50 w-full h-16 bg-white">

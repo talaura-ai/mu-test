@@ -1,14 +1,12 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const VerificationPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      navigate("/");
-    }, 5000);
-    return () => clearTimeout(timer);
+    const userId = localStorage.getItem("talaura-x-u-r")
+    navigate(`/assessment/${userId}/dashboard`)
   }, []);
   return (
     <div>
@@ -17,9 +15,9 @@ const VerificationPage = () => {
         <h2 className="text-center text-black text-xl font-semibold font-sansation">
           Loading...
         </h2>
-        <p className="w-1/3 text-center text-black font-sansation">
+        {/* <p className="w-1/3 text-center text-black font-sansation">
           This may take a few seconds, please don't close this page.
-        </p>
+        </p> */}
       </div>
     </div>
   );

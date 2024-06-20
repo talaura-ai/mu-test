@@ -49,7 +49,7 @@ function App () {
               path="/assessment/:userId/dashboard"
               element={ <MyAssessments /> }
             />
-            <Route path="/" element={ <MyAssessments /> } />
+            <Route path="/" element={ <VerificationPage /> } />
           </Route>
         </Route>
       </Routes>

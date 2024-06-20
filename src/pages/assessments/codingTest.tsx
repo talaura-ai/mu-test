@@ -36,7 +36,9 @@ const CodingTest: React.FC<any> = (props) => {
   }, [dispatcher, assessmentId, testId, userId])
 
   const onTimeout = () => {
-    navigate(-1)
+    if (Number(assessmentModule.module?.time) > 0) {
+      navigate(-1)
+    }
   }
 
   return (

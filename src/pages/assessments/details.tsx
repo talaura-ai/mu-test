@@ -17,28 +17,28 @@ function AssessmentDetails () {
   const myAssessments = useAppSelector(getAssessmentsSelector)
   const [selectAssessment, setSelectAssessment] = React.useState<any>({});
 
-  const assessmentIdNew = "66716cae21292014904615c4"
-
   const onNextClicked = () => {
     setStartTestModal(false);
     console.log(selectedTest)
     if (selectedTest?.type === "Quiz") {
-      navigate(`/assessment/${userId}/${assessmentIdNew}/${selectedTest?._id}`);
+      navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}`);
     } else if (selectedTest?.type === "Sandbox") {
-      navigate(`/assessment/${userId}/${assessmentIdNew}/${selectedTest?._id}/coding`);
+      navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/coding`);
     } else if (selectedTest?.type === "Voice To Voice") {
-      navigate(`/assessment/${userId}/${assessmentIdNew}/${selectedTest?._id}/voice-to-text`);
+      navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/voice-to-text`);
     } else if (selectedTest?.type === "Voice to Text") {
-      navigate(`/assessment/${userId}/${assessmentIdNew}/${selectedTest?._id}/voice-to-text`);
+      navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/voice-to-text`);
     } else if (selectedTest?.type === "AI Video Interview") {
-      navigate(`/assessment/${userId}/${assessmentIdNew}/${selectedTest?._id}/video-interview`);
+      navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/video-interview`);
     }
   };
 
   React.useEffect(() => {
     if (assessmentId && myAssessments?.length) {
-      const data = myAssessments?.filter(v => v?._id === assessmentId)
-      setSelectAssessment(data?.[0])
+      const data = myAssessments?.filter(v => v?.assessmentId === assessmentId)
+      let assessmentData = [...data?.[0]?.module]
+      const newData = assessmentData?.sort((a: any, b: any) => Number(b?.position || 0) - Number(a?.position || 0));
+      setSelectAssessment({ module: newData })
     } else {
       setSelectAssessment({})
     }
@@ -77,8 +77,7 @@ function AssessmentDetails () {
             <div className="flex flex-col md:w-[25%] sm:w-full px-4">
               <span className="text-[20px] font-normal text-black font-sansation">Skills</span>
               <span className="text-[14px] font-medium text-[#BDBDBD] font-sansation">
-                Objective-C/Swift Proficiency, Offline Storage & Threading,
-                Performance Tuning, RESTful APIs Integration, Cloud Messaging.
+                { item?.skills?.join(", ") }
               </span>
             </div>
             <div className="flex sm:justify-around md:justify-between md:w-[35%] sm:w-full px-2">
