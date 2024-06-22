@@ -132,9 +132,9 @@ export default function DeviceConfigTestModal (props: any) {
                   </div>
                 </div>
               )) }
-              <div className="flex items-center" onClick={ () => { setIsChecboxClicked(!isChecboxClicked) } }>
-                <input type="checkbox" value="" checked={ isChecboxClicked } className="w-5 h-5 text-[#CC8448] bg-gray-100 border-gray-200 rounded accent-[#CC8448]" />
-                <label className="ms-2 font-medium text-[14px] text-black font-sansation">I Agree, to allow access to my these above elements</label>
+              <div className="flex items-center cursor-pointer" onClick={ () => { setIsChecboxClicked(!isChecboxClicked) } }>
+                <input type="checkbox" value="" checked={ isChecboxClicked } className="w-5 h-5 text-[#CC8448] bg-gray-100 border-gray-200 rounded accent-[#CC8448] cursor-pointer" />
+                <label className="ms-2 font-medium text-[14px] text-black font-sansation cursor-pointer">I Agree, to allow access to my these above elements</label>
               </div>
             </div>
 

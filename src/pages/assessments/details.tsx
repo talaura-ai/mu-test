@@ -32,6 +32,18 @@ function AssessmentDetails () {
       navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/video-interview`);
     }
   };
+  var elem: any = document.documentElement;
+  /* View in fullscreen */
+  function openFullscreen () {
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) { /* Safari */
+      elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) { /* IE11 */
+      elem.msRequestFullscreen();
+    }
+    onNextClicked()
+  }
 
   React.useEffect(() => {
     if (assessmentId && myAssessments?.length) {
@@ -126,7 +138,7 @@ function AssessmentDetails () {
           onClose={ () => {
             setStartTestModal(false);
           } }
-          onNextClicked={ onNextClicked }
+          onNextClicked={ openFullscreen }
           selectedTest={selectedTest}
         />
       ) }

@@ -8,24 +8,29 @@ import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 // import * as posenet from '@tensorflow-models/posenet';
 import Webcam from 'react-webcam';
+import { CameraOptions, useFaceDetection } from 'react-use-face-detection';
+import FaceDetection from '@mediapipe/face_detection';
+import { Camera } from '@mediapipe/camera_utils';
 import { toast } from "react-toastify";
 import usePageVisibility from "../../hooks/tabDetection";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
+import moment from "moment";
 // import * as cocoSsd from "@tensorflow-models/coco-ssd";
 // import "@tensorflow/tfjs";
 var count_facedetect = 0;
-
+const width = 650;
+const height = 650;
 const VideoTest = () => {
-  const webcamRef = useRef<any>(null);
+  // const webcamRef = useRef<any>(null);
   const elementRef = useRef<any>(null);
   const visibility = usePageVisibility()
-  console.log('visibility=>', visibility)
   let videoRef = useRef<any>();
   let canvasRef = useRef<any>();
   // const webcamRef=useRef(null);
   // const canvasRef=useRef(null);
   const navigate = useNavigate();
   const { userId } = useParams();
+  const chatEndRef: any = useRef(null);
 
   const noOfUser = 3;
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
@@ -33,6 +38,38 @@ const VideoTest = () => {
   );
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isRecording, setIsRecording] = useState(true);
+  const [faceProctoringData, setFaceProctoringData] = useState<any>([]);
+
+  const { webcamRef, boundingBox, isLoading, detected, facesDetected } = useFaceDetection({
+    faceDetectionOptions: {
+      model: 'short',
+    },
+    faceDetection: new FaceDetection.FaceDetection({
+      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/${file}`,
+    }),
+    camera: ({ mediaSrc, onFrame }: CameraOptions) =>
+      new Camera(mediaSrc, {
+        onFrame,
+        width,
+        height,
+      }),
+  });
+
+  useEffect(() => {
+    console.log(detected, facesDetected)
+    let dataUpdate = [...faceProctoringData]
+    dataUpdate.push(moment().format("HH:mm:ss") + " " + "Face detected: " + detected)
+    dataUpdate.push(moment().format("HH:mm:ss") + " " + "No. of faces detected: " + facesDetected)
+    setFaceProctoringData(dataUpdate)
+  }, [detected, facesDetected])
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [faceProctoringData]);
+
+  const scrollToBottom = () => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   // //Disable Right click
   // if (document.addEventListener) {
@@ -72,11 +109,11 @@ const VideoTest = () => {
   useEffect(() => {
     if (mediaRecorder) {
       const socket = io("ws://34.100.209.222:4000");
-      console.log("websocket");
+      // console.log("websocket");
       socket.on("connect", async () => {
-        console.log("client connected to websocket");
+        // console.log("client connected to websocket");
         mediaRecorder.addEventListener("dataavailable", (event) => {
-          console.log('dataavailable', event)
+          // console.log('dataavailable', event)
           if (event?.data?.size > 0) {
             console.log('packet-sent')
             socket.emit("packet-sent", event.data);
@@ -85,15 +122,15 @@ const VideoTest = () => {
         mediaRecorder.start(500);
       });
       socket.on("disconnect", () => {
-        console.log("disconnect", socket.id); // undefined
+        // console.log("disconnect", socket.id); // undefined
       });
       socket.on("connect_error", (error) => {
-        console.log("connect_error", error);
+        // console.log("connect_error", error);
       });
       socket.on("audioData", (arrayBuffer) => {
         setIsSpeaking(true)
         setIsRecording(false);
-        console.log('audioData')
+        // console.log('audioData')
         const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
         const audioUrl = URL.createObjectURL(blob);
 
@@ -106,13 +143,13 @@ const VideoTest = () => {
       });
       // openFullscreen()
       return () => {
-        console.log('RETURNED')
+        // console.log('RETURNED')
         socket.disconnect(); // Clean up the socket connection on component unmount
       };
     }
   }, [mediaRecorder]);
 
-  console.log(mediaRecorder, isRecording)
+  // console.log(mediaRecorder, isRecording)
   useEffect(() => {
     if (mediaRecorder && mediaRecorder.state !== "inactive") {
       if (isRecording) {
@@ -359,6 +396,7 @@ const VideoTest = () => {
               {/* <img src={ VideoCallUser } className="px-2" alt="left icon" /> */ }
               <Webcam
                 ref={ webcamRef }
+                forceScreenshotSourceSize
                 className="overflow-hidden rounded-xl bg-gray-200 mr-4 object-cover"
               // style={ {
               //   // position: "absolute",
@@ -420,7 +458,7 @@ const VideoTest = () => {
                   } }
                 /> */}
               </div>
-              <div className="absolute left-10 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation">
+              <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation">
                 Manisha
               </div>
               <div className="absolute right-6 bottom-4 text-white  px-4 py-1  ">
@@ -429,35 +467,24 @@ const VideoTest = () => {
             </div>
           </div>
         </div>
+
         <div className="flex flex-col w-[20%] bg-white shadow rounded-lg p-4">
-          {/* <div className=" flex justify-center w-full">
-            <img
-              src={ LanguageIcon }
-              className="px-2 bg-[#FFEFDF]"
-              alt="left icon"
-            />
-          </div>
-          <div className="flex ">
-            <img src={ ChatIcon } className="px-2" alt="left icon" />
-          </div> */}
-          <div className="flex h-1/2 w-full flex-col">
-            <div className="flex gap-2">
+          <div className="flex w-full flex-col h-[440px]">
+            <div className="flex gap-2 px-2 pb-2">
               <img src={ VoiceIcon } alt="icn" />
               <span className="text-xs text-gray-300 mt-2">CC/Subtitle </span>
             </div>
-            <div className="flex mx-10 bg-white ">
-              <span>
-                Hi how are you doing?
-                <br />
-                Im doing well how about you?
-              </span>
+            <div className="flex flex-col mx-2 bg-white overflow-y-scroll">
+              { faceProctoringData?.map((item: any, index: number) => (
+                <span key={ item + index }>
+                  { item }
+                </span>
+              )) }
+              <div ref={ chatEndRef } />
             </div>
           </div>
         </div>
       </div>
-      {/* <div className="flex justify-center py-6 font-sansation">
-        <img src={ Caption } alt="caption" />
-      </div> */}
       <div className="flex justify-center py-6 mt-4 font-sansation">
         <button
           className="flex justify-center bg-[#E04747] px-6 py-2 rounded-lg text-white font-semibold"
