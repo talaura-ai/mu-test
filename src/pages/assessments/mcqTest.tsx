@@ -96,19 +96,8 @@ function StartMCQTest () {
     }
   }
 
-  const getProgress = () => {
-    let answered = 0
-    moduleQuestions?.map((v: any) => {
-      if (v?.answer) {
-        answered++
-      }
-    })
-    return (answered * 100) / moduleQuestions?.length
-  }
-
   const onSubmission = (type: string) => {
     if (type === "submit") {
-      console.log('DATA=>', moduleQuestions)
       submitTestClicked()
     }
     setSubmitTest(false)
@@ -138,20 +127,18 @@ function StartMCQTest () {
     }
   }
 
+  const onReview = () => {
+    let updateQuestion = [...moduleQuestions]
+    updateQuestion[questionIndex] = { ...updateQuestion[questionIndex], review: !updateQuestion[questionIndex]?.review }
+    setModuleQuestions(updateQuestion)
+  }
+
   return (
     <>
-      <div className="sm:p-6 md:px-20 md:py-12 p-4">
+      <div className="md:px-20 md:pt-12 px-4">
         <TimerCounterWithProgress timestamp={ assessmentModule.module?.time || 0 } title={ assessmentModule.module?.name } onTimeout={ onTimeout } />
-        {/* <div className="flex items-center mb-10 px-4 font-sansation">
-          <div className="w-full bg-[#C7C6C0] rounded-full h-2.5 mb-4 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
-            <div
-              className="bg-gradient-to-r from-[#E5A971] to-[#F3BC84] h-2.5 rounded-full"
-              style={ { width: `${getProgress()}%` } }
-            ></div>
-          </div>
-        </div> */}
-        <div className="mb-6 flex md:flex-row flex-col font-sansation mt-10">
-          <div className="basis-[30%] w-full">
+        <div className="flex md:flex-row flex-col font-sansation mt-10">
+          <div className="basis-[30%] w-full md:mr-12">
             <div className="w-full bg-white border border-gray-200 rounded-lg shadow overflow-hidden">
               <div className="flex flex-row items-center mx-6 py-5 border-solid border-b-[3px] border-[#E6E6E6]">
                 <img
@@ -170,12 +157,17 @@ function StartMCQTest () {
                 <div className=" flex w-full items-center space-x-2 mt-2">
                   <div className="w-[12px] h-[12px] rounded-full bg-[#F3BC84]"></div>
                   <h5 className="text-[10px] font-normal text-[#B1B1B1]">
-                    Question analysis
+                    Answered
                   </h5>
                   <div className="w-[2px] min-h-[14px] bg-[#B1B1B1]"></div>
                   <div className="w-[12px] h-[12px] rounded-full border-[#B1B1B1] border-solid border-[2px]"></div>
                   <h5 className="text-[10px] font-normal text-[#B1B1B1]">
-                    Question analysis
+                    Not Answered
+                  </h5>
+                  <div className="w-[2px] min-h-[14px] bg-[#B1B1B1]"></div>
+                  <div className="w-[12px] h-[12px] rounded-full border-[#40B24B] bg-[#40B24B] border-solid border-[2px]"></div>
+                  <h5 className="text-[10px] font-normal text-[#B1B1B1]">
+                    Review
                   </h5>
                 </div>
                 <div className=" flex flex-wrap w-full gap-5 my-5">
@@ -184,6 +176,7 @@ function StartMCQTest () {
                       questionNo={ index + 1 }
                       checked={ question?.answer }
                       key={ question?._id }
+                      review={ question?.review }
                       directQuestionClicked={ directQuestionClicked }
                     />
                   )) }
@@ -198,44 +191,63 @@ function StartMCQTest () {
               </button>
             </div>
           </div>
-          <div className="basis-[70%]">
-            <div className="md:px-20 px-6 md:pt-0 pt-6">
-              <div className="flex">
-                <div>
-                  <h5 className="text-[22px] font-normal text-black select-none">
-                    Q{ questionIndex + 1 }.
-                  </h5>
+          <div className="basis-[70%] relative md:border-l-[2px] md:border-[#DCDCD9]">
+            <div className="mcq-q pb-44">
+              <div className="md:px-12 px-6 md:pt-0 pt-6">
+                <div className="flex">
+                  <div>
+                    <h5 className="text-[22px] font-normal text-black select-none">
+                      Q{ questionIndex + 1 }.
+                    </h5>
+                  </div>
+                  <div>
+                    <h5 className="text-[22px] font-normal text-black pl-[10px] select-none">
+                      { moduleQuestions?.[questionIndex]?.title || "" }
+                    </h5>
+                  </div>
                 </div>
-                <div>
-                  <h5 className="text-[22px] font-normal text-black pl-[10px] select-none">
-                    { moduleQuestions?.[questionIndex]?.title || "" }
-                  </h5>
+                <div className="space-y-5 mt-6 ml-10">
+                  { moduleQuestions?.[questionIndex]?.options?.map((option: any, index: number) => (
+                    <QuestionOptionBox key={ option } onSelection={ (v: any) => { onQuestionSelection(v) } } option={ option } index={ index } checked={ selectedQuestion } />
+                  )) }
                 </div>
-              </div>
-              <div className="space-y-5 mt-6 ml-10">
-                { moduleQuestions?.[questionIndex]?.options?.map((option: any, index: number) => (
-                  <QuestionOptionBox key={ option } onSelection={ (v: any) => { onQuestionSelection(v) } } option={ option } index={ index } checked={ selectedQuestion } />
-                )) }
               </div>
             </div>
-            <div className="flex w-full justify-between mt-20">
-              <button
-                type="button"
-                disabled={ disablePrevBtn }
-                onClick={ onPrevClicked }
-                className="md:mx-20 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
-              >
-                <FaArrowLeft className="mr-2" />
-                PREVIOUS
-              </button>
-              <button
-                type="button"
-                disabled={ disableNextBtn }
-                onClick={ onNextClicked }
-                className="md:mx-20 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
-              >
-                NEXT <FaArrowRight className="ml-2" />
-              </button>
+            <div className="w-full absolute bottom-0 left-0 right-0 bg-[#F9F7F0] pb-6 pt-6">
+              <div className="flex w-full md:justify-end justify-center mb-3">
+                <button
+                  type="button"
+                  onClick={ onReview }
+                  className="md:mx-20 mx-6 flex text-white bg-[#40B24B] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
+                >
+                  Review
+                </button>
+              </div>
+              <div className="flex w-full md:justify-between md:flex-row flex-col justify-center items-center md:gap-0 gap-4">
+                <button
+                  type="button"
+                  disabled={ disablePrevBtn }
+                  onClick={ onPrevClicked }
+                  className="md:mx-20 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
+                >
+                  <FaArrowLeft className="mr-2" />
+                  PREVIOUS
+                </button>
+                { moduleQuestions?.length - 1 === questionIndex ? <button
+                  type="button"
+                  onClick={ () => { setSubmitTest(true) } }
+                  className="md:mx-20 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg cursor-pointer"
+                >
+                  SUBMIT
+                </button> : <button
+                  type="button"
+                  disabled={ disableNextBtn }
+                  onClick={ onNextClicked }
+                  className="md:mx-20 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
+                >
+                  NEXT<FaArrowRight className="ml-2" />
+                </button> }
+              </div>
             </div>
           </div>
         </div>

@@ -12,7 +12,7 @@ export default function StartTestConfirmationModal (props: any) {
             {/*header*/ }
             <div className="relative flex items-center py-3 justify-center border-solid border-t-8 border-[#FFAC3A]">
               <h3 className="text-[24px] text-black font-semibold">
-                Application of Aptitude Test - 72
+                {props?.selectedTest?.name}
               </h3>
               <button
                 className="absolute border-0 text-3xl leading-none font-semibold outline-none top-0 right-6 bottom-0"

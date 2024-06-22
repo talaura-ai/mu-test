@@ -132,3 +132,8 @@ code {
 			transform: scale(0.8);
 	}
 }
+
+.mcq-q {
+  height: calc(100vh - 250px) !important;
+	overflow-y: scroll !important;
+}

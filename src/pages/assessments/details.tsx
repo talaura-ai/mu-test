@@ -127,6 +127,7 @@ function AssessmentDetails () {
             setStartTestModal(false);
           } }
           onNextClicked={ onNextClicked }
+          selectedTest={selectedTest}
         />
       ) }
     </>

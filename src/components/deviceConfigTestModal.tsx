@@ -21,6 +21,7 @@ const data = [
 export default function DeviceConfigTestModal (props: any) {
   const [cameraChecking, setCameraChecking] = useState(0);
   const [speedLaoding, setSpeedLaoding] = useState(true);
+  const [isChecboxClicked, setIsChecboxClicked] = useState(false);
   const [audioChecking, setAudioChecking] = useState(0);
   const [networkChecking, setNetworkChecking] = useState(0);
   const state = useNetworkState();
@@ -131,14 +132,14 @@ export default function DeviceConfigTestModal (props: any) {
                   </div>
                 </div>
               )) }
-              <div className="flex items-center">
-                <input type="checkbox" value="" className="w-5 h-5 text-[#CC8448] bg-gray-100 border-gray-200 rounded accent-[#CC8448]" />
+              <div className="flex items-center" onClick={ () => { setIsChecboxClicked(!isChecboxClicked) } }>
+                <input type="checkbox" value="" checked={ isChecboxClicked } className="w-5 h-5 text-[#CC8448] bg-gray-100 border-gray-200 rounded accent-[#CC8448]" />
                 <label className="ms-2 font-medium text-[14px] text-black font-sansation">I Agree, to allow access to my these above elements</label>
               </div>
             </div>
 
             <div className="flex items-center justify-center px-6 pb-6">
-              <button onClick={ () => { props?.onNextClicked() } } type="button" className="font-sansation text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center">
+              <button onClick={ () => { props?.onNextClicked() } } disabled={!isChecboxClicked} type="button" className={ `font-sansation text-white ${isChecboxClicked ? "bg-[#CC8448] hover:bg-[#CC8448]/80" : "bg-[#CC8448]/60 cursor-not-allowed"} focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center` }>
                 Next
               </button>
             </div>
