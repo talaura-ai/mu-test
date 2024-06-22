@@ -137,3 +137,6 @@ code {
   height: calc(100vh - 250px) !important;
 	overflow-y: scroll !important;
 }
+.Toastify__toast-container--top-center {
+	width: 400px !important;
+}

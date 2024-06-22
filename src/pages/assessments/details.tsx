@@ -7,6 +7,7 @@ import AssessmentCard from "../../components/assessmentCard";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { setAssessmentDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import { getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
+import { toast } from "react-toastify";
 
 function AssessmentDetails () {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ function AssessmentDetails () {
     }
   };
   // var elem: any = document.documentElement;
-  const elem:any = document.getElementById('fullscreenDiv');
+  const elem: any = document.getElementById('fullscreenDiv');
 
   /* View in fullscreen */
   function openFullscreen () {
@@ -46,6 +47,16 @@ function AssessmentDetails () {
     }
     onNextClicked()
   }
+
+  const checkDevTools = () => {
+    const widthThreshold = window.outerWidth - window.innerWidth > 10;
+    const heightThreshold = window.outerHeight - window.innerHeight > 121;
+    if (widthThreshold || heightThreshold) {
+      toast.error(`Alert: Your Dev Tools Opened, Please close them before proceed!`, {});
+    } else {
+      openFullscreen()
+    }
+  };
 
   React.useEffect(() => {
     if (assessmentId && myAssessments?.length) {
@@ -140,8 +151,8 @@ function AssessmentDetails () {
           onClose={ () => {
             setStartTestModal(false);
           } }
-          onNextClicked={ openFullscreen }
-          selectedTest={selectedTest}
+          onNextClicked={ checkDevTools }
+          selectedTest={ selectedTest }
         />
       ) }
     </>
