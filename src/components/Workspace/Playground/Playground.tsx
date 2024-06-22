@@ -15,6 +15,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getLanguagesDispatcher, getSendSubmissionDispatcher, getSubmissionStatusDispatcher } from "../../../store/slices/dashboard-slice/dashboard-dispatchers";
 import { getLanguageSelector } from "../../../store/slices/dashboard-slice/dashboard-selectors";
 import { selectiveLanguages, submissionStatuses, submissionStatusesColours } from "../../../constants";
+import { useNavigate } from "react-router-dom";
 export interface ISettings {
   fontSize: string;
   settingsModalIsOpen: boolean;
@@ -37,6 +38,7 @@ const customStyles = {
 };
 
 const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
+  const navigate = useNavigate();
   const [activeTestCase, setActiveTestCase] = useState<boolean>(true);
   let [userCode, setUserCode] = useState<string>(problem?.starterCode);
   let [codeOutput, setCodeOutput] = useState<string>("");
@@ -58,7 +60,7 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
     dropdownIsOpen: false,
   });
   const pid = "";
-  const handleSubmit = async () => {
+  const runCode = async () => {
     setCodeOutput("")
     setOutputError("")
     setActiveTestCase(true)
@@ -113,6 +115,10 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
     localStorage.setItem(`code-${pid}`, JSON.stringify(value));
   };
   console.log('submissionStatus=>', submissionStatus)
+
+  const handleSubmit = () => {
+    navigate(-1)
+  }
 
   return (
     <div className="flex flex-col relative overflow-x-hidden rounded font-sansation">
@@ -214,7 +220,7 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
               <div className="ml-auto flex items-center space-x-4">
                 <button
                   className="px-3 py-1.5 text-base font-medium items-center whitespace-nowrap transition-all focus:outline-none inline-flex bg-dark-fill-3  hover:bg-dark-fill-2 text-[#19aa4a] border rounded gap-2"
-                  onClick={ () => handleSubmit() }
+                  onClick={ () => runCode() }
                 >
                   <FaPlay />
                   Run Code
@@ -223,7 +229,7 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
                   className=" w-[100px] justify-center px-3 py-1.5 font-medium items-center transition-all focus:outline-none inline-flex text-base text-white bg-[#19aa4c] hover:bg-green-800 rounded"
                   onClick={ () => handleSubmit() }
                 >
-                  Confirm
+                  Submit
                 </button>
               </div>
             </div>
