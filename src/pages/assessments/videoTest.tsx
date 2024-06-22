@@ -12,6 +12,8 @@ import { toast } from "react-toastify";
 import usePageVisibility from "../../hooks/tabDetection";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
 import moment from "moment";
+import { v4 as uuidv4 } from "uuid";
+
 const width = 650;
 const height = 650;
 const VideoTest = () => {
@@ -26,11 +28,19 @@ const VideoTest = () => {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
   );
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isRecording, setIsRecording] = useState(true);
   const [cameraStats, setCameraStats] = useState(0);
   const [userMute, setUserMute] = useState(true);
   const [faceProctoringData, setFaceProctoringData] = useState<any>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [question, setQuestion] = useState({
+    title: "",
+    answer: ""
+  });
+
+  let speakTimeout: any = null
 
   const { webcamRef, boundingBox, isLoading, detected, facesDetected }: any = useFaceDetection({
     faceDetectionOptions: {
@@ -117,50 +127,163 @@ const VideoTest = () => {
 
 
   useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-      setMediaRecorder(new MediaRecorder(stream));
-    });
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then((stream) => {
+        setMediaRecorder(new MediaRecorder(stream, { mimeType: 'audio/webm; codecs=opus' }));
+      })
+      .catch((error) => {
+        console.error("Error accessing microphone:", error);
+        setError("Error accessing microphone. Please check your permissions.");
+      });
   }, []); // Setup mediaRecorder initially
 
+  // useEffect(() => {
+  //   if (mediaRecorder) {
+  //     const socket = io("ws://34.100.209.222:4000");
+  //     // console.log("websocket");
+  //     socket.on("connect", async () => {
+  //       // console.log("client connected to websocket");
+  //       mediaRecorder.addEventListener("dataavailable", (event) => {
+  //         // console.log('dataavailable', event)
+  //         if (event?.data?.size > 0) {
+  //           console.log('packet-sent')
+  //           socket.emit("packet-sent", event.data);
+  //         }
+  //       });
+  //       mediaRecorder.start(500);
+  //     });
+  //     socket.on("disconnect", () => {
+  //       // console.log("disconnect", socket.id); // undefined
+  //     });
+  //     socket.on("connect_error", (error) => {
+  //       // console.log("connect_error", error);
+  //     });
+  //     socket.on("audioData", (arrayBuffer) => {
+  //       setIsSpeaking(true)
+  //       setIsRecording(false);
+  //       // console.log('audioData')
+  //       const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
+  //       const audioUrl = URL.createObjectURL(blob);
+  //       const audioElement = new Audio(audioUrl);
+  //       audioElement.onended = () => {
+  //         setIsRecording(true)
+  //         setIsSpeaking(false)
+  //       }
+  //       audioElement.play();
+  //     });
+  //     return () => {
+  //       socket.disconnect();
+  //     };
+  //   }
+  // }, [mediaRecorder]);
+
   useEffect(() => {
-    if (mediaRecorder) {
-      const socket = io("ws://34.100.209.222:4000");
-      // console.log("websocket");
-      socket.on("connect", async () => {
-        // console.log("client connected to websocket");
-        mediaRecorder.addEventListener("dataavailable", (event) => {
-          // console.log('dataavailable', event)
-          if (event?.data?.size > 0) {
-            console.log('packet-sent')
-            socket.emit("packet-sent", event.data);
-          }
-        });
-        mediaRecorder.start(500);
-      });
-      socket.on("disconnect", () => {
-        // console.log("disconnect", socket.id); // undefined
-      });
-      socket.on("connect_error", (error) => {
-        // console.log("connect_error", error);
-      });
-      socket.on("audioData", (arrayBuffer) => {
-        setIsSpeaking(true)
-        setIsRecording(false);
-        // console.log('audioData')
-        const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
-        const audioUrl = URL.createObjectURL(blob);
-        const audioElement = new Audio(audioUrl);
-        audioElement.onended = () => {
-          setIsRecording(true)
-          setIsSpeaking(false)
+    if (mediaRecorder && userId) {
+      const audioElement = new Audio();
+      const newSocket = io("wss://talorexvoice.com", {
+        query: {
+          userId: userId
         }
-        audioElement.play();
+      });
+      console.log("socket id", newSocket.id);
+      newSocket.on("connect", () => {
+        console.log("connected to server");
+        mediaRecorder.start(500);
+        mediaRecorder.ondataavailable = async (event) => {
+          if (event?.data?.size > 0) {
+            console.log('START AI')
+            try {
+              const arrayBuffer = await event.data.arrayBuffer();
+              const base64String = arrayBufferToBase64(arrayBuffer);
+              newSocket.emit("media", { payload: base64String });
+              // audioElement?.pause();
+              // audioElement.currentTime = 0;
+            } catch (err) {
+              console.error("Failed to encode audio:", err);
+              setError("Failed to encode audio.");
+            }
+          }
+        };
+        newSocket.emit("start", { streamSid: newSocket.id, callSid: uuidv4() });
+      });
+      newSocket.on("question", (data) => {
+        console.log('question=>', data)
+        setQuestion({ ...question, ...data });
+      })
+      newSocket.on('answer', (data) => {
+        console.log('answer=>', data)
+        audioElement.pause();
+        audioElement.currentTime = 0;
+        setIsPlaying(true)
+      })
+      newSocket.on("audioData", (data) => {
+        const audioBlob = base64ToBlob(data.audio, "audio/mpeg");
+        const audioUrl = URL.createObjectURL(audioBlob);
+        console.log('audioUrl=>', audioUrl)
+        clearTimeout(speakTimeout)
+        setIsSpeaking(true)
+        // if (isPlaying) {
+        audioElement.pause();
+        audioElement.currentTime = 0;
+        audioElement.src = "";
+        speakTimeout = setTimeout(() => {
+          audioElement.src = audioUrl
+          setIsPlaying(true)
+          audioElement.play();
+        }, 2000)
+        // } else {
+        //   audioElement.src = audioUrl
+        //   setIsPlaying(true)
+        //   audioElement.play();
+        // }
+        audioElement.onended = () => {
+          setIsSpeaking(false)
+          setIsPlaying(false)
+        }
+      });
+
+      newSocket.on("disconnect", () => {
+        console.log("socket: disconnected from server");
+      });
+
+      newSocket.on("error", (error: string) => {
+        console.error("WebSocket error:", error);
+        setError("A WebSocket error occurred.");
       });
       return () => {
-        socket.disconnect();
+        mediaRecorder?.stop();
+        audioElement?.pause();
+        audioElement.currentTime = 0;
+        mediaRecorder.removeEventListener("dataavailable", () => { });
+        newSocket?.disconnect();
       };
     }
-  }, [mediaRecorder]);
+  }, [mediaRecorder, userId]);
+
+  function arrayBufferToBase64 (buffer: ArrayBuffer): string {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+  }
+
+  const base64ToBlob = (base64: string, type: string): Blob => {
+    const byteCharacters = atob(base64);
+    const byteArrays = [];
+    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+      const slice = byteCharacters.slice(offset, offset + 512);
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
+    return new Blob(byteArrays, { type });
+  };
 
   useEffect(() => {
     if (mediaRecorder && mediaRecorder.state !== "inactive") {
