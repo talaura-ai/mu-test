@@ -32,7 +32,9 @@ function AssessmentDetails () {
       navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/video-interview`);
     }
   };
-  var elem: any = document.documentElement;
+  // var elem: any = document.documentElement;
+  const elem:any = document.getElementById('fullscreenDiv');
+
   /* View in fullscreen */
   function openFullscreen () {
     if (elem.requestFullscreen) {
