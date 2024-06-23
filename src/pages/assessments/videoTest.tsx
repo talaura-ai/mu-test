@@ -13,6 +13,7 @@ import usePageVisibility from "../../hooks/tabDetection";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
 import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
+import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
 
 const width = 650;
 const height = 650;
@@ -28,6 +29,7 @@ const VideoTest = () => {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
   );
+  const [submitTestModal, setSubmitTestModal] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isRecording, setIsRecording] = useState(true);
@@ -310,6 +312,13 @@ const VideoTest = () => {
     facingMode: "user",
   };
 
+  const onSubmitTest = (type: string) => {
+    setSubmitTestModal(false)
+    if (type === "submit") {
+      navigate(`/assessment/${userId}/dashboard`)
+    }
+  }
+
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4">
       <TimerCounterWithProgress timestamp={ 20 || 0 } title={ "Video Round" } onTimeout={ onTimeout } />
@@ -391,11 +400,12 @@ const VideoTest = () => {
       <div className="flex justify-center py-6 mt-4 font-sansation">
         <button
           className="flex justify-center bg-[#E04747] px-6 py-2 rounded-lg text-white font-semibold"
-          onClick={ () => navigate(`/assessment/${userId}/dashboard`) }
+          onClick={ () => { setSubmitTestModal(true) } }
         >
           End Meet
         </button>
       </div>
+      { submitTestModal ? <ModuleConfirmationModal onPress={ (v) => { onSubmitTest(v) } } /> : null }
     </div>
   );
 };

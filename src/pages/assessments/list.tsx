@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { setAssessmentDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import { getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import moment from "moment";
-import { getExpiredIn } from "../../utils/helper";
+import { assessmentTotalTime, getExpiredIn } from "../../utils/helper";
 
 function MyAssessments () {
   const navigate = useNavigate();
@@ -74,12 +74,12 @@ function MyAssessments () {
           >
             <div className="w-[10px] md:h-[64px] sm:h-[130px] bg-gradient-to-r from-[#E5A971] to-[rgb(243,188,132)] rounded-r-xl absolute top-auto left-0 bottom-auto"></div>
             <div className="flex flex-col items-center justify-center py-6 md:w-[40%] sm:w-full">
-              <span className="text-[36px] font-semibold text-[#F2BC84] self-center leading-[38px] font-sansation">
-                A2
+              <span className="text-[36px] font-semibold text-[#F2BC84] self-center justify-center pr-4 pl-7 leading-[38px] font-sansation">
+                { item?.assessmentName || "" }
               </span>
-              <span className="text-[18px] font-semibold text-[#BDBDBD] self-center leading-[20px] font-sansation">
+              {/* <span className="text-[18px] font-semibold text-[#BDBDBD] self-center leading-[20px] font-sansation">
                 Sales Department
-              </span>
+              </span> */}
             </div>
             <div className="flex items-center sm:justify-around md:justify-between md:w-[40%] sm:w-full px-2">
               <div className="flex flex-col justify-center">
@@ -97,7 +97,7 @@ function MyAssessments () {
                   Duration
                 </span>
                 <span className="text-[16px] font-semibold text-black leading-[16px] font-sansation">
-                  120 minutes
+                  { assessmentTotalTime(item?.module) } minutes
                 </span>
               </div>
               <div className="flex flex-col justify-center">

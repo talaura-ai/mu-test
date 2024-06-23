@@ -1,5 +1,5 @@
-import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import UnlockNextIcon from "../../assets/svg/unlockNext.svg";
 import LockNextIcon from "../../assets/svg/lockIcon.svg";
 import StartTestConfirmationModal from "../../components/startTestConfirmationModal";
@@ -17,18 +17,26 @@ function AssessmentDetails () {
   const { assessmentId, userId } = useParams();
   const myAssessments = useAppSelector(getAssessmentsSelector)
   const [selectAssessment, setSelectAssessment] = React.useState<any>({});
+  const location = useLocation();
+
+  useEffect(() => {
+    if (userId) {
+      dispatcher(setAssessmentDispatcher({ userId }))
+    }
+  }, [location]);
 
   const onNextClicked = () => {
     setStartTestModal(false);
-    if (selectedTest?.type === "Quiz") {
+    const type = String(selectedTest?.type).toLocaleLowerCase()
+    if (type === "Quiz"?.toLocaleLowerCase()) {
       navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}`);
-    } else if (selectedTest?.type === "Sandbox") {
+    } else if (type === "Sandbox"?.toLocaleLowerCase()) {
       navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/coding`);
-    } else if (selectedTest?.type === "Voice To Voice") {
+    } else if (type === "Voice To Voice"?.toLocaleLowerCase()) {
       navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/voice-to-text`);
-    } else if (selectedTest?.type === "Voice To Text") {
+    } else if (type === "Voice To Text"?.toLocaleLowerCase()) {
       navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/voice-to-text`);
-    } else if (selectedTest?.type === "AI Video Interview") {
+    } else if (type === "AI Video Interview"?.toLocaleLowerCase()) {
       navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/video-interview`);
     }
   };
@@ -118,7 +126,7 @@ function AssessmentDetails () {
                   Weightage
                 </span>
                 <span className="text-[20px] font-semibold text-[#BDBDBD] min-w-[50px] border-b border-[#E5A971] font-sansation">
-                  0%
+                  { item?.weightage || 0 }%
                 </span>
               </div>
               <div className="flex flex-col text-center">
@@ -131,7 +139,12 @@ function AssessmentDetails () {
               </div>
             </div>
             <div className="flex items-center justify-center py-6 md:w-[15%] sm:w-full">
-              <button
+              { item?.status === "Completed" ? <button
+                type="button"
+                className="text-white bg-[#CC8448]/80 font-sansation tracking-wide font-medium rounded-lg text-md px-6 py-2.5 text-center inline-flex items-center cursor-not-allowed"
+              >
+                Completed
+              </button> : <button
                 type="button"
                 onClick={ () => {
                   setStartTestModal(true);
@@ -140,7 +153,7 @@ function AssessmentDetails () {
                 className="text-white bg-[#CC8448] hover:bg-[#CC8448]/80 font-sansation focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center"
               >
                 Next
-              </button>
+              </button> }
             </div>
           </div>
         )) }

@@ -42,9 +42,9 @@ const CommonLayout = () => {
 								</span>
 							</a>
 						</div>
-						<div className="flex items-center">
+						{/* <div className="flex items-center">
 							<img src={ MiddleLogo } className="bg-blend-multiply h-[35px]" />
-						</div>
+						</div> */}
 						<div className="flex items-center">
 							<div className="flex items-center md:mr-8">
 								<div className="flex items-center">
@@ -53,7 +53,7 @@ const CommonLayout = () => {
 										<img className="w-8 h-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo" />
 									</button>
 									<p className="text-sm font-semibold font-sansation text-gray-900 ml-2" role="none">
-										{ myAssessments && myAssessments?.[0]?.name || "" }
+										{ myAssessments && myAssessments?.[0]?.name || "Candidate" }
 									</p>
 								</div>
 							</div>

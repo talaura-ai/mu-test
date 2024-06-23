@@ -12,3 +12,11 @@ export const getExpiredIn = (startDate: any, endDate: any) => {
 }
 
 export const alphabetArray = [...Array(26)].map((_, i) => String.fromCharCode(65 + i));
+
+export const assessmentTotalTime = (module: any) => {
+  let sum = 0
+  module?.map((v: any) => {
+    sum = sum + v?.time || 0
+  })
+  return sum
+}

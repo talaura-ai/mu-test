@@ -5,7 +5,7 @@ import ExpireIcon from "../assets/svg/expireIcon.svg"
 import React from "react";
 import { useAppSelector } from "../store/hooks";
 import { getAssessmentsSelector } from "../store/slices/dashboard-slice/dashboard-selectors";
-import { getExpiredIn } from "../utils/helper";
+import { assessmentTotalTime, getExpiredIn } from "../utils/helper";
 import moment from "moment";
 
 function AssessmentCard () {
@@ -16,7 +16,7 @@ function AssessmentCard () {
 
   React.useEffect(() => {
     if (assessmentId && myAssessments?.length) {
-      const data = myAssessments?.filter(v => v?._id === assessmentId)
+      const data = myAssessments?.filter(v => v?.assessmentId === assessmentId)
       setSelectAssessment(data?.[0])
     } else {
       setSelectAssessment({})
@@ -50,7 +50,7 @@ function AssessmentCard () {
               Duration
             </span>
             <span className="text-[16px] font-semibold text-black leading-[16px] font-sansation">
-              120 minutes
+              {assessmentTotalTime(selectAssessment?.module)} minutes
             </span>
           </div>
           <div className="flex flex-col justify-center mb-4">
