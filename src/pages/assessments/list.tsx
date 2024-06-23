@@ -20,9 +20,12 @@ function MyAssessments () {
 
   const onNextClicked = () => {
     setDeviceConfigModal(false);
-    navigate(`/assessment/${userId}/${selectAssessment?.assessmentId}/share-details`);
+    if (selectAssessment && selectAssessment?.question && selectAssessment?.question?.[0]) {
+      navigate(`/assessment/${userId}/${selectAssessment?.assessmentId}/share-details`);
+    } else {
+      navigate(`/assessment/${userId}/${selectAssessment?.assessmentId}/modules`);
+    }
   };
-
   React.useEffect(() => {
     if (userId) {
       dispatcher(setAssessmentDispatcher({ userId }));

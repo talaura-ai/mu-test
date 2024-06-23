@@ -14,6 +14,7 @@ import {
 import { toast } from "react-toastify";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
+import { htmlToText } from 'html-to-text';
 
 const VoiceToText = () => {
   const dispatcher = useAppDispatch();
@@ -115,12 +116,28 @@ const VoiceToText = () => {
       }
     }
   };
+  const getAnswered = () => {
+    return moduleQuestions?.map((v: any) => {
+      if (v?.answer) {
+        let text = htmlToText(v?.answer, {
+          wordwrap: 130,
+        })
+        text = text?.replace(/\n/g, ' ')?.trim();
+        text = text?.replace(/\s+/g, ' ')?.trim();
+        return {
+          ...v, answer: text
+        }
+      } else {
+        return v
+      }
+    })
+  }
   const submitTest = async () => {
     try {
       const res = await dispatcher(
         getModuleSubmissionDispatcher({
           moduleId: testId,
-          question: moduleQuestions,
+          question: getAnswered(),
         })
       );
       if (res?.payload.data?.status) {

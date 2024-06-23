@@ -147,11 +147,12 @@ function AssessmentDetails () {
                 Completed
               </button> : <button
                 type="button"
+                disabled={ item?.isLocked }
                 onClick={ () => {
                   setStartTestModal(true);
                   setSelectedTest(item);
                 } }
-                className="text-white bg-[#CC8448] hover:bg-[#CC8448]/80 font-sansation focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center"
+                className={ `text-white bg-[#CC8448] hover:bg-[#CC8448]/80 ${item?.isLocked ? "bg-[#CC8448]/80 cursor-not-allowed" : ""} font-sansation focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center` }
               >
                 Next
               </button> }
