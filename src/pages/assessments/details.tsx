@@ -20,14 +20,13 @@ function AssessmentDetails () {
 
   const onNextClicked = () => {
     setStartTestModal(false);
-    console.log(selectedTest)
     if (selectedTest?.type === "Quiz") {
       navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}`);
     } else if (selectedTest?.type === "Sandbox") {
       navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/coding`);
     } else if (selectedTest?.type === "Voice To Voice") {
       navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/voice-to-text`);
-    } else if (selectedTest?.type === "Voice to Text") {
+    } else if (selectedTest?.type === "Voice To Text") {
       navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/voice-to-text`);
     } else if (selectedTest?.type === "AI Video Interview") {
       navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/video-interview`);
@@ -38,12 +37,12 @@ function AssessmentDetails () {
 
   /* View in fullscreen */
   function openFullscreen () {
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if (elem.webkitRequestFullscreen) { /* Safari */
-      elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) { /* IE11 */
-      elem.msRequestFullscreen();
+    if (elem?.requestFullscreen) {
+      elem?.requestFullscreen();
+    } else if (elem?.webkitRequestFullscreen) { /* Safari */
+      elem?.webkitRequestFullscreen();
+    } else if (elem?.msRequestFullscreen) { /* IE11 */
+      elem?.msRequestFullscreen();
     }
     onNextClicked()
   }
