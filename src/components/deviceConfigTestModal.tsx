@@ -71,12 +71,19 @@ export default function DeviceConfigTestModal (props: any) {
       return cameraChecking
     }
     if (name === "Internet") {
-      return networkChecking
+      return speedLaoding ? 0 : networkChecking
     }
     if (name === "Screen Sharing") {
       return 1
     }
     return 0
+  }
+
+  const getBtnStatus = () => {
+    if (!isChecboxClicked || !(!speedLaoding && networkChecking === 1) || !(cameraChecking === 1) || !(audioChecking === 1)) {
+      return true
+    }
+    return false
   }
 
   return (
@@ -139,7 +146,7 @@ export default function DeviceConfigTestModal (props: any) {
             </div>
 
             <div className="flex items-center justify-center px-6 pb-6">
-              <button onClick={ () => { props?.onNextClicked() } } disabled={!isChecboxClicked} type="button" className={ `font-sansation text-white ${isChecboxClicked ? "bg-[#CC8448] hover:bg-[#CC8448]/80" : "bg-[#CC8448]/60 cursor-not-allowed"} focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center` }>
+              <button onClick={ () => { props?.onNextClicked() } } disabled={ getBtnStatus() } type="button" className={ `font-sansation text-white ${!getBtnStatus() ? "bg-[#CC8448] hover:bg-[#CC8448]/80" : "bg-[#CC8448]/60 cursor-not-allowed"} focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center` }>
                 Next
               </button>
             </div>
