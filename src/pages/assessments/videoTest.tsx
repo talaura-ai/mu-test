@@ -9,26 +9,27 @@ import { CameraOptions, useFaceDetection } from 'react-use-face-detection';
 import FaceDetection from '@mediapipe/face_detection';
 import { Camera } from '@mediapipe/camera_utils';
 import { toast } from "react-toastify";
-import usePageVisibility from "../../hooks/tabDetection";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
 import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { getAssessmentModuleSelector, getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
+import { getModuleSubmissionDispatcher, setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 
 const width = 650;
 const height = 650;
 const VideoTest = () => {
   // const webcamRef = useRef<any>(null);
-  const visibility = usePageVisibility()
-  let videoRef = useRef<any>();
-  let canvasRef = useRef<any>();
   const navigate = useNavigate();
-  const { userId } = useParams();
+  const { assessmentId, testId, userId } = useParams();
   const chatEndRef: any = useRef(null);
-
+  const myAssessments = useAppSelector(getAssessmentsSelector);
+  const dispatcher = useAppDispatch();
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
   );
+  const assessmentModule = useAppSelector(getAssessmentModuleSelector);
   const [submitTestModal, setSubmitTestModal] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -41,7 +42,8 @@ const VideoTest = () => {
     title: "",
     answer: ""
   });
-
+  const [conversationAns, setConversationAns] = useState<string>("");
+  const [moduleQuestions, setModuleQuestions] = useState<any>([]);
   const [aiChats, setAIChat] = useState<any>([]);
 
   let speakTimeout: any = null
@@ -60,7 +62,7 @@ const VideoTest = () => {
         height,
       }),
   });
-
+  console.log('assessmentModule-', assessmentModule)
   useEffect(() => {
     console.log(detected, facesDetected)
     let dataUpdate = [...faceProctoringData]
@@ -76,6 +78,23 @@ const VideoTest = () => {
   useEffect(() => {
     scrollToBottom();
   }, [aiChats]);
+
+  useEffect(() => {
+    if (assessmentModule?.module?.question) {
+      const questions = assessmentModule?.module?.question?.map((v: any) => { return { ...v, answer: v?.answer ? v?.answer : "" } })
+      setModuleQuestions(questions);
+    }
+  }, [assessmentModule]);
+
+  useEffect(() => {
+    dispatcher(
+      setAssessmentModuleDispatcher({
+        moduleId: testId,
+        candidateId: userId,
+        assessmentId: assessmentId,
+      })
+    );
+  }, [dispatcher, assessmentId, testId, userId]);
 
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -140,46 +159,6 @@ const VideoTest = () => {
       });
   }, []); // Setup mediaRecorder initially
 
-  // useEffect(() => {
-  //   if (mediaRecorder) {
-  //     const socket = io("ws://34.100.209.222:4000");
-  //     // console.log("websocket");
-  //     socket.on("connect", async () => {
-  //       // console.log("client connected to websocket");
-  //       mediaRecorder.addEventListener("dataavailable", (event) => {
-  //         // console.log('dataavailable', event)
-  //         if (event?.data?.size > 0) {
-  //           console.log('packet-sent')
-  //           socket.emit("packet-sent", event.data);
-  //         }
-  //       });
-  //       mediaRecorder.start(500);
-  //     });
-  //     socket.on("disconnect", () => {
-  //       // console.log("disconnect", socket.id); // undefined
-  //     });
-  //     socket.on("connect_error", (error) => {
-  //       // console.log("connect_error", error);
-  //     });
-  //     socket.on("audioData", (arrayBuffer) => {
-  //       setIsSpeaking(true)
-  //       setIsRecording(false);
-  //       // console.log('audioData')
-  //       const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
-  //       const audioUrl = URL.createObjectURL(blob);
-  //       const audioElement = new Audio(audioUrl);
-  //       audioElement.onended = () => {
-  //         setIsRecording(true)
-  //         setIsSpeaking(false)
-  //       }
-  //       audioElement.play();
-  //     });
-  //     return () => {
-  //       socket.disconnect();
-  //     };
-  //   }
-  // }, [mediaRecorder]);
-
   useEffect(() => {
     if (mediaRecorder && userId) {
       const audioElement = new Audio();
@@ -190,7 +169,8 @@ const VideoTest = () => {
       });
       console.log("socket id", newSocket.id);
       newSocket.on("connect", () => {
-        console.log("connected to server");
+        console.log("connected to server", { title: moduleQuestions?.[0]?.title, name: myAssessments && myAssessments?.[0]?.name });
+        newSocket.emit("prompt", { title: moduleQuestions?.[0]?.title, name: myAssessments && myAssessments?.[0]?.name })
         mediaRecorder.start(500);
         mediaRecorder.ondataavailable = async (event) => {
           if (event?.data?.size > 0) {
@@ -210,19 +190,25 @@ const VideoTest = () => {
         newSocket.emit("start", { streamSid: newSocket.id, callSid: uuidv4() });
       });
       newSocket.on("question", (data) => {
-        console.log('question=>', data)
+        console.log('conversationAns question=>', data)
         setQuestion({ ...question, ...data });
         setAIChat((prev: any) => {
           return [...prev, { type: 'ai', text: data?.title }]
         })
+        setConversationAns((prev) => {
+          return prev + `AI:${data?.title} `
+        })
       })
       newSocket.on('answer', (data) => {
-        console.log('answer=>', data)
+        console.log('conversationAns answer=>', data)
         audioElement.pause();
         audioElement.currentTime = 0;
         setIsPlaying(true)
         setAIChat((prev: any) => {
           return [...prev, { type: 'user', text: data?.answer }]
+        })
+        setConversationAns((prev) => {
+          return prev + `User:${data?.answer} `
         })
       })
 
@@ -315,9 +301,29 @@ const VideoTest = () => {
   const onSubmitTest = (type: string) => {
     setSubmitTestModal(false)
     if (type === "submit") {
-      navigate(`/assessment/${userId}/dashboard`)
+      submitTest()
     }
   }
+
+  const submitTest = async () => {
+    try {
+      const res = await dispatcher(
+        getModuleSubmissionDispatcher({
+          moduleId: testId,
+          question: [{ ...moduleQuestions?.[0], answer: conversationAns }]
+        })
+      );
+      if (res?.payload.data?.status) {
+        toast.success(`${assessmentModule?.module?.name} completed successfully!`, {});
+        navigate(-1)
+      } else {
+        toast.error("Oops! Submission is failed", {});
+      }
+    } catch (error) {
+      toast.error("Oops! Internal server error", {});
+      console.log("error=>", error);
+    }
+  };
 
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4">

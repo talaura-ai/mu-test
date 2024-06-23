@@ -70,7 +70,7 @@ const CodingTest: React.FC<any> = (props) => {
           ></div>
         </div>
       </div> */}
-      <Workspace problem={ moduleQuestions } />
+      <Workspace problem={ moduleQuestions } moduleData={ { ...assessmentModule, ...moduleQuestions, } } />
     </div>
   );
 };

@@ -3,7 +3,7 @@ import Split from "react-split";
 import ProblemDescription from "./ProblemDescription/ProblemDescription";
 import Playground from "./Playground/Playground";
 
-const Workspace: React.FC<any> = ({ problem }) => {
+const Workspace: React.FC<any> = ({ problem, moduleData }) => {
   const [success, setSuccess] = useState(false);
   const [solved, setSolved] = useState(false);
 
@@ -13,6 +13,7 @@ const Workspace: React.FC<any> = ({ problem }) => {
       <div className="bg-white rounded-xl overflow-hidden ">
         <Playground
           problem={problem}
+          moduleData={moduleData}
           setSuccess={setSuccess}
           setSolved={setSolved}
         />

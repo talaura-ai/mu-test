@@ -12,10 +12,10 @@ import { IoIosArrowDown } from "react-icons/io";
 import { FaPlay } from "react-icons/fa6";
 import { Base64 } from "js-base64";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getLanguagesDispatcher, getSendSubmissionDispatcher, getSubmissionStatusDispatcher } from "../../../store/slices/dashboard-slice/dashboard-dispatchers";
+import { getLanguagesDispatcher, getModuleSubmissionDispatcher, getSendSubmissionDispatcher, getSubmissionStatusDispatcher } from "../../../store/slices/dashboard-slice/dashboard-dispatchers";
 import { getLanguageSelector } from "../../../store/slices/dashboard-slice/dashboard-selectors";
 import { selectiveLanguages, submissionStatuses, submissionStatusesColours } from "../../../constants";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 export interface ISettings {
   fontSize: string;
   settingsModalIsOpen: boolean;
@@ -37,7 +37,7 @@ const customStyles = {
   }),
 };
 
-const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
+const Playground: React.FC<any> = ({ problem, setSuccess, setSolved, moduleData }) => {
   const navigate = useNavigate();
   const [activeTestCase, setActiveTestCase] = useState<boolean>(true);
   let [userCode, setUserCode] = useState<string>(problem?.starterCode);
@@ -47,8 +47,8 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
   const dispatcher = useAppDispatch()
   const languages = useAppSelector(getLanguageSelector);
   const fontSize = "16px";
+  const { assessmentId, testId, userId } = useParams();
   const [selectedOption, setSelectedOption] = useState<any>(selectiveLanguages?.[4]);
-
   const options = languages?.map((language: any) => ({
     value: language.id,
     label: language.name,
@@ -114,10 +114,30 @@ const Playground: React.FC<any> = ({ problem, setSuccess, setSolved }) => {
     console.log(value);
     localStorage.setItem(`code-${pid}`, JSON.stringify(value));
   };
-  console.log('submissionStatus=>', submissionStatus)
 
   const handleSubmit = () => {
-    navigate(-1)
+    submitTestClicked()
+  }
+
+  const submitTestClicked = async () => {
+    let questions = [...moduleData.module?.question]
+    try {
+      const res = await dispatcher(getModuleSubmissionDispatcher({
+        moduleId: testId,
+        question: questions?.map((v:any)=>{
+          return {...v, answer: v?.expectedAnswer}
+        })
+      }))
+      if (res?.payload.data?.status) {
+        toast.success(`${moduleData.module?.name} completed successfully!`, {});
+        navigate(-1)
+      } else {
+        toast.error("Oops! Submission is failed", {});
+      }
+    } catch (error) {
+      console.log('error=>', error)
+      toast.error("Oops! Internal server error", {});
+    }
   }
 
   return (

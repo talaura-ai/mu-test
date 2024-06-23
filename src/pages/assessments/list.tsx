@@ -32,6 +32,17 @@ function MyAssessments () {
     }
   }, [dispatcher, userId]);
 
+  const getAssessmentStatus = (modules: any) => {
+    let flag = true
+    if (modules && modules?.length) {
+      modules?.map((v: any) => {
+        if (v?.status !== "Completed") {
+          flag = false
+        }
+      })
+    }
+    return flag
+  }
   return (
     <>
       { deviceConfigModal && (
@@ -116,13 +127,14 @@ function MyAssessments () {
             <div className="flex items-center justify-center py-6 md:w-[20%] sm:w-full">
               <button
                 type="button"
+                disabled={ getAssessmentStatus(item?.module) }
                 onClick={ () => {
                   setDeviceConfigModal(true);
                   setSelectAssessment(item);
                 } }
-                className="text-white font-sansation bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center"
+                className={ `text-white font-sansation bg-[#CC8448] hover:bg-[#CC8448]/80 ${getAssessmentStatus(item?.module) ? "bg-[#CC8448]/80 cursor-not-allowed px-6" : "px-12"} focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md py-2.5 text-center inline-flex items-center` }
               >
-                Start
+                { getAssessmentStatus(item?.module) ? "Completed" : "Start" }
               </button>
             </div>
           </div>
