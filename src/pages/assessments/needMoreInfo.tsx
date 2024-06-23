@@ -100,7 +100,7 @@ function PersonNeedMoreInfo () {
                 />
                 { v?.isValid ? (
                   <p className="mt-1 text-sm text-[#FB2121] font-sansation">
-                    Required
+                    { `Please enter valid ${v?.name}` }
                   </p>
                 ) : null }
               </div>

@@ -165,7 +165,7 @@ function StartMCQTest () {
                     Not Answered
                   </h5>
                   <div className="w-[2px] min-h-[14px] bg-[#B1B1B1]"></div>
-                  <div className="w-[12px] h-[12px] rounded-full border-[#40B24B] bg-[#40B24B] border-solid border-[2px]"></div>
+                  <div className="w-[12px] h-[12px] rounded-full border-[#F15C2E] bg-[#F15C2E] border-solid border-[2px]"></div>
                   <h5 className="text-[10px] font-normal text-[#B1B1B1]">
                     Review
                   </h5>
@@ -218,7 +218,7 @@ function StartMCQTest () {
                 <button
                   type="button"
                   onClick={ onReview }
-                  className="md:mx-20 mx-6 flex text-white bg-[#40B24B] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
+                  className="md:mx-20 mx-6 flex text-white bg-[#F15C2E] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
                 >
                   Review
                 </button>
