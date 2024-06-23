@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { setAssessmentDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import { getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import { toast } from "react-toastify";
+import CompletedIcon from "../../assets/svg/completedIcon.svg"
 
 function AssessmentDetails () {
   const navigate = useNavigate();
@@ -95,11 +96,11 @@ function AssessmentDetails () {
               <div className="w-[10px] md:h-[64px] sm:h-[130px] bg-gradient-to-r from-[#E5A971] to-[rgb(243,188,132)] rounded-r-xl"></div>
             </div>
             <div className="absolute -top-6 -left-4">
-              { !item?.isLocked ? (
+              { item?.status === "Completed" ? <img src={ CompletedIcon } /> : (!item?.isLocked ? (
                 <img src={ UnlockNextIcon } />
               ) : (
                 <img src={ LockNextIcon } />
-              ) }
+              )) }
             </div>
             <div className="flex flex-col justify-center py-4 md:w-[30%] sm:w-full pr-4 pl-7">
               <span className="text-[22px] font-semibold text-[#F2BC84] font-sansation">
