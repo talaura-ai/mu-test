@@ -13,6 +13,7 @@ import {
 } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import { toast } from "react-toastify";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
+import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
 
 const VoiceToText = () => {
   const dispatcher = useAppDispatch();
@@ -24,12 +25,14 @@ const VoiceToText = () => {
   const [currentIndex, setCurrentIndex] = React.useState<any>(0);
   const [isSpeaking, setIsSpeaking] = React.useState<boolean>(false);
   const [editorState, setEditorState] = React.useState(EditorState.createEmpty())
+  const [submitTestModal, setSubmitTestModal] = React.useState(false)
 
   console.log("assessmentModule---TEXT", assessmentModule);
 
   React.useEffect(() => {
     if (assessmentModule?.module?.question) {
-      setModuleQuestions(assessmentModule?.module?.question);
+      const questions = assessmentModule?.module?.question?.map((v: any) => { return { ...v, answer: v?.answer ? v?.answer : "" } })
+      setModuleQuestions(questions);
       if (assessmentModule?.module?.question?.length && assessmentModule?.module?.question?.[0]?.answer) {
         setEditorState(getEditorData(assessmentModule?.module?.question?.[0]?.answer))
       }
@@ -124,13 +127,20 @@ const VoiceToText = () => {
         toast.success(`${assessmentModule?.module?.name} completed successfully!`, {});
         navigate(-1)
       } else {
-        toast.error("Oops! Failed", {});
+        toast.error("Oops! Submission is failed", {});
       }
     } catch (error) {
       toast.error("Oops! Internal server error", {});
       console.log("error=>", error);
     }
   };
+
+  const onSubmitTest = (type: string) => {
+    setSubmitTestModal(false)
+    if (type === "submit") {
+      submitTest()
+    }
+  }
 
   const onTimeout = () => {
     if (Number(assessmentModule.module?.time) > 0) {
@@ -190,7 +200,7 @@ const VoiceToText = () => {
         <div className="flex items-center justify-between py-6 px-2 w-3/5 self-end  ">
           <button
             onClick={ () => {
-              submitTest();
+              setSubmitTestModal(true)
             } }
             type="button"
             className="font-sansation text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2.5 text-center inline-flex items-center"
@@ -199,7 +209,7 @@ const VoiceToText = () => {
           </button>
           { moduleQuestions?.length - 1 === currentIndex ? <button
             onClick={ () => {
-              submitTest();
+              setSubmitTestModal(true)
             } }
             disabled={ isSpeaking }
             type="button"
@@ -226,6 +236,7 @@ const VoiceToText = () => {
           } }
         />
       ) : null }
+      { submitTestModal ? <ModuleConfirmationModal onPress={ (v) => { onSubmitTest(v) } } /> : null }
     </div>
   );
 };

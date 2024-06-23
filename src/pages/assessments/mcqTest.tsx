@@ -25,7 +25,8 @@ function StartMCQTest () {
 
   React.useEffect(() => {
     if (assessmentModule?.module?.question) {
-      setModuleQuestions(assessmentModule?.module?.question)
+      const questions = assessmentModule?.module?.question?.map((v: any) => { return { ...v, answer: "" } })
+      setModuleQuestions(questions)
       setQuestionIndex(0)
     }
   }, [assessmentModule])
@@ -113,7 +114,7 @@ function StartMCQTest () {
         toast.success(`${assessmentModule.module?.name} completed successfully!`, {});
         navigate(-1)
       } else {
-        toast.error("Oops! Failed", {});
+        toast.error("Oops! Submission is failed", {});
       }
     } catch (error) {
       console.log('error=>', error)

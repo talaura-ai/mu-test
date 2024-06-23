@@ -127,7 +127,6 @@ const VideoTest = () => {
     };
   }, []);
 
-
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true })
       .then((stream) => {
