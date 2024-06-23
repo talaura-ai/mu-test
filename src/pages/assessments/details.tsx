@@ -119,7 +119,7 @@ function AssessmentDetails () {
                   Weightage
                 </span>
                 <span className="text-[20px] font-semibold text-[#BDBDBD] min-w-[50px] border-b border-[#E5A971] font-sansation">
-                  25%
+                  0%
                 </span>
               </div>
               <div className="flex flex-col text-center">

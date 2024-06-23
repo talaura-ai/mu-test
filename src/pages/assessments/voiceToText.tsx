@@ -1,5 +1,9 @@
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { ContentState, EditorState, convertFromHTML, convertToRaw } from 'draft-js';
+import { Editor } from 'react-draft-wysiwyg';
+import draftToHtml from 'draftjs-to-html';
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import ModuletestStartModal from "../../components/Modals/testStartModal";
@@ -19,14 +23,27 @@ const VoiceToText = () => {
   const [startTest, setStartTest] = React.useState(false);
   const [currentIndex, setCurrentIndex] = React.useState<any>(0);
   const [isSpeaking, setIsSpeaking] = React.useState<boolean>(false);
+  const [editorState, setEditorState] = React.useState(EditorState.createEmpty())
 
   console.log("assessmentModule---TEXT", assessmentModule);
 
   React.useEffect(() => {
     if (assessmentModule?.module?.question) {
       setModuleQuestions(assessmentModule?.module?.question);
+      if (assessmentModule?.module?.question?.length && assessmentModule?.module?.question?.[0]?.answer) {
+        setEditorState(getEditorData(assessmentModule?.module?.question?.[0]?.answer))
+      }
     }
   }, [assessmentModule]);
+
+  const getEditorData = (data: any) => {
+    const blocksFromHTML = convertFromHTML(data)
+    const contentState = ContentState.createFromBlockArray(
+      blocksFromHTML.contentBlocks,
+      blocksFromHTML.entityMap
+    )
+    return EditorState.createWithContent(contentState)
+  }
 
   React.useEffect(() => {
     dispatcher(
@@ -80,28 +97,21 @@ const VoiceToText = () => {
   };
 
   const onNextClicked = (i: any) => {
-    console.log(i + 1, moduleQuestions?.length - 1);
     const index = i + 1;
     if (index < moduleQuestions?.length) {
       playText(moduleQuestions?.[index]?.title);
       setCurrentIndex((prev: any) => index);
+      if (moduleQuestions?.[index]?.answer) {
+        setEditorState(getEditorData(moduleQuestions?.[index]?.answer))
+      } else {
+        setEditorState(EditorState.createEmpty())
+      }
     } else {
-      console.log("RREEE", index, moduleQuestions?.length);
       if (moduleQuestions?.length > 0) {
         submitTest();
       }
     }
   };
-
-  const onChange = (e: any) => {
-    let questions = [...moduleQuestions];
-    questions[currentIndex] = {
-      ...questions[currentIndex],
-      answer: e.target.value,
-    };
-    setModuleQuestions(questions);
-  };
-
   const submitTest = async () => {
     try {
       const res = await dispatcher(
@@ -128,6 +138,16 @@ const VoiceToText = () => {
     }
   }
 
+  const onEditorStateChange = (stats: any) => {
+    setEditorState(stats)
+    let questions = [...moduleQuestions];
+    questions[currentIndex] = {
+      ...questions[currentIndex],
+      answer: draftToHtml(convertToRaw(stats.getCurrentContent()))
+    };
+    setModuleQuestions(questions);
+  };
+
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4">
       <TimerCounterWithProgress timestamp={ assessmentModule.module?.time || 0 } title={ assessmentModule.module?.name } onTimeout={ onTimeout } />
@@ -153,14 +173,15 @@ const VoiceToText = () => {
             </div>
           </div>
           <div className="flex md:w-3/5 w-full h-full rounded-xl bg-white">
-            <div className="w-full h-full flex overflow-hidden">
-              <textarea
-                className="bg-gray-100 w-full h-full rounded-lg p-4 border"
-                placeholder="Write your answer here..."
-                onChange={ (v) => {
-                  onChange(v);
-                } }
-                value={ moduleQuestions?.[currentIndex]?.answer || "" }
+            <div className="w-full h-full flex overflow-hidden rounded-xl">
+              <Editor
+                editorState={ editorState }
+                toolbarClassName="toolbarClassName"
+                wrapperClassName="wrapperClassName"
+                editorClassName="editorClassName"
+                wrapperStyle={ { width: "100%", overflow: 'hidden' } }
+                editorStyle={ { paddingLeft: 20, paddingRight: 20, width: '100%', overflow: 'hidden' } }
+                onEditorStateChange={ onEditorStateChange }
               />
             </div>
           </div>
@@ -176,7 +197,16 @@ const VoiceToText = () => {
           >
             Submit Test
           </button>
-          <button
+          { moduleQuestions?.length - 1 === currentIndex ? <button
+            onClick={ () => {
+              submitTest();
+            } }
+            disabled={ isSpeaking }
+            type="button"
+            className={ `font-sansation text-white hover:bg-[#CC8448]/80 ${isSpeaking ? "bg-[#CC8448]/60" : "bg-[#CC8448]"} focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2.5 text-center inline-flex items-center` }
+          >
+            Submit
+          </button> : <button
             onClick={ () => {
               onNextClicked(currentIndex);
             } }
@@ -185,7 +215,7 @@ const VoiceToText = () => {
             className={ `font-sansation text-white hover:bg-[#CC8448]/80 ${isSpeaking ? "bg-[#CC8448]/60" : "bg-[#CC8448]"} focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2.5 text-center inline-flex items-center` }
           >
             Next
-          </button>
+          </button> }
         </div>
       </div>
 
