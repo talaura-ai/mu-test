@@ -40,6 +40,8 @@ const VideoTest = () => {
     answer: ""
   });
 
+  const [aiChats, setAIChat] = useState<any>([]);
+
   let speakTimeout: any = null
 
   const { webcamRef, boundingBox, isLoading, detected, facesDetected }: any = useFaceDetection({
@@ -71,18 +73,18 @@ const VideoTest = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [faceProctoringData]);
+  }, [aiChats]);
 
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   // //Disable Right click
-  // if (document.addEventListener) {
-  //   document.addEventListener('contextmenu', function (e) {
-  //     e.preventDefault();
-  //   }, false);
-  // }
+  if (document.addEventListener) {
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    }, false);
+  }
 
   useEffect(() => {
     const handleBeforeUnload = (event: any) => {
@@ -209,13 +211,20 @@ const VideoTest = () => {
       newSocket.on("question", (data) => {
         console.log('question=>', data)
         setQuestion({ ...question, ...data });
+        setAIChat((prev: any) => {
+          return [...prev, { type: 'ai', text: data?.title }]
+        })
       })
       newSocket.on('answer', (data) => {
         console.log('answer=>', data)
         audioElement.pause();
         audioElement.currentTime = 0;
         setIsPlaying(true)
+        setAIChat((prev: any) => {
+          return [...prev, { type: 'user', text: data?.answer }]
+        })
       })
+
       newSocket.on("audioData", (data) => {
         const audioBlob = base64ToBlob(data.audio, "audio/mpeg");
         const audioUrl = URL.createObjectURL(audioBlob);
@@ -359,12 +368,22 @@ const VideoTest = () => {
               <img src={ VoiceIcon } alt="icn" />
               <span className="text-xs text-gray-300 mt-2">CC/Subtitle </span>
             </div>
-            <div className="flex flex-col mx-2 bg-white overflow-y-scroll">
-              { faceProctoringData?.map((item: any, index: number) => (
-                <span key={ item + index }>
-                  { item }
-                </span>
-              )) }
+            <div className="flex flex-col mx-2 bg-white overflow-y-scroll space-y-2">
+              { aiChats?.map((item: any, index: number) => {
+                if (item?.type === "ai") {
+                  return (<div key={ item?.text + index } className="flex flex-col gap-1 w-full max-w-[80%]">
+                    <div className="flex flex-col leading-1.5 p-4 border-gray-200 bg-[#F5F2F2] rounded-xl">
+                      <p className="text-sm font-normal text-gray-900">{ item?.text }</p>
+                    </div>
+                  </div>)
+                } else {
+                  return (<div key={ item?.text + index } className="flex justify-end">
+                    <div className="bg-[#F5F2F2] text-black p-2 rounded-lg max-w-[80%]">
+                      { item?.text }
+                    </div>
+                  </div>)
+                }
+              }) }
               <div ref={ chatEndRef } />
             </div>
           </div>
