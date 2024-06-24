@@ -26,14 +26,14 @@ function AssessmentCard () {
   return (
     <>
       <div className="flex flex-wrap items-center justify-center md:mb-12 mb-6 ">
-        <div className="flex md:flex-row flex-col items-center justify-around md:justify-between md:w-[55%] w-full bg-white rounded-lg shadow-lg px-12 py-4">
-          <div className="flex flex-col justify-center mb-4">
+        <div className="flex md:flex-row flex-col items-center justify-around md:justify-between md:w-[55%] w-full bg-white rounded-lg shadow-lg px-10 py-6">
+          <div className="flex flex-col justify-center md:max-w-[40%]">
             <span className="text-[36px] font-semibold text-[#F2BC84] self-center leading-[38px] font-sansation">
-              A2
+              { selectAssessment?.assessmentName || "" }
             </span>
-            <span className="text-[18px] font-semibold text-black self-center leading-[20px] font-sansation">
+            {/* <span className="text-[18px] font-semibold text-black self-center leading-[20px] font-sansation">
               Sales Department
-            </span>
+            </span> */}
           </div>
           <div className="flex flex-col justify-center mb-4">
             <img src={ CalenderIcon } className="h-[20px] w-[20px]" />
@@ -50,7 +50,7 @@ function AssessmentCard () {
               Duration
             </span>
             <span className="text-[16px] font-semibold text-black leading-[16px] font-sansation">
-              {assessmentTotalTime(selectAssessment?.module)} minutes
+              { assessmentTotalTime(selectAssessment?.module) } minutes
             </span>
           </div>
           <div className="flex flex-col justify-center mb-4">
