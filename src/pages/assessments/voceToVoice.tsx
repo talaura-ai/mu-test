@@ -1,16 +1,11 @@
 import VoiceIcon from "../../assets/Group 171.png";
-import ReactLoading from 'react-loading';
 import MicIcon from "../../assets/svg/micIcon2.svg";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import Webcam from 'react-webcam';
-import { CameraOptions, useFaceDetection } from 'react-use-face-detection';
-import FaceDetection from '@mediapipe/face_detection';
-import { Camera } from '@mediapipe/camera_utils';
 import { toast } from "react-toastify";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
-import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
@@ -18,10 +13,8 @@ import { getAssessmentModuleSelector, getAssessmentsSelector } from "../../store
 import { getModuleSubmissionDispatcher, getUserActivityDispatcher, setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection";
 
-const width = 650;
-const height = 650;
-const VideoTest = () => {
-  // const webcamRef = useRef<any>(null);
+const VoiceToVoice = () => {
+  const webcamRef = useRef<any>(null);
   const navigate = useNavigate();
   const { assessmentId, testId, userId } = useParams();
   const chatEndRef: any = useRef(null);
@@ -30,12 +23,12 @@ const VideoTest = () => {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
   );
+  // console.log('myAssessments=>', myAssessments)
   const assessmentModule = useAppSelector(getAssessmentModuleSelector);
   const [submitTestModal, setSubmitTestModal] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(0);
   const [isRecording, setIsRecording] = useState(true);
-  const [cameraStats, setCameraStats] = useState(0);
   const [userMute, setUserMute] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [question, setQuestion] = useState({
@@ -49,31 +42,6 @@ const VideoTest = () => {
   useUserActivityDetection()
 
   let speakTimeout: any = null
-
-  const { webcamRef, boundingBox, isLoading, detected, facesDetected }: any = useFaceDetection({
-    faceDetectionOptions: {
-      model: 'short',
-    },
-    faceDetection: new FaceDetection.FaceDetection({
-      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/${file}`,
-    }),
-    camera: ({ mediaSrc, onFrame }: CameraOptions) =>
-      new Camera(mediaSrc, {
-        onFrame,
-        width,
-        height,
-      }),
-  });
-  useEffect(() => {
-    console.log(detected, facesDetected)
-    if (!detected) {
-      const screenshot = webcamRef.current.getScreenshot();
-      updateUserActivity()
-    }
-    if (facesDetected > 1) {
-      updateUserActivity()
-    }
-  }, [detected, facesDetected])
 
   useEffect(() => {
     scrollToBottom();
@@ -107,54 +75,6 @@ const VideoTest = () => {
     }, false);
   }
 
-  const updateUserActivity = () => {
-    dispatcher(getUserActivityDispatcher({
-      candidateId: userId,
-    }));
-  }
-
-  // useEffect(() => {
-  //   const handleBeforeUnload = (event: any) => {
-  //     console.log('Browser Closing')
-  //     // Here you can handle logic before the unload event
-  //     const message = "Are you sure you want to leave? Any unsaved changes will be lost.";
-  //     event.returnValue = message; // Standard for most browsers
-
-  //     return message; // For some older browsers
-  //   };
-  //   const handleUnload = () => {
-  //     console.log('Page reloading')
-  //     // Logic to handle page reload
-  //     console.log('Page is being reloaded');
-  //   };
-  //   window.addEventListener('beforeunload', handleBeforeUnload);
-  //   window.addEventListener('unload', handleUnload);
-  //   // Clean up event listeners on component unmount
-  //   return () => {
-  //     window.removeEventListener('beforeunload', handleBeforeUnload);
-  //     window.removeEventListener('unload', handleUnload);
-  //   };
-  // }, []);
-
-  // // Alert on Tab Changed within the Same browser Window
-  // function handleVisibilityChange () {
-  //   if (document?.hidden) {
-  //     console.log("Tab Change Detected", "Action has been Recorded", "error");
-  //     // toast.error("Alert: Tab Change Detected", {});
-  //     // the page is hidden
-  //   } else {
-  //     console.log("ACTIVE")
-  //     // the page is visible
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   document.addEventListener('visibilitychange', handleVisibilityChange);
-  //   return () => {
-  //     document.removeEventListener('visibilitychange', handleVisibilityChange);
-  //   };
-  // }, []);
-
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true })
       .then((stream) => {
@@ -164,7 +84,7 @@ const VideoTest = () => {
         console.error("Error accessing microphone:", error);
         setError("Error accessing microphone. Please check your permissions.");
       });
-  }, []); // Setup mediaRecorder initially
+  }, []);
 
   useEffect(() => {
     if (mediaRecorder && userId && moduleQuestions && myAssessments) {
@@ -205,6 +125,7 @@ const VideoTest = () => {
         })
       })
       newSocket.on('answer', (data) => {
+        setIsSpeaking(2)
         console.log('conversationAns answer=>', data)
         audioElement.pause();
         audioElement.currentTime = 0;
@@ -220,9 +141,9 @@ const VideoTest = () => {
       newSocket.on("audioData", (data) => {
         const audioBlob = base64ToBlob(data.audio, "audio/mpeg");
         const audioUrl = URL.createObjectURL(audioBlob);
-        console.log('audioUrl=>', audioUrl)
+        console.log('audioUrl UUUUU=>', audioUrl)
         clearTimeout(speakTimeout)
-        setIsSpeaking(true)
+        setIsSpeaking(1)
         // if (isPlaying) {
         audioElement.pause();
         audioElement.currentTime = 0;
@@ -238,7 +159,7 @@ const VideoTest = () => {
         //   audioElement.play();
         // }
         audioElement.onended = () => {
-          setIsSpeaking(false)
+          setIsSpeaking(0)
           setIsPlaying(false)
         }
       });
@@ -299,9 +220,6 @@ const VideoTest = () => {
   const onTimeout = () => {
     navigate(-1)
   }
-  const videoConstraints = {
-    facingMode: "user",
-  };
 
   const onSubmitTest = (type: string) => {
     setSubmitTestModal(false)
@@ -332,7 +250,7 @@ const VideoTest = () => {
 
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4">
-      <TimerCounterWithProgress timestamp={ 20 || 0 } title={ "Video Round" } onTimeout={ onTimeout } />
+      <TimerCounterWithProgress timestamp={ 20 || 0 } title={ "Voice Round" } onTimeout={ onTimeout } />
       <div className="flex">
         <span className="text-md text-black">
           The AI will pose the question out loud, and the candidate must response.
@@ -347,7 +265,7 @@ const VideoTest = () => {
         <div className="flex flex-col w-[80%] h-1/2 md:flex-row justify-between">
           <div className="relative flex w-[50%] h-[470px] bg-[#474646] justify-center items-center rounded-xl border border-[#E5A971] mr-4">
             <div className="flex justify-center items-center">
-              <div className={ `h-10 w-10 md:h-40 md:w-40 bg-white text-[#E5A971] rounded-full text-[20px] md:text-[60px] font-semibold font-sansation flex justify-center items-center ${isSpeaking ? "animation-pulse" : ""}` }>
+              <div className={ `h-10 w-10 md:h-40 md:w-40 bg-white text-[#E5A971] rounded-full text-[20px] md:text-[60px] font-semibold font-sansation flex justify-center items-center ${isSpeaking === 1 ? "animation-pulse" : ""}` }>
                 Ai
               </div>
             </div>
@@ -358,26 +276,17 @@ const VideoTest = () => {
               <img src={ MicIcon } className="h-8 w-10" alt="mic" />
             </div>
           </div>
-          <div className="flex relative h-1/2 w-[50%] rounded-xl overflow-hidden">
-            <div className="flex rounded-xl w-full overflow-hidden h-[470px]">
-              <Webcam
-                ref={ webcamRef }
-                screenshotFormat="image/jpeg"
-                screenshotQuality={ 1 }
-                // audio={userMute}
-                videoConstraints={ videoConstraints }
-                onUserMedia={ () => { setCameraStats(1) } }
-                onUserMediaError={ () => { setCameraStats(2) } }
-                className="overflow-hidden rounded-xl bg-gray-200 mr-4 object-cover"
-              />
-              <div>
+          <div className="relative flex w-[50%] h-[470px] bg-[#E5A971] justify-center items-center rounded-xl border border-[#E5A971] mr-4">
+            <div className="flex justify-center items-center">
+              <div className={ `h-10 w-10 md:h-40 md:w-40 bg-white text-[#E5A971] rounded-full text-[20px] md:text-[60px] font-semibold font-sansation flex justify-center items-center capitalize ${isSpeaking === 2 ? "animation-pulse" : ""}` }>
+                { myAssessments && myAssessments?.[0]?.name ? myAssessments?.[0]?.name?.substring(0, 1) : "" }
               </div>
-              <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation capitalize">
-                { myAssessments && myAssessments?.[0]?.name || "Candidate" }
-              </div>
-              <div className="absolute right-6 bottom-4 text-white  px-4 py-1  ">
-                <img onClick={ () => { setUserMute(!userMute) } } src={ MicIcon } className="h-8 w-10" alt="mic" />
-              </div>
+            </div>
+            <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation capitalize">
+              { myAssessments && myAssessments?.[0]?.name || "Candidate" }
+            </div>
+            <div className="absolute right-2 bottom-4 text-white  px-4 py-1  ">
+              <img src={ MicIcon } className="h-8 w-10" alt="mic" />
             </div>
           </div>
         </div>
@@ -421,4 +330,4 @@ const VideoTest = () => {
   );
 };
 
-export default VideoTest;
+export default VoiceToVoice;

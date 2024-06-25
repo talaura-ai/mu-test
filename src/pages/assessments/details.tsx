@@ -34,7 +34,7 @@ function AssessmentDetails () {
     } else if (type === "Sandbox"?.toLocaleLowerCase()) {
       navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/coding`);
     } else if (type === "Voice To Voice"?.toLocaleLowerCase()) {
-      navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/voice-to-text`);
+      navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/voice-to-voice`);
     } else if (type === "Voice To Text"?.toLocaleLowerCase()) {
       navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/voice-to-text`);
     } else if (type === "AI Video Interview"?.toLocaleLowerCase()) {

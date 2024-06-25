@@ -10,6 +10,7 @@ import VideoTest from "./pages/assessments/videoTest";
 import VerificationPage from "./pages/verificationPage";
 import PersonNeedMoreInfo from "./pages/assessments/needMoreInfo";
 import VoiceToText from "./pages/assessments/voiceToText";
+import VoiceToVoice from "./pages/assessments/voceToVoice";
 
 function App () {
   return (
@@ -36,6 +37,10 @@ function App () {
             <Route
               path="/assessment/:userId/:assessmentId/:testId/voice-to-text"
               element={ <VoiceToText /> }
+            />
+            <Route
+              path="/assessment/:userId/:assessmentId/:testId/voice-to-voice"
+              element={ <VoiceToVoice /> }
             />
             <Route
               path="/assessment/:userId/:assessmentId/:testId"
