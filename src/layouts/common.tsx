@@ -91,10 +91,15 @@ const CommonLayout = () => {
 			</div>
 			{ loading ? <>
 				<div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-					<div className="relative my-6 mx-auto w-[350px]">
-						<div className="border-0 rounded-3xl shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
-							<div className="flex items-center justify-center py-16">
-								<img src={ TimerLoading } />
+					<div className="relative mx-auto w-[150px] h-[150px]">
+						<div className="border-0 rounded-3xl shadow-md relative flex flex-col w-full h-full bg-white outline-none focus:outline-none">
+							<div className="flex items-center justify-center w-full h-full">
+								{/* <img src={ TimerLoading } /> */ }
+								<div className="loader">
+									<span className="hour"></span>
+									<span className="min"></span>
+									<span className="circel"></span>
+								</div>
 							</div>
 						</div>
 					</div>
