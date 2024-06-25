@@ -9,4 +9,7 @@ interface Window {
 interface Document {
   msHidden?: any;
   webkitHidden?: any;
+  webkitFullscreenElement?: any
+  msFullscreenElement?: any
+  mozFullScreenElement?: any
 }

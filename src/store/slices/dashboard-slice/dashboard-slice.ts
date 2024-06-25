@@ -1,6 +1,6 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import { setAssessmentDispatcher, setAssessmentModuleDispatcher, setAssessmentQuestionDispatcher, getLanguagesDispatcher, getModuleSubmissionDispatcher, getSendSubmissionDispatcher, getSubmissionStatusDispatcher } from "./dashboard-dispatchers";
+import { setAssessmentDispatcher, setAssessmentModuleDispatcher, setAssessmentQuestionDispatcher, getLanguagesDispatcher, getModuleSubmissionDispatcher, getSendSubmissionDispatcher, getSubmissionStatusDispatcher, getUserActivityDispatcher } from "./dashboard-dispatchers";
 
 const initialState: DashboardDataType = {
   assessments: [],
@@ -100,6 +100,16 @@ export const dashboardSlice = createSlice({
         state.loading = false;
       })
       .addCase(getSubmissionStatusDispatcher.rejected, (state: any) => {
+        state.loading = false;
+      })
+    builder
+      .addCase(getUserActivityDispatcher.pending, (state: any) => {
+        state.loading = false;
+      })
+      .addCase(getUserActivityDispatcher.fulfilled, (state: any, action: any) => {
+        state.loading = false;
+      })
+      .addCase(getUserActivityDispatcher.rejected, (state: any) => {
         state.loading = false;
       })
   },

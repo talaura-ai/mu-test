@@ -5,5 +5,7 @@ export const Endpoints = {
   programming: "/languages",
   submitTest: "/candidate/module/submitModule",
   codeSubmission: "/submissions?base64_encoded=true&wait=true&fields=*",
-  submissionStatus: "/submissions/"
+  submissionStatus: "/submissions/",
+  userActivity: "/candidate/updateActivity"
+
 }

@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
 import { htmlToText } from 'html-to-text';
+import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection";
 
 const VoiceToText = () => {
   const dispatcher = useAppDispatch();
@@ -28,7 +29,7 @@ const VoiceToText = () => {
   const [editorState, setEditorState] = React.useState(EditorState.createEmpty())
   const [submitTestModal, setSubmitTestModal] = React.useState(false)
 
-  console.log("assessmentModule---TEXT", assessmentModule);
+  useUserActivityDetection()
 
   React.useEffect(() => {
     if (assessmentModule?.module?.question) {

@@ -59,11 +59,10 @@ const CommonLayout = () => {
 									<button type="button" className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300" aria-expanded="false" data-dropdown-toggle="dropdown-user">
 										<span className="sr-only">Open user menu</span>
 										<div className="relative inline-flex items-center justify-center w-8 h-8 overflow-hidden bg-[#E66B50] rounded-full">
-											<span className="text-white text-[20px] font-sansation font-bold">{ myAssessments && myAssessments?.[0]?.name ? myAssessments?.[0]?.name?.substring(0, 1) : "" }</span>
+											<span className="text-white text-[20px] font-sansation font-bold capitalize">{ myAssessments && myAssessments?.[0]?.name ? myAssessments?.[0]?.name?.substring(0, 1) : "" }</span>
 										</div>
-										{/* <img className="w-8 h-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo" /> */ }
 									</button>
-									<p className="text-sm font-semibold font-sansation text-gray-900 ml-2" role="none">
+									<p className="text-sm font-semibold font-sansation text-gray-900 ml-2 capitalize" role="none">
 										{ myAssessments && myAssessments?.[0]?.name || "Candidate" }
 									</p>
 								</div>

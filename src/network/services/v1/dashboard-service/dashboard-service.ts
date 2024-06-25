@@ -31,4 +31,7 @@ const codeSubmission = async (body: any) => {
 const submissionStatus = async (query: any) => {
   return await Judge0AxiosService.get(Endpoints.submissionStatus + query)
 }
-export default { getAssessments, getAssessmentModules, getAssessmentQuestionModules, getProgrammingLanguage, getSubmission, codeSubmission, submissionStatus }
+const updateActivity = async (body: any) => {
+  return await AxiosService.post(Endpoints.userActivity, body)
+}
+export default { getAssessments, getAssessmentModules, getAssessmentQuestionModules, getProgrammingLanguage, getSubmission, codeSubmission, submissionStatus, updateActivity }

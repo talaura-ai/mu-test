@@ -15,7 +15,8 @@ import { v4 as uuidv4 } from "uuid";
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getAssessmentModuleSelector, getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
-import { getModuleSubmissionDispatcher, setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
+import { getModuleSubmissionDispatcher, getUserActivityDispatcher, setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
+import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection";
 
 const width = 650;
 const height = 650;
@@ -36,7 +37,6 @@ const VideoTest = () => {
   const [isRecording, setIsRecording] = useState(true);
   const [cameraStats, setCameraStats] = useState(0);
   const [userMute, setUserMute] = useState(true);
-  const [faceProctoringData, setFaceProctoringData] = useState<any>([]);
   const [error, setError] = useState<string | null>(null);
   const [question, setQuestion] = useState({
     title: "",
@@ -45,6 +45,8 @@ const VideoTest = () => {
   const [conversationAns, setConversationAns] = useState<string>("");
   const [moduleQuestions, setModuleQuestions] = useState<any>([]);
   const [aiChats, setAIChat] = useState<any>([]);
+
+  useUserActivityDetection()
 
   let speakTimeout: any = null
 
@@ -62,17 +64,15 @@ const VideoTest = () => {
         height,
       }),
   });
-  console.log('assessmentModule-', assessmentModule)
   useEffect(() => {
     console.log(detected, facesDetected)
-    let dataUpdate = [...faceProctoringData]
-    dataUpdate.push(moment().format("HH:mm:ss") + " " + "Face detected: " + detected)
-    dataUpdate.push(moment().format("HH:mm:ss") + " " + "No. of faces detected: " + facesDetected)
     if (!detected) {
       const screenshot = webcamRef.current.getScreenshot();
-      console.log('screenshot=>', screenshot)
+      updateUserActivity()
     }
-    setFaceProctoringData(dataUpdate)
+    if (facesDetected > 1) {
+      updateUserActivity()
+    }
   }, [detected, facesDetected])
 
   useEffect(() => {
@@ -107,46 +107,53 @@ const VideoTest = () => {
     }, false);
   }
 
-  useEffect(() => {
-    const handleBeforeUnload = (event: any) => {
-      // Here you can handle logic before the unload event
-      const message = "Are you sure you want to leave? Any unsaved changes will be lost.";
-      event.returnValue = message; // Standard for most browsers
-      console.log('Browser Closing')
-      return message; // For some older browsers
-    };
-    const handleUnload = () => {
-      // Logic to handle page reload
-      console.log('Page is being reloaded');
-      console.log('Page reloading')
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    window.addEventListener('unload', handleUnload);
-    // Clean up event listeners on component unmount
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      window.removeEventListener('unload', handleUnload);
-    };
-  }, []);
-
-  // Alert on Tab Changed within the Same browser Window
-  function handleVisibilityChange () {
-    if (document.hidden) {
-      console.log("Tab Change Detected", "Action has been Recorded", "error");
-      toast.error("Alert: Tab Change Detected", {});
-      // the page is hidden
-    } else {
-      console.log("ACTIVE")
-      // the page is visible
-    }
+  const updateUserActivity = () => {
+    dispatcher(getUserActivityDispatcher({
+      candidateId: userId,
+    }));
   }
 
-  useEffect(() => {
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, []);
+  // useEffect(() => {
+  //   const handleBeforeUnload = (event: any) => {
+  //     console.log('Browser Closing')
+  //     // Here you can handle logic before the unload event
+  //     const message = "Are you sure you want to leave? Any unsaved changes will be lost.";
+  //     event.returnValue = message; // Standard for most browsers
+
+  //     return message; // For some older browsers
+  //   };
+  //   const handleUnload = () => {
+  //     console.log('Page reloading')
+  //     // Logic to handle page reload
+  //     console.log('Page is being reloaded');
+  //   };
+  //   window.addEventListener('beforeunload', handleBeforeUnload);
+  //   window.addEventListener('unload', handleUnload);
+  //   // Clean up event listeners on component unmount
+  //   return () => {
+  //     window.removeEventListener('beforeunload', handleBeforeUnload);
+  //     window.removeEventListener('unload', handleUnload);
+  //   };
+  // }, []);
+
+  // // Alert on Tab Changed within the Same browser Window
+  // function handleVisibilityChange () {
+  //   if (document?.hidden) {
+  //     console.log("Tab Change Detected", "Action has been Recorded", "error");
+  //     // toast.error("Alert: Tab Change Detected", {});
+  //     // the page is hidden
+  //   } else {
+  //     console.log("ACTIVE")
+  //     // the page is visible
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   document.addEventListener('visibilitychange', handleVisibilityChange);
+  //   return () => {
+  //     document.removeEventListener('visibilitychange', handleVisibilityChange);
+  //   };
+  // }, []);
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true })
@@ -160,7 +167,7 @@ const VideoTest = () => {
   }, []); // Setup mediaRecorder initially
 
   useEffect(() => {
-    if (mediaRecorder && userId) {
+    if (mediaRecorder && userId && moduleQuestions && myAssessments) {
       const audioElement = new Audio();
       const newSocket = io("wss://talorexvoice.com", {
         query: {
@@ -254,7 +261,7 @@ const VideoTest = () => {
         newSocket?.disconnect();
       };
     }
-  }, [mediaRecorder, userId]);
+  }, [mediaRecorder, userId, moduleQuestions, myAssessments]);
 
   function arrayBufferToBase64 (buffer: ArrayBuffer): string {
     let binary = '';

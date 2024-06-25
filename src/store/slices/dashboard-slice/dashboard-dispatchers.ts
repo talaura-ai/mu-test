@@ -65,3 +65,11 @@ export const getSubmissionStatusDispatcher: any = createAsyncThunk("submission-s
     return { error: JSON.parse(JSON.stringify(e)) }
   }
 })
+
+export const getUserActivityDispatcher: any = createAsyncThunk("user-activity", async (body: any) => {
+  try {
+    return await Services.DashboardService.updateActivity(body)
+  } catch (e) {
+    return { error: JSON.parse(JSON.stringify(e)) }
+  }
+})

@@ -3,13 +3,14 @@ import UserIcon from "../../assets/svg/userIcon.svg";
 import QuestionNumberBox from "../../components/questionNumberBox";
 import QuestionOptionBox from "../../components/displayQuestionOptions";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
-import React from "react";
+import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import { getModuleSubmissionDispatcher, setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
 import { toast } from "react-toastify";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
+import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection";
 
 function StartMCQTest () {
   const dispatcher = useAppDispatch()
@@ -22,6 +23,8 @@ function StartMCQTest () {
   const [submitTest, setSubmitTest] = React.useState(false)
   const [disablePrevBtn, setDisablePrevBtn] = React.useState(true)
   const { assessmentId, testId, userId } = useParams();
+
+  useUserActivityDetection()
 
   React.useEffect(() => {
     if (assessmentModule?.module?.question) {
