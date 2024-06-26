@@ -98,7 +98,7 @@ const VoiceToVoice = () => {
       newSocket.on("connect", () => {
         console.log("connected to server", { title: moduleQuestions?.[0]?.title, name: myAssessments && myAssessments?.[0]?.name });
         newSocket.emit("prompt", { title: moduleQuestions?.[0]?.title, name: myAssessments && myAssessments?.[0]?.name })
-        mediaRecorder.start(500);
+        mediaRecorder.start(1500);
         mediaRecorder.ondataavailable = async (event) => {
           if (event?.data?.size > 0) {
             console.log('START AI')
