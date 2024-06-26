@@ -231,7 +231,7 @@ const VideoTest = () => {
           audioElement.src = audioUrl
           setIsPlaying(true)
           audioElement.play();
-        }, 2000)
+        }, 200)
         // } else {
         //   audioElement.src = audioUrl
         //   setIsPlaying(true)
@@ -416,7 +416,7 @@ const VideoTest = () => {
           Submit
         </button>
       </div>
-      { submitTestModal ? <ModuleConfirmationModal onPress={ (v) => { onSubmitTest(v) } } title={assessmentModule.module?.name} /> : null }
+      { submitTestModal ? <ModuleConfirmationModal onPress={ (v) => { onSubmitTest(v) } } title={ assessmentModule.module?.name } /> : null }
     </div>
   );
 };

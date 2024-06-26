@@ -152,7 +152,7 @@ const VoiceToVoice = () => {
           audioElement.src = audioUrl
           setIsPlaying(true)
           audioElement.play();
-        }, 2000)
+        }, 200)
         // } else {
         //   audioElement.src = audioUrl
         //   setIsPlaying(true)
