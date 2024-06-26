@@ -332,18 +332,18 @@ const VideoTest = () => {
 
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4">
-      <TimerCounterWithProgress timestamp={ 20 || 0 } title={ "Video Round" } onTimeout={ onTimeout } />
+      <TimerCounterWithProgress timestamp={ 20 || 0 } title={ "Video Round" } onTimeout={ onTimeout } showTimer={ false } />
       <div className="flex">
-        <span className="text-md text-black">
-          The AI will pose the question out loud, and the candidate must response.
+        <span className="text-[20px] text-black font-sansation font-semibold">
+          TALBot is your interviewer, please listen carefully and respond to the questions asked by TALBot
         </span>
       </div>
-      <div className="flex mb-3">
+      {/* <div className="flex mb-3">
         <span className="text-[32px] font-semibold font-sansation text-[#CC8448]">
           Case Study
         </span>
-      </div>
-      <div className="flex md:flex-row flex-col md:justify-center">
+      </div> */}
+      <div className="flex md:flex-row flex-col md:justify-center mt-16">
         <div className="flex flex-col w-[80%] h-1/2 md:flex-row justify-between">
           <div className="relative flex w-[50%] h-[470px] bg-[#474646] justify-center items-center rounded-xl border border-[#E5A971] mr-4">
             <div className="flex justify-center items-center">
@@ -408,15 +408,15 @@ const VideoTest = () => {
           </div>
         </div>
       </div>
-      <div className="flex justify-center py-6 mt-4 font-sansation">
+      <div className="flex justify-end py-6 mt-4 font-sansation">
         <button
-          className="flex justify-center bg-[#E04747] px-6 py-2 rounded-lg text-white font-semibold"
+          className="flex justify-center bg-[#40B24B] px-12 py-2 rounded-lg text-white font-semibold font-sansation"
           onClick={ () => { setSubmitTestModal(true) } }
         >
-          End Meet
+          Submit
         </button>
       </div>
-      { submitTestModal ? <ModuleConfirmationModal onPress={ (v) => { onSubmitTest(v) } } /> : null }
+      { submitTestModal ? <ModuleConfirmationModal onPress={ (v) => { onSubmitTest(v) } } title={assessmentModule.module?.name} /> : null }
     </div>
   );
 };

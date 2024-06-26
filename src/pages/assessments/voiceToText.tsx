@@ -181,18 +181,17 @@ const VoiceToText = () => {
       <TimerCounterWithProgress timestamp={ assessmentModule.module?.time || 0 } title={ assessmentModule.module?.name } onTimeout={ onTimeout } />
       <div className="flex items-start justify-start flex-col w-[100%] h-[100%] ">
         <div className="flex">
-          <span className="text-md text-black">
-            The AI will pose the question out loud, and the candidate must
-            provide a typed response.
+          <span className="text-[20px] text-black font-sansation font-semibold">
+            The AI will pose the question <span className="text-[#CC484E]">only once, </span>candidate please share your response in the provided text box.
           </span>
         </div>
-        <div className="flex mb-2">
+        {/* <div className="flex mb-2">
           <span className="text-[32px] font-semibold font-sansation text-[#CC8448]">
             Case Study
           </span>
-        </div>
+        </div> */}
 
-        <div className="flex justify-between flex-col md:flex-row w-full gap-4 p-2 h-[500px]">
+        <div className="flex justify-between flex-col md:flex-row w-full gap-4 p-2 h-[500px] mt-14">
           <div className="flex md:w-2/5 w-full h-[500px] md:h-full bg-[#474646] justify-center items-center overflow-hidden border border-[#E5A971] rounded-xl">
             <div className="flex justify-center items-center">
               <div className={ `h-10 w-10 md:h-40 md:w-40 bg-white text-[#E5A971] rounded-full text-[20px] md:text-[60px] font-semibold font-sansation flex justify-center items-center ${isSpeaking ? "animation-pulse" : ""}` }>
@@ -215,8 +214,8 @@ const VoiceToText = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between py-6 px-2 w-3/5 self-end  ">
-          <button
+        <div className="flex items-center justify-end py-6 px-2 w-3/5 self-end  ">
+          {/* <button
             onClick={ () => {
               setSubmitTestModal(true)
             } }
@@ -224,14 +223,14 @@ const VoiceToText = () => {
             className="font-sansation text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2.5 text-center inline-flex items-center"
           >
             Submit Test
-          </button>
-          { moduleQuestions?.length - 1 === currentIndex ? <button
+          </button> */}
+          { !(moduleQuestions?.length - 1 === currentIndex) ? <button
             onClick={ () => {
               setSubmitTestModal(true)
             } }
             disabled={ isSpeaking }
             type="button"
-            className={ `font-sansation text-white hover:bg-[#CC8448]/80 ${isSpeaking ? "bg-[#CC8448]/60" : "bg-[#CC8448]"} focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2.5 text-center inline-flex items-center` }
+            className={ `font-sansation text-white hover:bg-[#40B24B]/80 ${isSpeaking ? "bg-[#40B24B]/60" : "bg-[#40B24B]"} focus:ring-4 focus:outline-none tracking-wide focus:ring-[#40B24B]/50 font-semibold rounded-lg text-md px-12 py-2 text-center inline-flex items-center` }
           >
             Submit
           </button> : <button
@@ -240,7 +239,7 @@ const VoiceToText = () => {
             } }
             disabled={ isSpeaking }
             type="button"
-            className={ `font-sansation text-white hover:bg-[#CC8448]/80 ${isSpeaking ? "bg-[#CC8448]/60" : "bg-[#CC8448]"} focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2.5 text-center inline-flex items-center` }
+            className={ `font-sansation text-white hover:bg-[#CC8448]/80 ${isSpeaking ? "bg-[#CC8448]/60" : "bg-[#CC8448]"} focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2 text-center inline-flex items-center` }
           >
             Next
           </button> }
@@ -254,7 +253,7 @@ const VoiceToText = () => {
           } }
         />
       ) : null }
-      { submitTestModal ? <ModuleConfirmationModal onPress={ (v) => { onSubmitTest(v) } } /> : null }
+      { submitTestModal ? <ModuleConfirmationModal onPress={ (v) => { onSubmitTest(v) } } title={ assessmentModule.module?.name } /> : null }
     </div>
   );
 };

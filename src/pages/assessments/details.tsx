@@ -90,7 +90,7 @@ function AssessmentDetails () {
         { selectAssessment?.module?.map((item: any) => (
           <div
             key={ item }
-            className="flex flex-wrap justify-around mb-10 rounded-2xl relative py-3 bg-white shadow-lg"
+            className="flex flex-wrap justify-around mb-10 rounded-2xl relative py-6 bg-white shadow-lg mx-[150px]"
           >
             <div className="absolute top-0 left-0 bottom-auto h-full flex items-center">
               <div className="w-[10px] md:h-[64px] sm:h-[130px] bg-gradient-to-r from-[#E5A971] to-[rgb(243,188,132)] rounded-r-xl"></div>
@@ -102,18 +102,18 @@ function AssessmentDetails () {
                 <img src={ LockNextIcon } />
               )) }
             </div>
-            <div className="flex flex-col justify-center py-4 md:w-[30%] sm:w-full pr-4 pl-7">
+            <div className="flex flex-col justify-center py-4 md:w-[45%] sm:w-full pr-6 pl-10">
               <span className="text-[22px] font-semibold text-[#F2BC84] font-sansation">
                 { item?.name }
               </span>
             </div>
-            <div className="flex flex-col md:w-[20%] sm:w-full px-4 justify-center ">
+            {/* <div className="flex flex-col md:w-[20%] sm:w-full px-4 justify-center ">
               <span className="text-[20px] font-normal text-black font-sansation">Skills</span>
               <span className="text-[14px] font-medium text-[#BDBDBD] font-sansation">
                 { item?.skills?.join(", ") }
               </span>
-            </div>
-            <div className="flex sm:justify-around md:justify-between md:w-[35%] items-center justify-center sm:w-full px-2">
+            </div> */}
+            <div className="flex sm:justify-around md:justify-around md:w-[55%] items-center justify-center sm:w-full px-2">
               <div className="flex flex-col text-center">
                 <span className="text-[20px] font-normal text-black font-sansation">
                   Questions
@@ -122,14 +122,14 @@ function AssessmentDetails () {
                   { item?.noOfQuestion || 0 }
                 </span>
               </div>
-              <div className="flex flex-col text-center items-center">
+              {/* <div className="flex flex-col text-center items-center">
                 <span className="text-[20px] font-normal text-black font-sansation">
                   Weightage
                 </span>
                 <span className="text-[20px] font-semibold text-[#BDBDBD] min-w-[50px] border-b border-[#E5A971] font-sansation">
                   { item?.weightage || 0 }%
                 </span>
-              </div>
+              </div> */}
               <div className="flex flex-col text-center">
                 <span className="text-[20px] font-normal text-black font-sansation">
                   Duration
@@ -138,8 +138,26 @@ function AssessmentDetails () {
                   { item?.time || 0 } min
                 </span>
               </div>
+              <div className="flex flex-col text-center">
+                { item?.status === "Completed" ? <button
+                  type="button"
+                  className="text-white bg-[#CC8448]/80 font-sansation tracking-wide font-medium rounded-lg text-md px-6 py-2.5 text-center inline-flex items-center cursor-not-allowed"
+                >
+                  Completed
+                </button> : <button
+                  type="button"
+                  disabled={ item?.isLocked }
+                  onClick={ () => {
+                    setStartTestModal(true);
+                    setSelectedTest(item);
+                  } }
+                  className={ `text-white bg-[#CC8448] hover:bg-[#CC8448]/80 ${item?.isLocked ? "bg-[#CC8448]/80 cursor-not-allowed" : ""} font-sansation focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center` }
+                >
+                  Start
+                </button> }
+              </div>
             </div>
-            <div className="flex items-center justify-center py-6 md:w-[15%] sm:w-full">
+            {/* <div className="flex items-center justify-center py-6 md:w-[15%] sm:w-full">
               { item?.status === "Completed" ? <button
                 type="button"
                 className="text-white bg-[#CC8448]/80 font-sansation tracking-wide font-medium rounded-lg text-md px-6 py-2.5 text-center inline-flex items-center cursor-not-allowed"
@@ -154,9 +172,9 @@ function AssessmentDetails () {
                 } }
                 className={ `text-white bg-[#CC8448] hover:bg-[#CC8448]/80 ${item?.isLocked ? "bg-[#CC8448]/80 cursor-not-allowed" : ""} font-sansation focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center` }
               >
-                Next
+                Start
               </button> }
-            </div>
+            </div> */}
           </div>
         )) }
       </div>

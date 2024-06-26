@@ -5,17 +5,20 @@ import QuestionOptionBox from "../../components/displayQuestionOptions";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
+import { getAssessmentModuleSelector, getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import { getModuleSubmissionDispatcher, setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
 import { toast } from "react-toastify";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
 import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection";
+import ReviewIcon from "../../assets/svg/review.svg"
+import ReviewedIcon from "../../assets/svg/reviewed.svg"
 
 function StartMCQTest () {
   const dispatcher = useAppDispatch()
   const navigate = useNavigate();
   const assessmentModule = useAppSelector(getAssessmentModuleSelector)
+  const myAssessments = useAppSelector(getAssessmentsSelector);
   const [moduleQuestions, setModuleQuestions] = React.useState<any>([])
   const [questionIndex, setQuestionIndex] = React.useState(0)
   const [selectedQuestion, setSelectedQuestion] = React.useState("")
@@ -150,8 +153,8 @@ function StartMCQTest () {
                   src={ UserIcon }
                   alt="user"
                 />
-                <h5 className="text-[24px] font-medium text-black ml-5">
-                  John Smith
+                <h5 className="text-[24px] font-medium text-black ml-5 capitalize">
+                  { myAssessments && myAssessments?.[0]?.name }
                 </h5>
               </div>
               <div className="flex flex-col mx-8 py-4">
@@ -169,7 +172,7 @@ function StartMCQTest () {
                     Not Answered
                   </h5>
                   <div className="w-[2px] min-h-[14px] bg-[#B1B1B1]"></div>
-                  <div className="w-[12px] h-[12px] rounded-full border-[#F15C2E] bg-[#F15C2E] border-solid border-[2px]"></div>
+                  <div className="w-[12px] h-[12px] rounded-full border-[#CC484E] bg-[#CC484E] border-solid border-[2px]"></div>
                   <h5 className="text-[10px] font-normal text-[#B1B1B1]">
                     Review
                   </h5>
@@ -189,9 +192,9 @@ function StartMCQTest () {
               <button
                 type="button"
                 onClick={ () => { setSubmitTest(true) } }
-                className={ `flex w-full text-white bg-[#CC8448] tracking-wide font-medium text-md px-12 py-2.5 text-center justify-center items-center font-sansation cursor-pointer` }
+                className={ `flex w-full text-white bg-[#31B06B] tracking-wide font-semibold text-md px-12 py-2.5 text-center justify-center items-center font-sansation cursor-pointer` }
               >
-                Submit Test
+                Submit
               </button>
             </div>
           </div>
@@ -204,10 +207,13 @@ function StartMCQTest () {
                       Q{ questionIndex + 1 }.
                     </h5>
                   </div>
-                  <div>
+                  <div className="mr-8">
                     <h5 className="text-[22px] font-normal text-black pl-[10px] select-none">
                       { moduleQuestions?.[questionIndex]?.title || "" }
                     </h5>
+                  </div>
+                  <div onClick={ onReview } className=" absolute -top-1 right-2">
+                    { moduleQuestions?.[questionIndex]?.review ? <img src={ ReviewedIcon } /> : <img src={ ReviewIcon } /> }
                   </div>
                 </div>
                 <div className="space-y-5 mt-6 ml-10">
@@ -218,7 +224,7 @@ function StartMCQTest () {
               </div>
             </div>
             <div className="w-full absolute bottom-0 left-0 right-0 bg-[#F9F7F0] pb-6 pt-6">
-              <div className="flex w-full md:justify-end justify-center mb-3">
+              {/* <div className="flex w-full md:justify-end justify-center mb-3">
                 <button
                   type="button"
                   onClick={ onReview }
@@ -226,7 +232,7 @@ function StartMCQTest () {
                 >
                   Review
                 </button>
-              </div>
+              </div> */}
               <div className="flex w-full md:justify-between md:flex-row flex-col justify-center items-center md:gap-0 gap-4">
                 <button
                   type="button"
@@ -240,7 +246,7 @@ function StartMCQTest () {
                 { moduleQuestions?.length - 1 === questionIndex ? <button
                   type="button"
                   onClick={ () => { setSubmitTest(true) } }
-                  className="md:mx-20 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg cursor-pointer"
+                  className="md:mx-20 mx-6 flex text-white bg-[#31B06B] font-semibold text-md w-40 py-2.5 text-center justify-center items-center rounded-lg cursor-pointer"
                 >
                   SUBMIT
                 </button> : <button
@@ -256,7 +262,7 @@ function StartMCQTest () {
           </div>
         </div>
       </div>
-      { submitTest ? <ModuleConfirmationModal onPress={ (v) => { onSubmission(v) } } /> : null }
+      { submitTest ? <ModuleConfirmationModal onPress={ (v) => { onSubmission(v) } } title={ assessmentModule.module?.name } /> : null }
     </>
   );
 }

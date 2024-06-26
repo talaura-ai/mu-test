@@ -11,7 +11,7 @@ export default function QuestionNumberBox ({ questionNo, checked, directQuestion
           }` }
       >
         { questionNo }
-        { review ? <VscTriangleUp className={ `rotate-45 text-[#F15C2E] absolute ${!checked ? "-top-[12px] -right-[12px]" : "-top-[10px] -right-[10px]"}` } size={ 32 } /> : null }
+        { review ? <VscTriangleUp className={ `rotate-45 text-[#CC484E] absolute ${!checked ? "-top-[12px] -right-[12px]" : "-top-[10px] -right-[10px]"}` } size={ 32 } /> : null }
       </div>
     </>
   );

@@ -3,6 +3,7 @@ import SubmitIcon from "../../assets/svg/submitIcon.svg"
 
 interface ModuleConfirmationModalProps {
   onPress: (val: string) => void
+  title?: string
 }
 export default function ModuleConfirmationModal (props: ModuleConfirmationModalProps) {
 
@@ -13,8 +14,9 @@ export default function ModuleConfirmationModal (props: ModuleConfirmationModalP
         <div className="relative mx-auto w-[450px]">
           <div className="border-0 rounded-xl overflow-hidden shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
             <div className="relative flex-auto justify-center flex-col items-center">
-              <div className="flex justify-center items-center py-8 bg-[#FFF6ED]">
+              <div className="flex flex-col justify-center items-center py-8 bg-[#FFF6ED]">
                 <img src={ SubmitIcon } />
+                { props?.title ? <p className="text-[#CC8448] text-[22px] font-sansation font-semibold mt-4">{ props?.title }</p> : null }
               </div>
               <p className="text-black leading-relaxed py-4 px-6 font-sansation font-bold text-[18px] text-center">
                 Are you sure you want to submit Test?

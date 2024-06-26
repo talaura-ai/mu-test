@@ -2,7 +2,7 @@ import React from "react";
 import TimeLeftIcon from "../assets/svg/timeLeftIcon.svg";
 import { useTimer } from 'react-timer-hook';
 
-export default function TimerCounterWithProgress ({ timestamp, title, onTimeout }: any) {
+export default function TimerCounterWithProgress ({ timestamp, title, onTimeout, showTimer = true }: any) {
   const time = new Date();
   time.setSeconds(time.getSeconds() + 60 * timestamp);
   const {
@@ -28,7 +28,7 @@ export default function TimerCounterWithProgress ({ timestamp, title, onTimeout 
             { title }
           </span>
         </div>
-        <div className="flex items-center mt-4 md:mt-0">
+        { showTimer ? <div className="flex items-center mt-4 md:mt-0">
           <div className="w-full flex">
             <p className="text-[18px] text-[#FB2121] font-semibold">
               Time left
@@ -38,7 +38,7 @@ export default function TimerCounterWithProgress ({ timestamp, title, onTimeout 
               { minutes }:{ seconds } min
             </p>
           </div>
-        </div>
+        </div> : null }
       </div>
       <div className="flex items-center mb-2 px-4 font-sansation">
         <div className="w-full bg-[#C7C6C0] rounded-full h-2.5 mb-4 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
