@@ -11,6 +11,7 @@ import {
   getModuleSubmissionDispatcher,
   setAssessmentModuleDispatcher,
 } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
+import axios from 'axios'
 import { toast } from "react-toastify";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
@@ -79,17 +80,35 @@ const VoiceToText = () => {
     }
   }, []);
 
-  const textToSpeech = (text: string) => {
-    setIsSpeaking(true)
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.6; // Speed of speech
-    utterance.pitch = 1; // Pitch of the voice
-    utterance.volume = 1; // Volume of the voice
-    utterance.onend = () => {
-      console.log("Speech synthesis finished.");
+  const textToSpeech = async (text: string) => {
+    const audioRef = new Audio();
+    try {
+      const response = await axios.post(
+        "https://api.openai.com/v1/audio/speech",
+        {
+          model: "tts-1",
+          input: text,
+          voice: "nova",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer sk-proj-2fodzEcqP1ztgSnrh3oLT3BlbkFJ2igg3I9HXE58UNyVcy0F"
+          },
+          responseType: "arraybuffer", // Specify the response type as arraybuffer
+        }
+      );
+      setIsSpeaking(true)
+      const blob = new Blob([response.data], { type: "audio/mp3" });
+      const audioUrl = URL.createObjectURL(blob);
+      audioRef.src = audioUrl;
+      audioRef.play();
+      audioRef.onended = () => {
+        setIsSpeaking(false)
+      }
+    } catch (error) {
       setIsSpeaking(false)
-    };
-    window.speechSynthesis.speak(utterance);
+    }
   };
 
   const playText = (text: string) => {
@@ -97,7 +116,9 @@ const VoiceToText = () => {
       console.error("Text-to-Speech not supported in this browser.");
     } else {
       console.log("Text-to-Speech is supported in this browser.");
-      textToSpeech(text);
+      if (text) {
+        textToSpeech(text);
+      }
     }
   };
 
