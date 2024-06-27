@@ -70,7 +70,7 @@ function AssessmentDetails () {
     if (assessmentId && myAssessments?.length) {
       const data = myAssessments?.filter(v => v?.assessmentId === assessmentId)
       let assessmentData = [...data?.[0]?.module]
-      const newData = assessmentData?.sort((a: any, b: any) => Number(b?.position || 0) - Number(a?.position || 0));
+      const newData = assessmentData?.sort((a: any, b: any) => Number(a?.position || 0) - Number(b?.position || 0));
       setSelectAssessment({ module: newData })
     } else {
       setSelectAssessment({})
