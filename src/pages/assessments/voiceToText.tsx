@@ -31,7 +31,7 @@ const VoiceToText = () => {
   const [submitTestModal, setSubmitTestModal] = React.useState(false)
 
   useUserActivityDetection()
-
+  const audioRef = new Audio();
   React.useEffect(() => {
     if (assessmentModule?.module?.question) {
       const questions = assessmentModule?.module?.question?.map((v: any) => { return { ...v, answer: v?.answer ? v?.answer : "" } })
@@ -77,11 +77,12 @@ const VoiceToText = () => {
     return () => {
       window?.speechSynthesis?.cancel?.();
       clearTimeout(timer)
+      audioRef?.pause?.();
+      audioRef.currentTime = 0;
     }
   }, []);
 
   const textToSpeech = async (text: string) => {
-    const audioRef = new Audio();
     try {
       const response = await axios.post(
         "https://api.openai.com/v1/audio/speech",
