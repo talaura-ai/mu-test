@@ -29,6 +29,7 @@ const VoiceToText = () => {
   const [isSpeaking, setIsSpeaking] = React.useState<boolean>(false);
   const [editorState, setEditorState] = React.useState(EditorState.createEmpty())
   const [submitTestModal, setSubmitTestModal] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
 
   useUserActivityDetection()
   const audioRef = new Audio();
@@ -83,6 +84,7 @@ const VoiceToText = () => {
   }, []);
 
   const textToSpeech = async (text: string) => {
+    setLoading(true)
     try {
       const response = await axios.post(
         "https://api.openai.com/v1/audio/speech",
@@ -106,21 +108,27 @@ const VoiceToText = () => {
       audioRef.play();
       audioRef.onended = () => {
         setIsSpeaking(false)
+        setLoading(false)
         audioRef?.pause?.();
         audioRef.currentTime = 0;
       }
     } catch (error) {
       setIsSpeaking(false)
+      setLoading(false)
     }
   };
 
   const playText = (text: string) => {
+    setLoading(true)
     if (!("speechSynthesis" in window)) {
+      setLoading(false)
       console.error("Text-to-Speech not supported in this browser.");
     } else {
       console.log("Text-to-Speech is supported in this browser.");
       if (text) {
         textToSpeech(text);
+      } else {
+        setLoading(false)
       }
     }
   };
@@ -252,7 +260,7 @@ const VoiceToText = () => {
             onClick={ () => {
               setSubmitTestModal(true)
             } }
-            disabled={ isSpeaking }
+            disabled={ isSpeaking || loading }
             type="button"
             className={ `font-sansation text-white hover:bg-[#40B24B]/80 ${isSpeaking ? "bg-[#40B24B]/60" : "bg-[#40B24B]"} focus:ring-4 focus:outline-none tracking-wide focus:ring-[#40B24B]/50 font-semibold rounded-lg text-md px-12 py-2 text-center inline-flex items-center` }
           >
@@ -261,7 +269,7 @@ const VoiceToText = () => {
             onClick={ () => {
               onNextClicked(currentIndex);
             } }
-            disabled={ isSpeaking }
+            disabled={ isSpeaking || loading }
             type="button"
             className={ `font-sansation text-white hover:bg-[#CC8448]/80 ${isSpeaking ? "bg-[#CC8448]/60" : "bg-[#CC8448]"} focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2 text-center inline-flex items-center` }
           >
