@@ -106,6 +106,8 @@ const VoiceToText = () => {
       audioRef.play();
       audioRef.onended = () => {
         setIsSpeaking(false)
+        audioRef?.pause?.();
+        audioRef.currentTime = 0;
       }
     } catch (error) {
       setIsSpeaking(false)
