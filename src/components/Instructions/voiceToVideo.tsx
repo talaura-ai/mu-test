@@ -3,12 +3,6 @@ export default function VoiceToVideoInstructions ({ test }: any) {
     <>
       <div className="px-3 flex-auto">
         <div className="flex flex-col px-6 py-4 font-sansation">
-          {/* <span className="text-[20px] font-semibold text-[#7A8A94]">
-            Duration: <span className=" text-black text-[20px] font-medium">{ test?.time || 0 } Mins</span>
-          </span> */}
-          {/* <span className="text-[20px] font-semibold text-[#7A8A94] py-1">
-            Maximum Marks: <span className=" text-black text-[20px] font-medium">{ test?.noOfQuestion * 1 || 0 }</span>
-          </span> */}
           <span className="text-[20px] font-semibold text-[#7A8A94] py-1">
             Read the following instructions carefully.
           </span>
