@@ -3,12 +3,6 @@ export default function QuizInstructions ({ test }: any) {
     <>
       <div className="px-3 flex-auto">
         <div className="flex flex-col px-6 py-4 font-sansation">
-          {/* <span className="text-[20px] font-semibold text-[#7A8A94]">
-            Duration: <span className=" text-black text-[20px] font-medium">{ test?.time || 0 } Mins</span>
-          </span>
-          <span className="text-[20px] font-semibold text-[#7A8A94] py-1">
-            Maximum Marks: <span className=" text-black text-[20px] font-medium">{ test?.noOfQuestion * 1 || 0 }</span>
-          </span> */}
           <span className="text-[20px] font-semibold text-[#7A8A94] py-1">
             Read the following instructions carefully.
           </span>
@@ -16,7 +10,7 @@ export default function QuizInstructions ({ test }: any) {
             1. <span className=" text-black text-[20px] font-medium">Ensure you have a stable internet connection. A wired connection is recommended over Wi-Fi to avoid connectivity issues</span>
           </span>
           <span className="text-[20px] font-semibold text-[#7A8A94] py-1">
-            2. <span className=" text-black text-[20px] font-medium">There are { test?.noOfQuestion * 1 || 0 } questions in this quiz.</span>
+            2. <span className=" text-black text-[20px] font-medium">There are { test?.noOfQuestions * 1 || 0 } questions in this quiz.</span>
           </span>
           <span className="text-[20px] font-semibold text-[#7A8A94] py-1">
             3. <span className=" text-black text-[20px] font-medium">You have { test?.time || 0 } minutes to complete the quiz.</span>

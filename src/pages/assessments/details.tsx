@@ -119,7 +119,7 @@ function AssessmentDetails () {
                   Questions
                 </span>
                 <span className="text-[20px] font-semibold text-[#BDBDBD] font-sansation">
-                  { item?.noOfQuestion || 0 }
+                  { item?.noOfQuestions || 0 }
                 </span>
               </div>
               {/* <div className="flex flex-col text-center items-center">

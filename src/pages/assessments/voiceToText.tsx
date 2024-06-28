@@ -256,7 +256,7 @@ const VoiceToText = () => {
           >
             Submit Test
           </button> */}
-          { !(moduleQuestions?.length - 1 === currentIndex) ? <button
+          { moduleQuestions?.length - 1 === currentIndex ? <button
             onClick={ () => {
               setSubmitTestModal(true)
             } }
