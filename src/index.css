@@ -189,3 +189,28 @@ code {
 	 transform: rotate(360deg);
 	}
  }
+
+ 
+
+ /* Custom Transform Class */
+.transform-translate3d-0-100-0 {
+	transform: translate3d(0, 100%, 0);
+  }
+  
+  /* Custom Transition Class */
+  .transition-custom {
+	transform: translate3d(0, 100%, 0);
+  transition: transform 0.5s ease, opacity 0.4s linear, visibility 0.1s 0.5s;
+  }
+  @keyframes slide-down {
+	0% {
+	  transform: translateY(-100%);
+	}
+	100% {
+	  transform: translateY(0);
+	}
+  }
+  
+  .animate-slide-down {
+	animation: slide-down 0.2s ease-out forwards;
+  }
