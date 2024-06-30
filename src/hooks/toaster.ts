@@ -17,7 +17,7 @@ const useToaster = (delay = 3000) => {
         [delay]
     );
 
-    return { isToastVisible, showToast };
+    return { isToastVisible, showToast, setIsToastVisible };
 };
 
 export default useToaster;

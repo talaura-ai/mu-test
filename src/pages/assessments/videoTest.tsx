@@ -1,5 +1,4 @@
 import VoiceIcon from "../../assets/Group 171.png";
-import ReactLoading from "react-loading";
 import MicIcon from "../../assets/svg/micIcon2.svg";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useRef, useState, useCallback } from "react";
@@ -10,7 +9,6 @@ import FaceDetection from "@mediapipe/face_detection";
 import { Camera } from "@mediapipe/camera_utils";
 import { toast } from "react-toastify";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
-import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
@@ -24,7 +22,6 @@ import {
   setAssessmentModuleDispatcher,
 } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection";
-import useToaster from "../../hooks/toaster"; // Adjust the import path accordingly
 import CustomToaster from "../../components/Modals/CustomToaster";
 
 const width = 650;
@@ -55,11 +52,11 @@ const VideoTest = () => {
   const [conversationAns, setConversationAns] = useState<string>("");
   const [moduleQuestions, setModuleQuestions] = useState<any>([]);
   const [aiChats, setAIChat] = useState<any>([]);
-  const { isToastVisible, showToast } = useToaster();
-
+  const [isToasterDisplayed, setIsToasterDisplayed] = useState(false);
   useUserActivityDetection();
 
   let speakTimeout: any = null;
+  let toasterTimeout: any = null;
 
   const { webcamRef, boundingBox, isLoading, detected, facesDetected }: any =
     useFaceDetection({
@@ -79,22 +76,25 @@ const VideoTest = () => {
     });
 
   useEffect(() => {
-    if (!detected) {
-      const screenshot = webcamRef.current.getScreenshot();
-      updateUserActivity();
-    }
-    if (!detected && !isToastVisible) {
-      showToast("Face not detected");
+    if (!detected && !isToasterDisplayed) {
       setToastMsg("Face not detected");
-    }
-    if (facesDetected > 1) {
+      displayToasterFun()
       updateUserActivity();
     }
-    if (facesDetected > 1 && !isToastVisible) {
-      showToast("Multiple face detected");
+    if (facesDetected > 1 && !isToasterDisplayed) {
       setToastMsg("Multiple face detected");
+      displayToasterFun()
+      updateUserActivity();
     }
-  }, [detected, facesDetected, showToast]);
+  }, [detected, facesDetected]);
+
+  const displayToasterFun = () => {
+    clearTimeout(toasterTimeout)
+    toasterTimeout = setTimeout(() => {
+      setIsToasterDisplayed(false)
+    }, 1000);
+    setIsToasterDisplayed(true)
+  }
 
   useEffect(() => {
     scrollToBottom();
@@ -141,48 +141,6 @@ const VideoTest = () => {
       })
     );
   };
-
-  // useEffect(() => {
-  //   const handleBeforeUnload = (event: any) => {
-  //     console.log('Browser Closing')
-  //     // Here you can handle logic before the unload event
-  //     const message = "Are you sure you want to leave? Any unsaved changes will be lost.";
-  //     event.returnValue = message; // Standard for most browsers
-
-  //     return message; // For some older browsers
-  //   };
-  //   const handleUnload = () => {
-  //     console.log('Page reloading')
-  //     // Logic to handle page reload
-  //     console.log('Page is being reloaded');
-  //   };
-  //   window.addEventListener('beforeunload', handleBeforeUnload);
-  //   window.addEventListener('unload', handleUnload);
-  //   // Clean up event listeners on component unmount
-  //   return () => {
-  //     window.removeEventListener('beforeunload', handleBeforeUnload);
-  //     window.removeEventListener('unload', handleUnload);
-  //   };
-  // }, []);
-
-  // // Alert on Tab Changed within the Same browser Window
-  // function handleVisibilityChange () {
-  //   if (document?.hidden) {
-  //     console.log("Tab Change Detected", "Action has been Recorded", "error");
-  //     // toast.error("Alert: Tab Change Detected", {});
-  //     // the page is hidden
-  //   } else {
-  //     console.log("ACTIVE")
-  //     // the page is visible
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   document.addEventListener('visibilitychange', handleVisibilityChange);
-  //   return () => {
-  //     document.removeEventListener('visibilitychange', handleVisibilityChange);
-  //   };
-  // }, []);
 
   useEffect(() => {
     navigator.mediaDevices
@@ -293,13 +251,13 @@ const VideoTest = () => {
         mediaRecorder?.stop();
         audioElement?.pause();
         audioElement.currentTime = 0;
-        mediaRecorder.removeEventListener("dataavailable", () => {});
+        mediaRecorder.removeEventListener("dataavailable", () => { });
         newSocket?.disconnect();
       };
     }
   }, [mediaRecorder, userId, moduleQuestions, myAssessments]);
 
-  function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  function arrayBufferToBase64 (buffer: ArrayBuffer): string {
     let binary = "";
     const bytes = new Uint8Array(buffer);
     const len = bytes.byteLength;
@@ -370,15 +328,14 @@ const VideoTest = () => {
       console.log("error=>", error);
     }
   };
-
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4">
-      {!isToastVisible && <CustomToaster message={toastMsg} />}
+      { isToasterDisplayed && <CustomToaster message={ toastMsg } onClose={ () => { setIsToasterDisplayed(false) } } /> }
       <TimerCounterWithProgress
-        timestamp={20 || 0}
-        title={"Video Round"}
-        onTimeout={onTimeout}
-        showTimer={false}
+        timestamp={ 20 || 0 }
+        title={ "Video Round" }
+        onTimeout={ onTimeout }
+        showTimer={ false }
       />
       <div className="flex">
         <span className="text-[20px] text-black font-sansation font-semibold">
@@ -396,9 +353,8 @@ const VideoTest = () => {
           <div className="relative flex w-[50%] h-[470px] bg-[#474646] justify-center items-center rounded-xl border border-[#E5A971] mr-4">
             <div className="flex justify-center items-center">
               <div
-                className={`h-10 w-10 md:h-40 md:w-40 bg-white text-[#E5A971] rounded-full text-[20px] md:text-[60px] font-semibold font-sansation flex justify-center items-center ${
-                  isSpeaking ? "animation-pulse" : ""
-                }`}
+                className={ `h-10 w-10 md:h-40 md:w-40 bg-white text-[#E5A971] rounded-full text-[20px] md:text-[60px] font-semibold font-sansation flex justify-center items-center ${isSpeaking ? "animation-pulse" : ""
+                  }` }
               >
                 Ai
               </div>
@@ -407,35 +363,35 @@ const VideoTest = () => {
               Ai Bot
             </div>
             <div className="absolute right-2 bottom-4 text-white  px-4 py-1  ">
-              <img src={MicIcon} className="h-8 w-10" alt="mic" />
+              <img src={ MicIcon } className="h-8 w-10" alt="mic" />
             </div>
           </div>
           <div className="flex relative h-1/2 w-[50%] rounded-xl overflow-hidden">
             <div className="flex rounded-xl w-full overflow-hidden h-[470px]">
               <Webcam
-                ref={webcamRef}
+                ref={ webcamRef }
                 screenshotFormat="image/jpeg"
-                screenshotQuality={1}
+                screenshotQuality={ 1 }
                 // audio={userMute}
-                videoConstraints={videoConstraints}
-                onUserMedia={() => {
+                videoConstraints={ videoConstraints }
+                onUserMedia={ () => {
                   setCameraStats(1);
-                }}
-                onUserMediaError={() => {
+                } }
+                onUserMediaError={ () => {
                   setCameraStats(2);
-                }}
+                } }
                 className="overflow-hidden rounded-xl bg-gray-200 mr-4 object-cover"
               />
               <div></div>
               <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation capitalize">
-                {(myAssessments && myAssessments?.[0]?.name) || "Candidate"}
+                { (myAssessments && myAssessments?.[0]?.name) || "Candidate" }
               </div>
               <div className="absolute right-6 bottom-4 text-white  px-4 py-1  ">
                 <img
-                  onClick={() => {
+                  onClick={ () => {
                     setUserMute(!userMute);
-                  }}
-                  src={MicIcon}
+                  } }
+                  src={ MicIcon }
                   className="h-8 w-10"
                   alt="mic"
                 />
@@ -446,35 +402,35 @@ const VideoTest = () => {
         <div className="flex flex-col w-[20%] bg-white shadow rounded-lg p-4">
           <div className="flex w-full flex-col h-[440px]">
             <div className="flex gap-2 px-2 pb-2">
-              <img src={VoiceIcon} alt="icn" />
+              <img src={ VoiceIcon } alt="icn" />
               <span className="text-xs text-gray-300 mt-2">CC/Subtitle </span>
             </div>
             <div className="flex flex-col mx-2 bg-white overflow-y-scroll space-y-2">
-              {aiChats?.map((item: any, index: number) => {
+              { aiChats?.map((item: any, index: number) => {
                 if (item?.type === "ai") {
                   return (
                     <div
-                      key={item?.text + index}
+                      key={ item?.text + index }
                       className="flex flex-col gap-1 w-full max-w-[80%]"
                     >
                       <div className="flex flex-col leading-1.5 p-4 border-gray-200 bg-[#F5F2F2] rounded-xl">
                         <p className="text-sm font-normal text-gray-900">
-                          {item?.text}
+                          { item?.text }
                         </p>
                       </div>
                     </div>
                   );
                 } else {
                   return (
-                    <div key={item?.text + index} className="flex justify-end">
+                    <div key={ item?.text + index } className="flex justify-end">
                       <div className="bg-[#F5F2F2] text-black p-2 rounded-lg max-w-[80%]">
-                        {item?.text}
+                        { item?.text }
                       </div>
                     </div>
                   );
                 }
-              })}
-              <div ref={chatEndRef} />
+              }) }
+              <div ref={ chatEndRef } />
             </div>
           </div>
         </div>
@@ -482,21 +438,21 @@ const VideoTest = () => {
       <div className="flex justify-end py-6 mt-4 font-sansation">
         <button
           className="flex justify-center bg-[#40B24B] px-12 py-2 rounded-lg text-white font-semibold font-sansation"
-          onClick={() => {
+          onClick={ () => {
             setSubmitTestModal(true);
-          }}
+          } }
         >
           Submit
         </button>
       </div>
-      {submitTestModal ? (
+      { submitTestModal ? (
         <ModuleConfirmationModal
-          onPress={(v) => {
+          onPress={ (v) => {
             onSubmitTest(v);
-          }}
-          title={assessmentModule.module?.name}
+          } }
+          title={ assessmentModule.module?.name }
         />
-      ) : null}
+      ) : null }
     </div>
   );
 };

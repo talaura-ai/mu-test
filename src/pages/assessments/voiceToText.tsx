@@ -52,6 +52,17 @@ const VoiceToText = () => {
     return EditorState.createWithContent(contentState)
   }
 
+  // //Disable Right click
+  if (document.addEventListener) {
+    document.addEventListener(
+      "contextmenu",
+      function (e) {
+        e.preventDefault();
+      },
+      false
+    );
+  }
+
   React.useEffect(() => {
     dispatcher(
       setAssessmentModuleDispatcher({

@@ -32,6 +32,17 @@ function MyAssessments () {
     }
   }, [dispatcher, userId]);
 
+  // //Disable Right click
+  if (document.addEventListener) {
+    document.addEventListener(
+      "contextmenu",
+      function (e) {
+        e.preventDefault();
+      },
+      false
+    );
+  }
+
   const getAssessmentStatus = (modules: any) => {
     let flag = true
     if (modules && modules?.length) {
