@@ -28,6 +28,17 @@ const CodingTest: React.FC<any> = (props) => {
     }
   }, [assessmentModule])
 
+  // //Disable Right click
+  if (document.addEventListener) {
+    document.addEventListener(
+      "contextmenu",
+      function (e) {
+        e.preventDefault();
+      },
+      false
+    );
+  }
+
   React.useEffect(() => {
     dispatcher(setAssessmentModuleDispatcher(
       {

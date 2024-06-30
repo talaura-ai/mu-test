@@ -45,6 +45,17 @@ function PersonNeedMoreInfo () {
     }
   };
 
+  // //Disable Right click
+  if (document.addEventListener) {
+    document.addEventListener(
+      "contextmenu",
+      function (e) {
+        e.preventDefault();
+      },
+      false
+    );
+  }
+
   React.useEffect(() => {
     if (assessmentId && myAssessments?.length) {
       const data = myAssessments?.filter((v) => v?.assessmentId === assessmentId);

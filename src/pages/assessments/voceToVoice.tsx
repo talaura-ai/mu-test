@@ -47,6 +47,17 @@ const VoiceToVoice = () => {
     scrollToBottom();
   }, [aiChats]);
 
+  // //Disable Right click
+  if (document.addEventListener) {
+    document.addEventListener(
+      "contextmenu",
+      function (e) {
+        e.preventDefault();
+      },
+      false
+    );
+  }
+
   useEffect(() => {
     if (assessmentModule?.module?.question) {
       const questions = assessmentModule?.module?.question?.map((v: any) => { return { ...v, answer: v?.answer ? v?.answer : "" } })

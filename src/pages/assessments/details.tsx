@@ -26,6 +26,17 @@ function AssessmentDetails () {
     }
   }, [location]);
 
+  // //Disable Right click
+  if (document.addEventListener) {
+    document.addEventListener(
+      "contextmenu",
+      function (e) {
+        e.preventDefault();
+      },
+      false
+    );
+  }
+
   const onNextClicked = () => {
     setStartTestModal(false);
     const type = String(selectedTest?.type).toLocaleLowerCase()

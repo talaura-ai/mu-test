@@ -47,6 +47,17 @@ function StartMCQTest () {
     ))
   }, [dispatcher, assessmentId, testId, userId])
 
+  // //Disable Right click
+  if (document.addEventListener) {
+    document.addEventListener(
+      "contextmenu",
+      function (e) {
+        e.preventDefault();
+      },
+      false
+    );
+  }
+
   const onQuestionSelection = (option: any) => {
     let optionValue = ""
     if (option !== selectedQuestion) {
