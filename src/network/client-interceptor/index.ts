@@ -16,11 +16,18 @@ AxiosService.interceptors.request.use(
     }
     return request
   },
-  async function (error) { return await Promise.reject(error) }
+  async function (error) {
+    return await Promise.reject(error)
+  }
 )
 
 AxiosService.interceptors.response.use(response => {
   return getAxiosResposeInterceptors(response)
+}, async function (error) {
+  if (error?.response?.status === 403) {
+    window.location.href = "/"
+  }
+  return await Promise.reject(error)
 })
 
 export default AxiosService
