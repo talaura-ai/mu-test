@@ -8,11 +8,11 @@ export default function StartTestConfirmationModal (props: any) {
   return (
     <>
       <div
-        className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none font-sansation"
+        className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none font-sansation "
       >
         <div className="relative w-full my-6 mx-auto max-w-2xl">
           {/*content*/ }
-          <div className="border-0 rounded-xl shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+          <div className="border-0 rounded-xl shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none overflow-hidden">
             {/*header*/ }
             <div className="relative flex items-center py-3 justify-center border-solid border-t-8 border-[#FFAC3A]">
               <h3 className="text-[24px] text-black font-semibold">
@@ -25,7 +25,7 @@ export default function StartTestConfirmationModal (props: any) {
                 <img src={ GrayCloseIcon } />
               </button>
             </div>
-            <div className="min-h-[500px] max-h-[600px] overflow-scroll">
+            <div className="min-h-[500px] max-h-[600px] overflow-y-scroll overflow-x-hidden">
               {/*body*/ }
               { String(props?.selectedTest?.type).toLocaleLowerCase() === "Quiz"?.toLocaleLowerCase() ? <QuizInstructions test={ props?.selectedTest } /> : null }
               { String(props?.selectedTest?.type).toLocaleLowerCase() === "Voice To Text"?.toLocaleLowerCase() ? <VoiceToTextInstructions test={ props?.selectedTest } /> : null }
