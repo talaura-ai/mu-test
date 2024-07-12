@@ -23,6 +23,8 @@ import {
 } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection";
 import CustomToaster from "../../components/Modals/CustomToaster";
+import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
+import screenfull from 'screenfull';
 
 const width = 650;
 const height = 650;
@@ -44,6 +46,7 @@ const VideoTest = () => {
   const [cameraStats, setCameraStats] = useState(0);
   const [toastMsg, setToastMsg] = useState("");
   const [userMute, setUserMute] = useState(true);
+  const [isExitFullScreen, setIsExitFullScreen] = useState(false)
   const [error, setError] = useState<string | null>(null);
   const [question, setQuestion] = useState({
     title: "",
@@ -87,6 +90,35 @@ const VideoTest = () => {
       updateUserActivity();
     }
   }, [detected, facesDetected]);
+
+  useEffect(() => {
+    if (screenfull.isEnabled) {
+      screenfull.on('change', handleFullscreenChange);
+    }
+    return () => {
+      if (screenfull.isEnabled) {
+        screenfull.off('change', handleFullscreenChange);
+      }
+    };
+  }, []);
+
+  const handleFullscreenChange = () => {
+    if (!screenfull.isFullscreen) {
+      setIsExitFullScreen(true)
+    }
+  };
+
+  const onExitAction = (type: any) => {
+    if (type === "cancel") {
+      if (screenfull.isEnabled && !screenfull.isFullscreen) {
+        screenfull.request();
+      }
+    }
+    if (type === "exit") {
+      submitTest();
+    }
+    setIsExitFullScreen(false)
+  }
 
   const displayToasterFun = () => {
     clearTimeout(toasterTimeout)
@@ -406,7 +438,9 @@ const VideoTest = () => {
               <span className="text-xs text-gray-300 mt-2">CC/Subtitle </span>
             </div>
             <div className="flex flex-col mx-2 bg-white overflow-y-scroll space-y-2">
-              { aiChats?.map((item: any, index: number) => {
+              { Array.from(
+                new Map(aiChats?.map((itm: any) => [itm?.text, itm])).values()
+              )?.map((item: any, index: number) => {
                 if (item?.type === "ai") {
                   return (
                     <div
@@ -453,6 +487,7 @@ const VideoTest = () => {
           title={ assessmentModule.module?.name }
         />
       ) : null }
+      { isExitFullScreen ? <ExitFullScreenModal onPress={ (v) => { onExitAction(v) } } /> : null }
     </div>
   );
 };

@@ -17,6 +17,8 @@ import TimerCounterWithProgress from "../../components/timerCounterWithProgress"
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
 import { htmlToText } from 'html-to-text';
 import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection";
+import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
+import screenfull from 'screenfull';
 
 const VoiceToText = () => {
   const dispatcher = useAppDispatch();
@@ -30,6 +32,7 @@ const VoiceToText = () => {
   const [editorState, setEditorState] = React.useState(EditorState.createEmpty())
   const [submitTestModal, setSubmitTestModal] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
+  const [isExitFullScreen, setIsExitFullScreen] = React.useState(false)
 
   useUserActivityDetection()
   const audioRef = new Audio();
@@ -93,6 +96,35 @@ const VoiceToText = () => {
       audioRef.currentTime = 0;
     }
   }, []);
+
+  useEffect(() => {
+    if (screenfull.isEnabled) {
+      screenfull.on('change', handleFullscreenChange);
+    }
+    return () => {
+      if (screenfull.isEnabled) {
+        screenfull.off('change', handleFullscreenChange);
+      }
+    };
+  }, []);
+
+  const handleFullscreenChange = () => {
+    if (!screenfull.isFullscreen) {
+      setIsExitFullScreen(true)
+    }
+  };
+
+  const onExitAction = (type: any) => {
+    if (type === "cancel") {
+      if (screenfull.isEnabled && !screenfull.isFullscreen) {
+        screenfull.request();
+      }
+    }
+    if (type === "exit") {
+      submitTest();
+    }
+    setIsExitFullScreen(false)
+  }
 
   const textToSpeech = async (text: string) => {
     setLoading(true)
@@ -288,7 +320,6 @@ const VoiceToText = () => {
           </button> }
         </div>
       </div>
-
       { startTest ? (
         <ModuletestStartModal
           onPress={ (v) => {
@@ -297,6 +328,7 @@ const VoiceToText = () => {
         />
       ) : null }
       { submitTestModal ? <ModuleConfirmationModal onPress={ (v) => { onSubmitTest(v) } } title={ assessmentModule.module?.name } /> : null }
+      { isExitFullScreen ? <ExitFullScreenModal onPress={ (v) => { onExitAction(v) } } /> : null }
     </div>
   );
 };

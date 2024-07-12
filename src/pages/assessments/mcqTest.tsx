@@ -13,6 +13,8 @@ import TimerCounterWithProgress from "../../components/timerCounterWithProgress"
 import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection";
 import ReviewIcon from "../../assets/svg/review.svg"
 import ReviewedIcon from "../../assets/svg/reviewed.svg"
+import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
+import screenfull from 'screenfull';
 
 function StartMCQTest () {
   const dispatcher = useAppDispatch()
@@ -25,6 +27,7 @@ function StartMCQTest () {
   const [disableNextBtn, setDisableNextBtn] = React.useState(false)
   const [submitTest, setSubmitTest] = React.useState(false)
   const [disablePrevBtn, setDisablePrevBtn] = React.useState(true)
+  const [isExitFullScreen, setIsExitFullScreen] = React.useState(false)
   const { assessmentId, testId, userId } = useParams();
 
   useUserActivityDetection()
@@ -56,6 +59,35 @@ function StartMCQTest () {
       },
       false
     );
+  }
+
+  useEffect(() => {
+    if (screenfull.isEnabled) {
+      screenfull.on('change', handleFullscreenChange);
+    }
+    return () => {
+      if (screenfull.isEnabled) {
+        screenfull.off('change', handleFullscreenChange);
+      }
+    };
+  }, []);
+
+  const handleFullscreenChange = () => {
+    if (!screenfull.isFullscreen) {
+      setIsExitFullScreen(true)
+    }
+  };
+
+  const onExitAction = (type: any) => {
+    if (type === "cancel") {
+      if (screenfull.isEnabled && !screenfull.isFullscreen) {
+        screenfull.request();
+      }
+    }
+    if (type === "exit") {
+      submitTestClicked()
+    }
+    setIsExitFullScreen(false)
   }
 
   const onQuestionSelection = (option: any) => {
@@ -274,6 +306,7 @@ function StartMCQTest () {
         </div>
       </div>
       { submitTest ? <ModuleConfirmationModal onPress={ (v) => { onSubmission(v) } } title={ assessmentModule.module?.name } /> : null }
+      { isExitFullScreen ? <ExitFullScreenModal onPress={ (v) => { onExitAction(v) } } /> : null }
     </>
   );
 }

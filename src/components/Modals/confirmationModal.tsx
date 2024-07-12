@@ -1,4 +1,3 @@
-import { AiOutlineInfoCircle } from "react-icons/ai";
 import SubmitIcon from "../../assets/svg/submitIcon.svg"
 
 interface ModuleConfirmationModalProps {
