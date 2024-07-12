@@ -18,6 +18,7 @@ function AssessmentDetails () {
   const { assessmentId, userId } = useParams();
   const myAssessments = useAppSelector(getAssessmentsSelector)
   const [selectAssessment, setSelectAssessment] = React.useState<any>({});
+  const [assessmentExpired, setAssessmentExpired] = React.useState<boolean>(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -94,10 +95,14 @@ function AssessmentDetails () {
     }
   }, [dispatcher, userId])
 
+  const onExpired = () => {
+    setAssessmentExpired(true)
+  }
+
   return (
     <>
       <div className="sm:p-8 md:px-20 md:py-12 p-4">
-        <AssessmentCard />
+        <AssessmentCard onExpired={ onExpired } />
         { selectAssessment?.module?.map((item: any) => (
           <div
             key={ item }
@@ -157,12 +162,12 @@ function AssessmentDetails () {
                   Completed
                 </button> : <button
                   type="button"
-                  disabled={ item?.isLocked }
+                  disabled={ item?.isLocked || assessmentExpired }
                   onClick={ () => {
                     setStartTestModal(true);
                     setSelectedTest(item);
                   } }
-                  className={ `text-white bg-[#CC8448] hover:bg-[#CC8448]/80 ${item?.isLocked ? "bg-[#CC8448]/80 cursor-not-allowed" : ""} font-sansation focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center` }
+                  className={ `text-white bg-[#CC8448] hover:bg-[#CC8448]/80 ${item?.isLocked || assessmentExpired ? "bg-[#CC8448]/80 cursor-not-allowed" : ""} font-sansation focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center` }
                 >
                   Start
                 </button> }

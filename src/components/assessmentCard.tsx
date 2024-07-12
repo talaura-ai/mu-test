@@ -7,8 +7,9 @@ import { useAppSelector } from "../store/hooks";
 import { getAssessmentsSelector } from "../store/slices/dashboard-slice/dashboard-selectors";
 import { assessmentTotalTime, getExpiredIn } from "../utils/helper";
 import moment from "moment";
+import CountdownTimer from "./countdownTimer";
 
-function AssessmentCard () {
+function AssessmentCard ({ onExpired }: any) {
   const { assessmentId } = useParams();
   let location = useLocation();
   const myAssessments = useAppSelector(getAssessmentsSelector)
@@ -59,7 +60,8 @@ function AssessmentCard () {
               Expires In
             </span>
             <span className="text-[16px] font-semibold text-black leading-[16px] font-sansation">
-              { getExpiredIn(selectAssessment?.startsAt, selectAssessment?.endsOn) }
+              {/* { getExpiredIn(selectAssessment?.startsAt, selectAssessment?.endsOn) } */ }
+              <CountdownTimer onTimeout={ () => { onExpired() } } timestamp={ moment(selectAssessment?.endsOn).diff(moment(), 'minutes') } />
             </span>
           </div>
         </div>

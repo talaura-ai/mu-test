@@ -9,12 +9,14 @@ import { setAssessmentDispatcher } from "../../store/slices/dashboard-slice/dash
 import { getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import moment from "moment";
 import { assessmentTotalTime, getExpiredIn } from "../../utils/helper";
+import CountdownTimer from "../../components/countdownTimer";
 
 function MyAssessments () {
   const navigate = useNavigate();
   const { userId } = useParams();
   const [deviceConfigModal, setDeviceConfigModal] = React.useState(false);
   const [selectAssessment, setSelectAssessment] = React.useState<any>({});
+  const [assessmentExpired, setAssessmentExpired] = React.useState<any>({});
   const dispatcher = useAppDispatch();
   const myAssessments = useAppSelector(getAssessmentsSelector);
 
@@ -33,15 +35,15 @@ function MyAssessments () {
   }, [dispatcher, userId]);
 
   // //Disable Right click
-  if (document.addEventListener) {
-    document.addEventListener(
-      "contextmenu",
-      function (e) {
-        e.preventDefault();
-      },
-      false
-    );
-  }
+  // if (document.addEventListener) {
+  //   document.addEventListener(
+  //     "contextmenu",
+  //     function (e) {
+  //       e.preventDefault();
+  //     },
+  //     false
+  //   );
+  // }
 
   const getAssessmentStatus = (modules: any) => {
     let flag = true
@@ -53,6 +55,12 @@ function MyAssessments () {
       })
     }
     return flag
+  }
+  const onExpired = (id: any) => {
+    let expire = { ...assessmentExpired }
+    expire[id] = "true"
+    setAssessmentExpired(expire)
+    console.log('id=>', id)
   }
   return (
     <>
@@ -92,9 +100,9 @@ function MyAssessments () {
             </div>
           </div>
         </div>
-        { myAssessments?.map((item) => (
+        { myAssessments?.map((item, index) => (
           <div
-            key={ item }
+            key={ item?.assessmentId + index }
             className="flex flex-wrap items-center justify-around mb-6 rounded-2xl bg-white relative shadow-lg"
           >
             <div className="w-[10px] md:h-[64px] sm:h-[130px] bg-gradient-to-r from-[#E5A971] to-[rgb(243,188,132)] rounded-r-xl absolute top-auto left-0 bottom-auto"></div>
@@ -131,19 +139,20 @@ function MyAssessments () {
                   Expires In
                 </span>
                 <span className="text-[16px] font-semibold text-black leading-[16px] font-sansation">
-                  { getExpiredIn(item?.startsAt, item?.endsOn) }
+                  {/* { getExpiredIn(item?.startsAt, ) } */ }
+                  <CountdownTimer onTimeout={ () => { onExpired(item?.assessmentId) } } timestamp={ moment(item?.endsOn).diff(moment(), 'minutes') } />
                 </span>
               </div>
             </div>
             <div className="flex items-center justify-center py-6 md:w-[20%] sm:w-full">
               <button
                 type="button"
-                disabled={ getAssessmentStatus(item?.module) }
+                disabled={ getAssessmentStatus(item?.module) || assessmentExpired[item?.assessmentId] }
                 onClick={ () => {
                   setDeviceConfigModal(true);
                   setSelectAssessment(item);
                 } }
-                className={ `text-white font-sansation bg-[#CC8448] hover:bg-[#CC8448]/80 ${getAssessmentStatus(item?.module) ? "bg-[#CC8448]/80 cursor-not-allowed px-6" : "px-12"} focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md py-2.5 text-center inline-flex items-center` }
+                className={ `text-white font-sansation bg-[#CC8448] hover:bg-[#CC8448]/80 ${getAssessmentStatus(item?.module) ? "bg-[#CC8448]/80 cursor-not-allowed px-6" : "px-12"} ${assessmentExpired[item?.assessmentId] ? "bg-[#CC8448]/80 cursor-not-allowed px-12" : ""} focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md py-2.5 text-center inline-flex items-center` }
               >
                 { getAssessmentStatus(item?.module) ? "Completed" : "Start" }
               </button>
