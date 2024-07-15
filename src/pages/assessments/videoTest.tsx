@@ -57,7 +57,8 @@ const VideoTest = () => {
   const [aiChats, setAIChat] = useState<any>([]);
   const [isToasterDisplayed, setIsToasterDisplayed] = useState(false);
   useUserActivityDetection();
-
+  // const audioElement = new Audio();
+  let audioElement = useRef(new Audio())
   let speakTimeout: any = null;
   let toasterTimeout: any = null;
 
@@ -190,7 +191,6 @@ const VideoTest = () => {
 
   useEffect(() => {
     if (mediaRecorder && userId && moduleQuestions && myAssessments) {
-      const audioElement = new Audio();
       const newSocket = io("wss://talorexvoice.com", {
         query: {
           userId: userId,
@@ -234,8 +234,8 @@ const VideoTest = () => {
       });
       newSocket.on("answer", (data) => {
         console.log("conversationAns answer=>", data);
-        audioElement.pause();
-        audioElement.currentTime = 0;
+        audioElement.current.pause();
+        audioElement.current.currentTime = 0;
         setIsPlaying(true);
         setAIChat((prev: any) => {
           return [...prev, { type: "user", text: data?.answer }];
@@ -251,21 +251,15 @@ const VideoTest = () => {
         console.log("audioUrl=>", audioUrl);
         clearTimeout(speakTimeout);
         setIsSpeaking(true);
-        // if (isPlaying) {
-        audioElement.pause();
-        audioElement.currentTime = 0;
-        audioElement.src = "";
+        audioElement.current.pause();
+        audioElement.current.currentTime = 0;
+        audioElement.current.src = "";
         speakTimeout = setTimeout(() => {
-          audioElement.src = audioUrl;
+          audioElement.current.src = audioUrl;
           setIsPlaying(true);
-          audioElement.play();
+          audioElement.current.play();
         }, 200);
-        // } else {
-        //   audioElement.src = audioUrl
-        //   setIsPlaying(true)
-        //   audioElement.play();
-        // }
-        audioElement.onended = () => {
+        audioElement.current.onended = () => {
           setIsSpeaking(false);
           setIsPlaying(false);
         };
@@ -281,8 +275,8 @@ const VideoTest = () => {
       });
       return () => {
         mediaRecorder?.stop();
-        audioElement?.pause();
-        audioElement.currentTime = 0;
+        audioElement.current?.pause();
+        audioElement.current.currentTime = 0;
         mediaRecorder.removeEventListener("dataavailable", () => { });
         newSocket?.disconnect();
       };
@@ -340,6 +334,14 @@ const VideoTest = () => {
 
   const submitTest = async () => {
     try {
+      clearTimeout(speakTimeout);
+      audioElement?.current?.pause();
+      audioElement.current.currentTime = 0;
+      audioElement.current.src = "";
+      webcamRef.current?.video?.srcObject?.getTracks()?.forEach((track: any) => track?.stop());
+      webcamRef.current.video.srcObject = null;
+      setIsSpeaking(false);
+      mediaRecorder?.stop();
       const res = await dispatcher(
         getModuleSubmissionDispatcher({
           moduleId: testId,
@@ -352,6 +354,7 @@ const VideoTest = () => {
           {}
         );
         navigate(-1);
+        screenfull.toggle()
       } else {
         toast.error("Oops! Submission is failed", {});
       }

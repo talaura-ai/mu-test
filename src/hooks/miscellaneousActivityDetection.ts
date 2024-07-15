@@ -17,19 +17,20 @@ function useUserActivityDetection () {
     const handleBeforeUnload = (event: any) => {
       console.log('1111;;;;;;;Browser Closing')
       // Here you can handle logic before the unload event
-      const message = "Are you sure you want to leave? Any unsaved changes will be lost.";
-      event.returnValue = message; // Standard for most browsers
-      return message; // For some older browsers
+      // const message = "Are you sure you want to leave? Any unsaved changes will be lost.";
+      // event.returnValue = message; // Standard for most browsers
+      // return message; // For some older browsers
+      return true
     };
     const handleUnload = () => {
       console.log('Page reloading')
       console.log('Page is being reloaded');
     };
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    // window.addEventListener('beforeunload', handleBeforeUnload);
     window.addEventListener('unload', handleUnload);
     // Clean up event listeners on component unmount
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      // window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('unload', handleUnload);
     };
   }, []);
