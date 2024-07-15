@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ContentState, EditorState, convertFromHTML, convertToRaw } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
@@ -35,7 +35,7 @@ const VoiceToText = () => {
   const [isExitFullScreen, setIsExitFullScreen] = React.useState(false)
 
   useUserActivityDetection()
-  const audioRef = new Audio();
+  const audioRef = useRef(new Audio())
   React.useEffect(() => {
     if (assessmentModule?.module?.question) {
       const questions = assessmentModule?.module?.question?.map((v: any) => { return { ...v, answer: v?.answer ? v?.answer : "" } })
@@ -92,8 +92,8 @@ const VoiceToText = () => {
     return () => {
       window?.speechSynthesis?.cancel?.();
       clearTimeout(timer)
-      audioRef?.pause?.();
-      audioRef.currentTime = 0;
+      audioRef?.current?.pause?.();
+      audioRef.current.currentTime = 0;
     }
   }, []);
 
@@ -147,13 +147,13 @@ const VoiceToText = () => {
       setIsSpeaking(true)
       const blob = new Blob([response.data], { type: "audio/mp3" });
       const audioUrl = URL.createObjectURL(blob);
-      audioRef.src = audioUrl;
-      audioRef.play();
-      audioRef.onended = () => {
+      audioRef.current.src = audioUrl;
+      audioRef?.current?.play();
+      audioRef.current.onended = () => {
         setIsSpeaking(false)
         setLoading(false)
-        audioRef?.pause?.();
-        audioRef.currentTime = 0;
+        audioRef?.current?.pause?.();
+        audioRef.current.currentTime = 0;
       }
     } catch (error) {
       setIsSpeaking(false)
@@ -210,6 +210,10 @@ const VoiceToText = () => {
   }
   const submitTest = async () => {
     try {
+      setIsSpeaking(false)
+      audioRef?.current?.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current.src = "";
       const res = await dispatcher(
         getModuleSubmissionDispatcher({
           moduleId: testId,
@@ -218,7 +222,9 @@ const VoiceToText = () => {
       );
       if (res?.payload.data?.status) {
         toast.success(`${assessmentModule?.module?.name} completed successfully!`, {});
-        navigate(-1)
+        // navigate(-1)
+        // screenfull.exit()
+        window.location.href = `/assessment/${userId}/${assessmentId}/modules`
       } else {
         toast.error("Oops! Submission is failed", {});
       }

@@ -161,7 +161,9 @@ function StartMCQTest () {
       }))
       if (res?.payload.data?.status) {
         toast.success(`${assessmentModule.module?.name} completed successfully!`, {});
-        navigate(-1)
+        // navigate(-1)
+        // screenfull.exit()
+        window.location.href = `/assessment/${userId}/${assessmentId}/modules`
       } else {
         toast.error("Oops! Submission is failed", {});
       }

@@ -41,8 +41,9 @@ const VoiceToVoice = () => {
   const [conversationAns, setConversationAns] = useState<string>("");
   const [moduleQuestions, setModuleQuestions] = useState<any>([]);
   const [aiChats, setAIChat] = useState<any>([]);
-
+  let streamRef: any = useRef(null);
   useUserActivityDetection()
+  let audioElement = useRef(new Audio())
 
   let speakTimeout: any = null
 
@@ -121,6 +122,7 @@ const VoiceToVoice = () => {
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true })
       .then((stream) => {
+        streamRef.current = stream;
         setMediaRecorder(new MediaRecorder(stream, { mimeType: 'audio/webm; codecs=opus' }));
       })
       .catch((error) => {
@@ -131,7 +133,6 @@ const VoiceToVoice = () => {
 
   useEffect(() => {
     if (mediaRecorder && userId && moduleQuestions && myAssessments) {
-      const audioElement = new Audio();
       const newSocket = io("wss://talorexvoice.com", {
         query: {
           userId: userId
@@ -170,8 +171,8 @@ const VoiceToVoice = () => {
       newSocket.on('answer', (data) => {
         setIsSpeaking(2)
         console.log('conversationAns answer=>', data)
-        audioElement.pause();
-        audioElement.currentTime = 0;
+        audioElement.current.pause();
+        audioElement.current.currentTime = 0;
         setIsPlaying(true)
         setAIChat((prev: any) => {
           return [...prev, { type: 'user', text: data?.answer }]
@@ -184,24 +185,17 @@ const VoiceToVoice = () => {
       newSocket.on("audioData", (data) => {
         const audioBlob = base64ToBlob(data.audio, "audio/mpeg");
         const audioUrl = URL.createObjectURL(audioBlob);
-        console.log('audioUrl UUUUU=>', audioUrl)
         clearTimeout(speakTimeout)
         setIsSpeaking(1)
-        // if (isPlaying) {
-        audioElement.pause();
-        audioElement.currentTime = 0;
-        audioElement.src = "";
+        audioElement?.current?.pause();
+        audioElement.current.currentTime = 0;
+        audioElement.current.src = "";
         speakTimeout = setTimeout(() => {
-          audioElement.src = audioUrl
+          audioElement.current.src = audioUrl
           setIsPlaying(true)
-          audioElement.play();
+          audioElement?.current?.play();
         }, 200)
-        // } else {
-        //   audioElement.src = audioUrl
-        //   setIsPlaying(true)
-        //   audioElement.play();
-        // }
-        audioElement.onended = () => {
+        audioElement.current.onended = () => {
           setIsSpeaking(0)
           setIsPlaying(false)
         }
@@ -217,8 +211,8 @@ const VoiceToVoice = () => {
       });
       return () => {
         mediaRecorder?.stop();
-        audioElement?.pause();
-        audioElement.currentTime = 0;
+        audioElement?.current?.pause();
+        audioElement.current.currentTime = 0;
         mediaRecorder.removeEventListener("dataavailable", () => { });
         newSocket?.disconnect();
       };
@@ -273,6 +267,19 @@ const VoiceToVoice = () => {
 
   const submitTest = async () => {
     try {
+      if (streamRef?.current) {
+        streamRef.current?.getTracks()?.forEach((track: any) => track?.stop());
+        streamRef.current = null;
+      }
+      if (mediaRecorder) {
+        mediaRecorder.stop();
+      }
+      clearTimeout(speakTimeout);
+      audioElement?.current?.pause();
+      audioElement.current.currentTime = 0;
+      audioElement.current.src = "";
+      setIsSpeaking(0);
+      mediaRecorder?.stop();
       const res = await dispatcher(
         getModuleSubmissionDispatcher({
           moduleId: testId,
@@ -281,7 +288,9 @@ const VoiceToVoice = () => {
       );
       if (res?.payload.data?.status) {
         toast.success(`${assessmentModule?.module?.name} completed successfully!`, {});
-        navigate(-1)
+        // navigate(-1)
+        // screenfull.exit()
+        window.location.href = `/assessment/${userId}/${assessmentId}/modules`
       } else {
         toast.error("Oops! Submission is failed", {});
       }

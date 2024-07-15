@@ -61,8 +61,8 @@ const VideoTest = () => {
   let audioElement = useRef(new Audio())
   let speakTimeout: any = null;
   let toasterTimeout: any = null;
-
-  const { webcamRef, boundingBox, isLoading, detected, facesDetected }: any =
+  let streamRef: any = useRef(null);
+  const { webcamRef, isLoading, detected, facesDetected }: any =
     useFaceDetection({
       faceDetectionOptions: {
         model: "short",
@@ -176,12 +176,10 @@ const VideoTest = () => {
   };
 
   useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({ audio: true })
+    navigator.mediaDevices.getUserMedia({ audio: true })
       .then((stream) => {
-        setMediaRecorder(
-          new MediaRecorder(stream, { mimeType: "audio/webm; codecs=opus" })
-        );
+        streamRef.current = stream;
+        setMediaRecorder(new MediaRecorder(stream, { mimeType: "audio/webm; codecs=opus" }));
       })
       .catch((error) => {
         console.error("Error accessing microphone:", error);
@@ -279,6 +277,10 @@ const VideoTest = () => {
         audioElement.current.currentTime = 0;
         mediaRecorder.removeEventListener("dataavailable", () => { });
         newSocket?.disconnect();
+        if (streamRef?.current) {
+          streamRef.current?.getTracks()?.forEach((track: any) => track?.stop());
+          streamRef.current = null;
+        }
       };
     }
   }, [mediaRecorder, userId, moduleQuestions, myAssessments]);
@@ -341,7 +343,21 @@ const VideoTest = () => {
       webcamRef.current?.video?.srcObject?.getTracks()?.forEach((track: any) => track?.stop());
       webcamRef.current.video.srcObject = null;
       setIsSpeaking(false);
-      mediaRecorder?.stop();
+      // mediaRecorder?.stop();
+      // if (streamRef?.current) {
+      //   streamRef.current?.getTracks()?.forEach((track: any) => track?.stop());
+      //   streamRef.current = null;
+      // }
+      if (streamRef?.current) {
+        streamRef.current?.getTracks()?.forEach((track: any) => {
+          track?.stop();
+          streamRef.current?.removeTrack(track);
+        });
+        streamRef.current = null;
+      }
+      if (mediaRecorder) {
+        mediaRecorder.stop();
+      }
       const res = await dispatcher(
         getModuleSubmissionDispatcher({
           moduleId: testId,
@@ -353,8 +369,9 @@ const VideoTest = () => {
           `${assessmentModule?.module?.name} completed successfully!`,
           {}
         );
-        navigate(-1);
-        screenfull.toggle()
+        // navigate(-1);
+        // screenfull.exit()
+        window.location.href = `/assessment/${userId}/${assessmentId}/modules`
       } else {
         toast.error("Oops! Submission is failed", {});
       }
