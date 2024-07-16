@@ -14,7 +14,6 @@ import { getModuleSubmissionDispatcher, getUserActivityDispatcher, setAssessment
 import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection";
 import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
 import screenfull from 'screenfull';
-import { fullScreenElev } from "../../constants";
 
 const VoiceToVoice = () => {
   const webcamRef = useRef<any>(null);
@@ -86,7 +85,7 @@ const VoiceToVoice = () => {
       setIsExitFullScreen(true)
     }
   };
-
+  const fullScreenElev: any = document.getElementById('fullscreenDiv');
   const onExitAction = (type: any) => {
     if (type === "cancel") {
       if (screenfull.isEnabled && !screenfull.isFullscreen) {

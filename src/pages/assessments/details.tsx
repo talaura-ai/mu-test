@@ -9,7 +9,6 @@ import { setAssessmentDispatcher } from "../../store/slices/dashboard-slice/dash
 import { getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import { toast } from "react-toastify";
 import CompletedIcon from "../../assets/svg/completedIcon.svg"
-import { fullScreenElev } from "../../constants";
 
 function AssessmentDetails () {
   const navigate = useNavigate();
@@ -42,7 +41,7 @@ function AssessmentDetails () {
   const onNextClicked = () => {
     setStartTestModal(false);
     const type = String(selectedTest?.type).toLocaleLowerCase()
-    // navigate("/assessment/668bcd8a086338396878dfbf/668ade6b286b95c1e420962b/668bcd8a086338396878dfcc/voice-to-voice")
+    // navigate("/assessment/668bcd8a086338396878dfbf/668ade6b286b95c1e420962b/668bcd8a086338396878dfcc")
     if (type === "Quiz"?.toLocaleLowerCase()) {
       navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}`);
     } else if (type === "Sandbox"?.toLocaleLowerCase()) {
@@ -56,6 +55,8 @@ function AssessmentDetails () {
     }
   };
   /* View in fullscreen */
+  const fullScreenElev: any = document.getElementById('fullscreenDiv');
+
   function openFullscreen () {
     if (fullScreenElev?.requestFullscreen) {
       fullScreenElev?.requestFullscreen();

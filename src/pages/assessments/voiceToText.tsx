@@ -19,7 +19,6 @@ import { htmlToText } from 'html-to-text';
 import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection";
 import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
 import screenfull from 'screenfull';
-import { fullScreenElev } from "../../constants";
 
 const VoiceToText = () => {
   const dispatcher = useAppDispatch();
@@ -114,7 +113,7 @@ const VoiceToText = () => {
       setIsExitFullScreen(true)
     }
   };
-
+  const fullScreenElev: any = document.getElementById('fullscreenDiv');
   const onExitAction = (type: any) => {
     if (type === "cancel") {
       if (screenfull.isEnabled && !screenfull.isFullscreen) {
