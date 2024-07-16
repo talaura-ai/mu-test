@@ -1,12 +1,16 @@
 import { useNavigate, useParams } from "react-router-dom";
+import Webcam from 'react-webcam';
 import UserIcon from "../../assets/svg/userIcon.svg";
 import QuestionNumberBox from "../../components/questionNumberBox";
 import QuestionOptionBox from "../../components/displayQuestionOptions";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { CameraOptions, useFaceDetection } from "react-use-face-detection";
+import FaceDetection from "@mediapipe/face_detection";
+import { Camera } from "@mediapipe/camera_utils";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getAssessmentModuleSelector, getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
-import { getModuleSubmissionDispatcher, setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
+import { getModuleSubmissionDispatcher, getUserActivityDispatcher, setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
 import { toast } from "react-toastify";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
@@ -15,6 +19,9 @@ import ReviewIcon from "../../assets/svg/review.svg"
 import ReviewedIcon from "../../assets/svg/reviewed.svg"
 import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
 import screenfull from 'screenfull';
+import CustomToaster from "../../components/Modals/CustomToaster";
+const width = 650;
+const height = 650;
 
 function StartMCQTest () {
   const dispatcher = useAppDispatch()
@@ -29,8 +36,61 @@ function StartMCQTest () {
   const [disablePrevBtn, setDisablePrevBtn] = React.useState(true)
   const [isExitFullScreen, setIsExitFullScreen] = React.useState(false)
   const { assessmentId, testId, userId } = useParams();
+  const [isToasterDisplayed, setIsToasterDisplayed] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
+  const [cameraStats, setCameraStats] = useState(false);
+  const [cameraReady, setCameraReady] = useState(false);
+
+  let toasterTimeout: any = null;
 
   useUserActivityDetection()
+
+  const { webcamRef, isLoading, detected, facesDetected }: any =
+    useFaceDetection({
+      faceDetectionOptions: {
+        model: "short",
+      },
+      faceDetection: new FaceDetection.FaceDetection({
+        locateFile: (file) =>
+          `https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/${file}`,
+      }),
+      camera: ({ mediaSrc, onFrame }: CameraOptions) =>
+        new Camera(mediaSrc, {
+          onFrame,
+          width,
+          height,
+        }),
+    });
+
+  useEffect(() => {
+    if (!detected && !isToasterDisplayed && cameraStats && cameraReady) {
+      setToastMsg("Face not detected");
+      displayToasterFun()
+      updateUserActivity();
+    }
+    if (facesDetected > 1 && !isToasterDisplayed && cameraStats && cameraReady) {
+      setToastMsg("Multiple face detected");
+      displayToasterFun()
+      updateUserActivity();
+    }
+    console.log('cameraStats=>', cameraStats, detected, facesDetected, cameraReady)
+  }, [detected, facesDetected, cameraStats, cameraReady]);
+
+  const displayToasterFun = () => {
+    clearTimeout(toasterTimeout)
+    toasterTimeout = setTimeout(() => {
+      setIsToasterDisplayed(false)
+    }, 1000);
+    setIsToasterDisplayed(true)
+  }
+
+  const updateUserActivity = () => {
+    dispatcher(
+      getUserActivityDispatcher({
+        candidateId: userId,
+      })
+    );
+  };
 
   React.useEffect(() => {
     if (assessmentModule?.module?.question) {
@@ -62,10 +122,17 @@ function StartMCQTest () {
   }
 
   useEffect(() => {
+    setTimeout(() => {
+      setCameraReady(true)
+    }, 4000);
     if (screenfull.isEnabled) {
       screenfull.on('change', handleFullscreenChange);
     }
     return () => {
+      if (webcamRef?.current) {
+        webcamRef?.current?.video?.srcObject?.getTracks()?.forEach((track: any) => track?.stop());
+        webcamRef.current.video.srcObject = null;
+      }
       if (screenfull.isEnabled) {
         screenfull.off('change', handleFullscreenChange);
       }
@@ -188,6 +255,7 @@ function StartMCQTest () {
   return (
     <>
       <div className="md:px-20 md:pt-12 px-4">
+        { isToasterDisplayed && <CustomToaster message={ toastMsg } onClose={ () => { setIsToasterDisplayed(false) } } /> }
         <TimerCounterWithProgress timestamp={ assessmentModule.module?.time || 0 } title={ assessmentModule.module?.name } onTimeout={ onTimeout } />
         <div className="flex md:flex-row flex-col font-sansation mt-10">
           <div className="basis-[30%] w-full md:mr-12">
@@ -243,6 +311,22 @@ function StartMCQTest () {
               </button>
             </div>
           </div>
+          <Webcam
+            ref={ webcamRef }
+            forceScreenshotSourceSize
+            onUserMedia={ () => {
+              setCameraStats(true);
+            } }
+            onUserMediaError={ () => {
+              setCameraStats(false);
+            } }
+            style={ {
+              height,
+              width,
+              position: 'absolute',
+              display: "none"
+            } }
+          />
           <div className="basis-[70%] relative md:border-l-[2px] md:border-[#DCDCD9]">
             <div className="mcq-q pb-44">
               <div className="md:px-12 px-6 md:pt-0 pt-6">

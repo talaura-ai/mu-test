@@ -43,7 +43,7 @@ const VideoTest = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isRecording, setIsRecording] = useState(true);
-  const [cameraStats, setCameraStats] = useState(0);
+  const [cameraStats, setCameraStats] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
   const [userMute, setUserMute] = useState(true);
   const [isExitFullScreen, setIsExitFullScreen] = useState(false)
@@ -56,6 +56,8 @@ const VideoTest = () => {
   const [moduleQuestions, setModuleQuestions] = useState<any>([]);
   const [aiChats, setAIChat] = useState<any>([]);
   const [isToasterDisplayed, setIsToasterDisplayed] = useState(false);
+  const [cameraReady, setCameraReady] = useState(false);
+
   useUserActivityDetection();
   // const audioElement = new Audio();
   let audioElement = useRef(new Audio())
@@ -80,17 +82,17 @@ const VideoTest = () => {
     });
 
   useEffect(() => {
-    if (!detected && !isToasterDisplayed) {
+    if (!detected && !isToasterDisplayed && cameraStats && cameraReady) {
       setToastMsg("Face not detected");
       displayToasterFun()
       updateUserActivity();
     }
-    if (facesDetected > 1 && !isToasterDisplayed) {
+    if (facesDetected > 1 && !isToasterDisplayed && cameraStats && cameraReady) {
       setToastMsg("Multiple face detected");
       displayToasterFun()
       updateUserActivity();
     }
-  }, [detected, facesDetected]);
+  }, [detected, facesDetected, cameraStats, cameraReady]);
 
   useEffect(() => {
     if (screenfull.isEnabled) {
@@ -177,6 +179,9 @@ const VideoTest = () => {
   };
 
   useEffect(() => {
+    setTimeout(() => {
+      setCameraReady(true)
+    }, 4000);
     navigator.mediaDevices.getUserMedia({ audio: true })
       .then((stream) => {
         streamRef.current = stream;
@@ -428,10 +433,10 @@ const VideoTest = () => {
                 // audio={userMute}
                 videoConstraints={ videoConstraints }
                 onUserMedia={ () => {
-                  setCameraStats(1);
+                  setCameraStats(true);
                 } }
                 onUserMediaError={ () => {
-                  setCameraStats(2);
+                  setCameraStats(false);
                 } }
                 className="overflow-hidden rounded-xl bg-gray-200 object-cover w-full"
               />
