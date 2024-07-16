@@ -22,7 +22,7 @@ export default function VoiceToVideoInstructions ({ test }: any) {
             5. <span className=" text-black text-[18px] font-medium">Your answers will be evaluated by the AI based on accuracy, relevance, and completeness. Ensure your responses are as precise as possible.</span>
           </span>
           <span className="text-[18px] font-semibold text-[#7A8A94] py-1">
-            6. <span className=" text-black text-[18px] font-medium">The test is conducted by an AI system, which will narrate each question. Pay close attention as each question is delivered only once</span>
+            6. <span className=" text-black text-[18px] font-medium">The test is conducted by an AI system, which will narrate each question.</span>
           </span>
           <span className="text-[18px] font-semibold text-[#7A8A94] py-1">
             7. <span className=" text-black text-[18px] font-medium">The number of questions can vary based on your answers. The AI may adjust the questions in real-time according to your responses.</span>
