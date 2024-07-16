@@ -111,15 +111,15 @@ function StartMCQTest () {
   }, [dispatcher, assessmentId, testId, userId])
 
   // //Disable Right click
-  if (document.addEventListener) {
-    document.addEventListener(
-      "contextmenu",
-      function (e) {
-        e.preventDefault();
-      },
-      false
-    );
-  }
+  // if (document.addEventListener) {
+  //   document.addEventListener(
+  //     "contextmenu",
+  //     function (e) {
+  //       e.preventDefault();
+  //     },
+  //     false
+  //   );
+  // }
 
   useEffect(() => {
     setTimeout(() => {
@@ -270,7 +270,7 @@ function StartMCQTest () {
                   { myAssessments && myAssessments?.[0]?.name }
                 </h5>
               </div>
-              <div className="flex flex-col mx-8 py-4">
+              <div className="flex flex-col mx-8 pt-4">
                 <h5 className="text-[18px] font-normal text-black">
                   Question analysis
                 </h5>
@@ -290,7 +290,7 @@ function StartMCQTest () {
                     Review
                   </h5>
                 </div>
-                <div className=" flex flex-wrap w-full gap-5 my-5">
+                <div className=" flex flex-wrap w-full gap-5 my-5 max-h-72 overflow-y-scroll">
                   { moduleQuestions?.map((question: any, index: number) => (
                     <QuestionNumberBox
                       questionNo={ index + 1 }
