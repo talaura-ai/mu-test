@@ -160,15 +160,15 @@ const VideoTest = () => {
   };
 
   // //Disable Right click
-  if (document.addEventListener) {
-    document.addEventListener(
-      "contextmenu",
-      function (e) {
-        e.preventDefault();
-      },
-      false
-    );
-  }
+  // if (document.addEventListener) {
+  //   document.addEventListener(
+  //     "contextmenu",
+  //     function (e) {
+  //       e.preventDefault();
+  //     },
+  //     false
+  //   );
+  // }
 
   const updateUserActivity = () => {
     dispatcher(
@@ -349,11 +349,6 @@ const VideoTest = () => {
       webcamRef.current?.video?.srcObject?.getTracks()?.forEach((track: any) => track?.stop());
       webcamRef.current.video.srcObject = null;
       setIsSpeaking(false);
-      // mediaRecorder?.stop();
-      // if (streamRef?.current) {
-      //   streamRef.current?.getTracks()?.forEach((track: any) => track?.stop());
-      //   streamRef.current = null;
-      // }
       if (streamRef?.current) {
         streamRef.current?.getTracks()?.forEach((track: any) => {
           track?.stop();
