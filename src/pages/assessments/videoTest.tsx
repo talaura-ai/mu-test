@@ -57,6 +57,7 @@ const VideoTest = () => {
   const [aiChats, setAIChat] = useState<any>([]);
   const [isToasterDisplayed, setIsToasterDisplayed] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
 
   useUserActivityDetection();
   // const audioElement = new Audio();
@@ -80,7 +81,6 @@ const VideoTest = () => {
           height,
         }),
     });
-
   useEffect(() => {
     if (!detected && !isToasterDisplayed && cameraStats && cameraReady) {
       setToastMsg("Face not detected");
@@ -179,9 +179,6 @@ const VideoTest = () => {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      setCameraReady(true)
-    }, 4000);
     navigator.mediaDevices.getUserMedia({ audio: true })
       .then((stream) => {
         streamRef.current = stream;
@@ -202,6 +199,10 @@ const VideoTest = () => {
       });
       console.log("socket id", newSocket.id);
       newSocket.on("connect", () => {
+        setIsSocketConnected(true)
+        setTimeout(() => {
+          setCameraReady(true)
+        }, 4000);
         console.log("connected to server", {
           title: moduleQuestions?.[0]?.title,
           name: myAssessments && myAssessments?.[0]?.name,
@@ -420,8 +421,8 @@ const VideoTest = () => {
             </div>
           </div>
           <div className="flex relative h-1/2 w-[50%] rounded-xl overflow-hidden">
-            <div className="flex rounded-xl w-full overflow-hidden h-[470px]">
-              <Webcam
+            <div className="flex rounded-xl w-full overflow-hidden h-[470px] bg-gray-200">
+              { isSocketConnected && <Webcam
                 ref={ webcamRef }
                 screenshotFormat="image/jpeg"
                 screenshotQuality={ 1 }
@@ -434,8 +435,7 @@ const VideoTest = () => {
                   setCameraStats(false);
                 } }
                 className="overflow-hidden rounded-xl bg-gray-200 object-cover w-full"
-              />
-              <div></div>
+              /> }
               <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation capitalize">
                 { (myAssessments && myAssessments?.[0]?.name) || "Candidate" }
               </div>
