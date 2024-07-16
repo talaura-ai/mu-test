@@ -45,3 +45,5 @@ export const submissionStatusesColours: any = {
   13: `F00`,
   14: `F00`,
 }
+
+export const fullScreenElev: any = document.getElementById('fullscreenDiv');

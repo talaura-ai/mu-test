@@ -25,6 +25,7 @@ import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection
 import CustomToaster from "../../components/Modals/CustomToaster";
 import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
 import screenfull from 'screenfull';
+import { fullScreenElev } from "../../constants";
 
 const width = 650;
 const height = 650;
@@ -112,7 +113,7 @@ const VideoTest = () => {
   const onExitAction = (type: any) => {
     if (type === "cancel") {
       if (screenfull.isEnabled && !screenfull.isFullscreen) {
-        screenfull.request();
+        screenfull.request(fullScreenElev);
       }
     }
     if (type === "exit") {

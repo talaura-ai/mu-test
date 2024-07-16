@@ -15,6 +15,7 @@ import ReviewIcon from "../../assets/svg/review.svg"
 import ReviewedIcon from "../../assets/svg/reviewed.svg"
 import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
 import screenfull from 'screenfull';
+import { fullScreenElev } from "../../constants";
 
 function StartMCQTest () {
   const dispatcher = useAppDispatch()
@@ -81,7 +82,7 @@ function StartMCQTest () {
   const onExitAction = (type: any) => {
     if (type === "cancel") {
       if (screenfull.isEnabled && !screenfull.isFullscreen) {
-        screenfull.request();
+        screenfull.request(fullScreenElev);
       }
     }
     if (type === "exit") {
