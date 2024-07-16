@@ -113,11 +113,11 @@ const VoiceToVoice = () => {
   };
 
   // //Disable Right click
-  if (document.addEventListener) {
-    document.addEventListener('contextmenu', function (e) {
-      e.preventDefault();
-    }, false);
-  }
+  // if (document.addEventListener) {
+  //   document.addEventListener('contextmenu', function (e) {
+  //     e.preventDefault();
+  //   }, false);
+  // }
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true })
