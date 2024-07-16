@@ -432,7 +432,7 @@ const VideoTest = () => {
                 onUserMediaError={ () => {
                   setCameraStats(2);
                 } }
-                className="overflow-hidden rounded-xl bg-gray-200 mr-4 object-cover"
+                className="overflow-hidden rounded-xl bg-gray-200 object-cover w-full"
               />
               <div></div>
               <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation capitalize">
@@ -451,7 +451,7 @@ const VideoTest = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col w-[20%] bg-white shadow rounded-lg p-4">
+        <div className="flex flex-col w-[20%] bg-white shadow rounded-lg p-4 ml-4">
           <div className="flex w-full flex-col h-[440px]">
             <div className="flex gap-2 px-2 pb-2">
               <img src={ VoiceIcon } alt="icn" />
