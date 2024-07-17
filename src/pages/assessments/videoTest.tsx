@@ -3,6 +3,7 @@ import MicIcon from "../../assets/svg/micIcon2.svg";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { io } from "socket.io-client";
+import { S3 } from 'aws-sdk';
 import Webcam from "react-webcam";
 import { CameraOptions, useFaceDetection } from "react-use-face-detection";
 import FaceDetection from "@mediapipe/face_detection";
@@ -25,6 +26,7 @@ import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection
 import CustomToaster from "../../components/Modals/CustomToaster";
 import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
 import screenfull from 'screenfull';
+import { setLoadingDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 
 const width = 650;
 const height = 650;
@@ -57,6 +59,7 @@ const VideoTest = () => {
   const [isToasterDisplayed, setIsToasterDisplayed] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const [videoChunks, setVideoChunks] = useState<any>([]);
 
   useUserActivityDetection();
   // const audioElement = new Audio();
@@ -178,10 +181,10 @@ const VideoTest = () => {
   };
 
   useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ audio: true })
+    navigator.mediaDevices.getUserMedia({ audio: true, video: true })
       .then((stream) => {
         streamRef.current = stream;
-        setMediaRecorder(new MediaRecorder(stream, { mimeType: "audio/webm; codecs=opus" }));
+        setMediaRecorder(new MediaRecorder(stream, { mimeType: "video/webm" }));
       })
       .catch((error) => {
         console.error("Error accessing microphone:", error);
@@ -196,24 +199,25 @@ const VideoTest = () => {
           userId: userId,
         },
       });
-      console.log("socket id", newSocket.id);
+      console.log("socket id", newSocket.id, newSocket);
       newSocket.on("connect", () => {
         setIsSocketConnected(true)
         setTimeout(() => {
           setCameraReady(true)
         }, 4000);
         console.log("connected to server", {
-          title: moduleQuestions?.[0]?.title,
+          title: moduleQuestions?.[0]?.title || "",
           name: myAssessments && myAssessments?.[0]?.name,
         });
         newSocket.emit("prompt", {
-          title: moduleQuestions?.[0]?.title,
+          title: moduleQuestions?.[0]?.title || "",
           name: myAssessments && myAssessments?.[0]?.name,
         });
         mediaRecorder.start(1500);
         mediaRecorder.ondataavailable = async (event) => {
           if (event?.data?.size > 0) {
-            console.log("START AI");
+            console.log("START AI", event?.data);
+            setVideoChunks((prev: any) => [...prev, event.data]);
             try {
               const arrayBuffer = await event.data.arrayBuffer();
               const base64String = arrayBufferToBase64(arrayBuffer);
@@ -338,6 +342,66 @@ const VideoTest = () => {
     facingMode: "user",
   };
 
+  const uploadToS3 = async () => {
+    dispatcher(setLoadingDispatcher(true))
+    const blob = new Blob(videoChunks, { type: 'video/webm' });
+    const s3 = new S3({
+      accessKeyId: 'AKIAXYKJWKKMP33E5KUS',
+      secretAccessKey: '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',
+      region: 'ap-south-1'
+    });
+
+    const params = {
+      Bucket: 'masters-unoin',
+      Key: `video-${userId}-${assessmentId}-${testId}.webm`,
+      Body: blob,
+      ContentType: 'video/webm',
+    };
+
+    s3.upload(params, (err: any, data: any) => {
+      if (err) {
+        console.error('Error uploading video:', err);
+        dispatcher(setLoadingDispatcher(false))
+      } else {
+        console.log('Video uploaded successfully:', data);
+        submitModule(data?.Location)
+      }
+    });
+  };
+
+  const submitModule = async (location: string) => {
+    console.log('OBESS:::', {
+      moduleId: testId,
+      videoUrl: location,
+      question: [{ ...moduleQuestions?.[0], answer: conversationAns }],
+    })
+    try {
+      const res = await dispatcher(
+        getModuleSubmissionDispatcher({
+          moduleId: testId,
+          videoUrl: location,
+          question: [{ ...moduleQuestions?.[0], answer: conversationAns }],
+        })
+      );
+      if (res?.payload.data?.status) {
+        toast.success(
+          `${assessmentModule?.module?.name} completed successfully!`,
+          {}
+        );
+        // navigate(-1);
+        // screenfull.exit()
+        window.location.href = `/assessment/${userId}/${assessmentId}/modules`
+      } else {
+        dispatcher(setLoadingDispatcher(false))
+        toast.error("Oops! Submission is failed", {});
+      }
+    } catch (error) {
+      toast.error("Oops! Submission is failed", {});
+      dispatcher(setLoadingDispatcher(false))
+    }
+  }
+
+
   const onSubmitTest = (type: string) => {
     setSubmitTestModal(false);
     if (type === "submit") {
@@ -364,23 +428,7 @@ const VideoTest = () => {
       if (mediaRecorder) {
         mediaRecorder.stop();
       }
-      const res = await dispatcher(
-        getModuleSubmissionDispatcher({
-          moduleId: testId,
-          question: [{ ...moduleQuestions?.[0], answer: conversationAns }],
-        })
-      );
-      if (res?.payload.data?.status) {
-        toast.success(
-          `${assessmentModule?.module?.name} completed successfully!`,
-          {}
-        );
-        // navigate(-1);
-        // screenfull.exit()
-        window.location.href = `/assessment/${userId}/${assessmentId}/modules`
-      } else {
-        toast.error("Oops! Submission is failed", {});
-      }
+      uploadToS3()
     } catch (error) {
       toast.error("Oops! Internal server error", {});
       console.log("error=>", error);
