@@ -40,7 +40,6 @@ const VideoTest = () => {
   );
   const assessmentModule = useAppSelector(getAssessmentModuleSelector);
   const [submitTestModal, setSubmitTestModal] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isRecording, setIsRecording] = useState(true);
   const [cameraStats, setCameraStats] = useState(false);
@@ -227,6 +226,14 @@ const VideoTest = () => {
         };
         newSocket.emit("start", { streamSid: newSocket.id, callSid: uuidv4() });
       });
+      newSocket.on("pauseAudio", (data) => {
+        if (data?.stop) {
+          setIsSpeaking(false);
+          audioElement?.current?.pause();
+          audioElement.current.currentTime = 0;
+          audioElement.current.src = "";
+        }
+      });
       newSocket.on("question", (data) => {
         console.log("conversationAns question=>", data);
         setQuestion({ ...question, ...data });
@@ -241,7 +248,6 @@ const VideoTest = () => {
         console.log("conversationAns answer=>", data);
         audioElement.current.pause();
         audioElement.current.currentTime = 0;
-        setIsPlaying(true);
         setAIChat((prev: any) => {
           return [...prev, { type: "user", text: data?.answer }];
         });
@@ -261,12 +267,10 @@ const VideoTest = () => {
         audioElement.current.src = "";
         speakTimeout = setTimeout(() => {
           audioElement.current.src = audioUrl;
-          setIsPlaying(true);
           audioElement.current.play();
         }, 200);
         audioElement.current.onended = () => {
           setIsSpeaking(false);
-          setIsPlaying(false);
         };
       });
 
