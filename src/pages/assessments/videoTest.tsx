@@ -1,9 +1,10 @@
 import VoiceIcon from "../../assets/Group 171.png";
 import MicIcon from "../../assets/svg/micIcon2.svg";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import Webcam from "react-webcam";
+import AWS from 'aws-sdk';
 import { CameraOptions, useFaceDetection } from "react-use-face-detection";
 import FaceDetection from "@mediapipe/face_detection";
 import { Camera } from "@mediapipe/camera_utils";
@@ -20,6 +21,7 @@ import {
   getModuleSubmissionDispatcher,
   getUserActivityDispatcher,
   setAssessmentModuleDispatcher,
+  setLoadingDispatcher,
 } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection";
 import CustomToaster from "../../components/Modals/CustomToaster";
@@ -28,14 +30,29 @@ import screenfull from 'screenfull';
 
 const width = 650;
 const height = 650;
+let partNumber = 1;
+let multipartMap: any = { Parts: [] };
+const bucketName = 'masters-unoin';
+const key = `live-video/${Date.now()}.webm`;
+
+AWS.config.update({
+  accessKeyId: 'AKIAXYKJWKKMP33E5KUS',
+  secretAccessKey: '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',
+  region: 'ap-south-1'
+});
+
+const s3 = new AWS.S3();
+
 const VideoTest = () => {
-  // const webcamRef = useRef<any>(null);
   const navigate = useNavigate();
   const { assessmentId, testId, userId } = useParams();
   const chatEndRef: any = useRef(null);
   const myAssessments = useAppSelector(getAssessmentsSelector);
   const dispatcher = useAppDispatch();
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
+    null
+  );
+  const [liveVideoMediaRecorder, setLiveVideoMediaRecorder] = useState<MediaRecorder | any>(
     null
   );
   const assessmentModule = useAppSelector(getAssessmentModuleSelector);
@@ -64,6 +81,8 @@ const VideoTest = () => {
   let speakTimeout: any = null;
   let toasterTimeout: any = null;
   let streamRef: any = useRef(null);
+  const uploadIdRef: any = useRef("");
+
   const { webcamRef, isLoading, detected, facesDetected }: any =
     useFaceDetection({
       faceDetectionOptions: {
@@ -118,7 +137,8 @@ const VideoTest = () => {
       }
     }
     if (type === "exit") {
-      submitTest();
+      // submitTest();
+      stopRecording()
     }
     setIsExitFullScreen(false)
   }
@@ -188,6 +208,16 @@ const VideoTest = () => {
         setError("Error accessing microphone. Please check your permissions.");
       });
   }, []); // Setup mediaRecorder initially
+
+  // Live video recording
+  useEffect(() => {
+    const initMedia = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      const recorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp8' });
+      setLiveVideoMediaRecorder(recorder);
+    };
+    initMedia();
+  }, []);
 
   useEffect(() => {
     if (mediaRecorder && userId && moduleQuestions && myAssessments) {
@@ -296,6 +326,102 @@ const VideoTest = () => {
     }
   }, [mediaRecorder, userId, moduleQuestions, myAssessments]);
 
+  useEffect(() => {
+    const mediaListner = async () => {
+      liveVideoMediaRecorder.ondataavailable = async (event: any) => {
+        if (event.data?.size > 0) {
+          await uploadChunk(event.data);
+        }
+      };
+      liveVideoMediaRecorder?.start(20000); // Collect data every second
+      setIsRecording(true);
+      try {
+        // Initiate multipart upload
+        const createMultipartUpload = await s3.createMultipartUpload({
+          Bucket: bucketName,
+          Key: key,
+          ContentType: 'video/webm'
+        }).promise();
+        uploadIdRef.current = createMultipartUpload.UploadId
+        console.log('Multipart upload initiated:', createMultipartUpload);
+      } catch (err) {
+        console.error('Error initiating multipart upload:', err);
+      }
+    }
+    if (liveVideoMediaRecorder) {
+      mediaListner()
+    }
+  }, [liveVideoMediaRecorder]);
+
+  async function uploadChunk (blob: any) {
+    const params = {
+      Body: blob,
+      Bucket: bucketName,
+      Key: key,
+      PartNumber: partNumber,
+      UploadId: uploadIdRef.current
+    };
+    console.log('params=>', params, uploadIdRef.current)
+    try {
+      const uploadPart = await s3.uploadPart(params).promise();
+      console.log('UploadPart response:', uploadPart);
+      if (uploadPart && uploadPart.ETag) {
+        multipartMap.Parts.push({
+          ETag: uploadPart.ETag,
+          PartNumber: partNumber
+        });
+        partNumber++;
+        console.log('Uploaded part:', partNumber - 1);
+      } else {
+        console.error('ETag is undefined in uploadPart response:', uploadPart);
+      }
+    } catch (err) {
+      console.error('Error uploading part:', err);
+    }
+  }
+
+  async function stopRecording () {
+    dispatcher(setLoadingDispatcher(true))
+    liveVideoMediaRecorder?.stop();
+    clearTimeout(speakTimeout);
+    audioElement?.current?.pause();
+    audioElement.current.currentTime = 0;
+    audioElement.current.src = "";
+    webcamRef.current?.video?.srcObject?.getTracks()?.forEach((track: any) => track?.stop());
+    webcamRef.current.video.srcObject = null;
+    setIsSpeaking(false);
+    if (streamRef?.current) {
+      streamRef.current?.getTracks()?.forEach((track: any) => {
+        track?.stop();
+        streamRef.current?.removeTrack(track);
+      });
+      streamRef.current = null;
+    }
+    if (mediaRecorder) {
+      mediaRecorder.stop();
+    }
+    console.log({
+      Bucket: bucketName,
+      Key: key,
+      UploadId: uploadIdRef.current,
+      MultipartUpload: multipartMap
+    })
+    try {
+      // Complete multipart upload
+      const completeMultipartUpload = await s3.completeMultipartUpload({
+        Bucket: bucketName,
+        Key: key,
+        UploadId: uploadIdRef.current,
+        MultipartUpload: multipartMap
+      }).promise();
+      submitTest(completeMultipartUpload?.Location || "")
+      console.log('Multipart upload completed:', completeMultipartUpload);
+    } catch (err) {
+      console.error('Error completing multipart upload:', err);
+      submitTest("")
+    }
+  }
+
   function arrayBufferToBase64 (buffer: ArrayBuffer): string {
     let binary = "";
     const bytes = new Uint8Array(buffer);
@@ -341,32 +467,17 @@ const VideoTest = () => {
   const onSubmitTest = (type: string) => {
     setSubmitTestModal(false);
     if (type === "submit") {
-      submitTest();
+      // submitTest();
+      stopRecording()
     }
   };
 
-  const submitTest = async () => {
+  const submitTest = async (location: string) => {
     try {
-      clearTimeout(speakTimeout);
-      audioElement?.current?.pause();
-      audioElement.current.currentTime = 0;
-      audioElement.current.src = "";
-      webcamRef.current?.video?.srcObject?.getTracks()?.forEach((track: any) => track?.stop());
-      webcamRef.current.video.srcObject = null;
-      setIsSpeaking(false);
-      if (streamRef?.current) {
-        streamRef.current?.getTracks()?.forEach((track: any) => {
-          track?.stop();
-          streamRef.current?.removeTrack(track);
-        });
-        streamRef.current = null;
-      }
-      if (mediaRecorder) {
-        mediaRecorder.stop();
-      }
       const res = await dispatcher(
         getModuleSubmissionDispatcher({
           moduleId: testId,
+          videoUrl: location,
           question: [{ ...moduleQuestions?.[0], answer: conversationAns }],
         })
       );
@@ -380,10 +491,12 @@ const VideoTest = () => {
         window.location.href = `/assessment/${userId}/${assessmentId}/modules`
       } else {
         toast.error("Oops! Submission is failed", {});
+        dispatcher(setLoadingDispatcher(false))
       }
     } catch (error) {
       toast.error("Oops! Internal server error", {});
       console.log("error=>", error);
+      dispatcher(setLoadingDispatcher(false))
     }
   };
   return (
