@@ -333,7 +333,7 @@ const VideoTest = () => {
           await uploadChunk(event.data);
         }
       };
-      liveVideoMediaRecorder?.start(20000); // Collect data every second
+      liveVideoMediaRecorder?.start(25000); // Collect data every second
       setIsRecording(true);
       try {
         // Initiate multipart upload
