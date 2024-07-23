@@ -4,7 +4,7 @@ import UserIcon from "../../assets/svg/userIcon.svg";
 import QuestionNumberBox from "../../components/questionNumberBox";
 import QuestionOptionBox from "../../components/displayQuestionOptions";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import { CameraOptions, useFaceDetection } from "react-use-face-detection";
 import FaceDetection from "@mediapipe/face_detection";
 import { Camera } from "@mediapipe/camera_utils";
@@ -40,6 +40,8 @@ function StartMCQTest () {
   const [toastMsg, setToastMsg] = useState("");
   const [cameraStats, setCameraStats] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
+  const prevFaceDataRef: any = useRef();
+  const toggleRef: any = useRef();
 
   let toasterTimeout: any = null;
 
@@ -64,14 +66,16 @@ function StartMCQTest () {
 
   useEffect(() => {
     if (!detected && !isToasterDisplayed && cameraStats && cameraReady) {
-      setToastMsg("Face not detected");
+      // setToastMsg("Face not detected");
       displayToasterFun()
       updateUserActivity();
+      prevFaceDataRef.current = "Face not detected"
     }
     if (facesDetected > 1 && !isToasterDisplayed && cameraStats && cameraReady) {
-      setToastMsg("Multiple face detected");
+      // setToastMsg("Multiple face detected");
       displayToasterFun()
       updateUserActivity();
+      prevFaceDataRef.current = "Multiple face detected"
     }
     console.log('cameraStats=>', cameraStats, detected, facesDetected, cameraReady)
   }, [detected, facesDetected, cameraStats, cameraReady]);
@@ -79,9 +83,11 @@ function StartMCQTest () {
   const displayToasterFun = () => {
     clearTimeout(toasterTimeout)
     toasterTimeout = setTimeout(() => {
-      setIsToasterDisplayed(false)
+      // setIsToasterDisplayed(false)
+      toggleRef.current = false
     }, 1000);
-    setIsToasterDisplayed(true)
+    // setIsToasterDisplayed(true)
+    toggleRef.current = true
   }
 
   const updateUserActivity = () => {
@@ -251,11 +257,10 @@ function StartMCQTest () {
     updateQuestion[questionIndex] = { ...updateQuestion[questionIndex], review: !updateQuestion[questionIndex]?.review }
     setModuleQuestions(updateQuestion)
   }
-
   return (
     <>
       <div className="md:px-20 md:pt-12 px-4">
-        { isToasterDisplayed && <CustomToaster message={ toastMsg } onClose={ () => { setIsToasterDisplayed(false) } } /> }
+        { toggleRef?.current && <CustomToaster message={ prevFaceDataRef?.current } onClose={ () => { toggleRef.current = false } } /> }
         <TimerCounterWithProgress timestamp={ assessmentModule.module?.time || 0 } title={ assessmentModule.module?.name } onTimeout={ onTimeout } />
         <div className="flex md:flex-row flex-col font-sansation mt-10">
           <div className="basis-[30%] w-full md:mr-12">
@@ -397,4 +402,4 @@ function StartMCQTest () {
   );
 }
 
-export default StartMCQTest;
+export default memo(StartMCQTest);
