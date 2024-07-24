@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import Webcam from 'react-webcam';
+import Webcam from "react-webcam";
 import UserIcon from "../../assets/svg/userIcon.svg";
 import QuestionNumberBox from "../../components/questionNumberBox";
 import QuestionOptionBox from "../../components/displayQuestionOptions";
@@ -9,32 +9,39 @@ import { CameraOptions, useFaceDetection } from "react-use-face-detection";
 import FaceDetection from "@mediapipe/face_detection";
 import { Camera } from "@mediapipe/camera_utils";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { getAssessmentModuleSelector, getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
-import { getModuleSubmissionDispatcher, getUserActivityDispatcher, setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
+import {
+  getAssessmentModuleSelector,
+  getAssessmentsSelector,
+} from "../../store/slices/dashboard-slice/dashboard-selectors";
+import {
+  getModuleSubmissionDispatcher,
+  getUserActivityDispatcher,
+  setAssessmentModuleDispatcher,
+} from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
 import { toast } from "react-toastify";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
 import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection";
-import ReviewIcon from "../../assets/svg/review.svg"
-import ReviewedIcon from "../../assets/svg/reviewed.svg"
+import ReviewIcon from "../../assets/svg/review.svg";
+import ReviewedIcon from "../../assets/svg/reviewed.svg";
 import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
-import screenfull from 'screenfull';
+import screenfull from "screenfull";
 import CustomToaster from "../../components/Modals/CustomToaster";
 const width = 650;
 const height = 650;
 
-function StartMCQTest () {
-  const dispatcher = useAppDispatch()
+function StartMCQTest() {
+  const dispatcher = useAppDispatch();
   const navigate = useNavigate();
-  const assessmentModule = useAppSelector(getAssessmentModuleSelector)
+  const assessmentModule = useAppSelector(getAssessmentModuleSelector);
   const myAssessments = useAppSelector(getAssessmentsSelector);
-  const [moduleQuestions, setModuleQuestions] = React.useState<any>([])
-  const [questionIndex, setQuestionIndex] = React.useState(0)
-  const [selectedQuestion, setSelectedQuestion] = React.useState("")
-  const [disableNextBtn, setDisableNextBtn] = React.useState(false)
-  const [submitTest, setSubmitTest] = React.useState(false)
-  const [disablePrevBtn, setDisablePrevBtn] = React.useState(true)
-  const [isExitFullScreen, setIsExitFullScreen] = React.useState(false)
+  const [moduleQuestions, setModuleQuestions] = React.useState<any>([]);
+  const [questionIndex, setQuestionIndex] = React.useState(0);
+  const [selectedQuestion, setSelectedQuestion] = React.useState("");
+  const [disableNextBtn, setDisableNextBtn] = React.useState(false);
+  const [submitTest, setSubmitTest] = React.useState(false);
+  const [disablePrevBtn, setDisablePrevBtn] = React.useState(true);
+  const [isExitFullScreen, setIsExitFullScreen] = React.useState(false);
   const { assessmentId, testId, userId } = useParams();
   const [isToasterDisplayed, setIsToasterDisplayed] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
@@ -45,7 +52,7 @@ function StartMCQTest () {
 
   let toasterTimeout: any = null;
 
-  useUserActivityDetection()
+  useUserActivityDetection();
 
   const { webcamRef, isLoading, detected, facesDetected }: any =
     useFaceDetection({
@@ -67,28 +74,39 @@ function StartMCQTest () {
   useEffect(() => {
     if (!detected && !isToasterDisplayed && cameraStats && cameraReady) {
       // setToastMsg("Face not detected");
-      displayToasterFun()
+      displayToasterFun();
       updateUserActivity();
-      prevFaceDataRef.current = "Face not detected"
+      prevFaceDataRef.current = "Face not detected";
     }
-    if (facesDetected > 1 && !isToasterDisplayed && cameraStats && cameraReady) {
+    if (
+      facesDetected > 1 &&
+      !isToasterDisplayed &&
+      cameraStats &&
+      cameraReady
+    ) {
       // setToastMsg("Multiple face detected");
-      displayToasterFun()
+      displayToasterFun();
       updateUserActivity();
-      prevFaceDataRef.current = "Multiple face detected"
+      prevFaceDataRef.current = "Multiple face detected";
     }
-    console.log('cameraStats=>', cameraStats, detected, facesDetected, cameraReady)
+    console.log(
+      "cameraStats=>",
+      cameraStats,
+      detected,
+      facesDetected,
+      cameraReady
+    );
   }, [detected, facesDetected, cameraStats, cameraReady]);
 
   const displayToasterFun = () => {
-    clearTimeout(toasterTimeout)
+    clearTimeout(toasterTimeout);
     toasterTimeout = setTimeout(() => {
       // setIsToasterDisplayed(false)
-      toggleRef.current = false
+      toggleRef.current = false;
     }, 1000);
     // setIsToasterDisplayed(true)
-    toggleRef.current = true
-  }
+    toggleRef.current = true;
+  };
 
   const updateUserActivity = () => {
     dispatcher(
@@ -100,21 +118,23 @@ function StartMCQTest () {
 
   React.useEffect(() => {
     if (assessmentModule?.module?.question) {
-      const questions = assessmentModule?.module?.question?.map((v: any) => { return { ...v, answer: "" } })
-      setModuleQuestions(questions)
-      setQuestionIndex(0)
+      const questions = assessmentModule?.module?.question?.map((v: any) => {
+        return { ...v, answer: "" };
+      });
+      setModuleQuestions(questions);
+      setQuestionIndex(0);
     }
-  }, [assessmentModule])
+  }, [assessmentModule]);
 
   React.useEffect(() => {
-    dispatcher(setAssessmentModuleDispatcher(
-      {
-        "moduleId": testId,
-        "candidateId": userId,
-        "assessmentId": assessmentId
-      }
-    ))
-  }, [dispatcher, assessmentId, testId, userId])
+    dispatcher(
+      setAssessmentModuleDispatcher({
+        moduleId: testId,
+        candidateId: userId,
+        assessmentId: assessmentId,
+      })
+    );
+  }, [dispatcher, assessmentId, testId, userId]);
 
   // //Disable Right click
   // if (document.addEventListener) {
@@ -128,29 +148,46 @@ function StartMCQTest () {
   // }
 
   useEffect(() => {
+    const handleKeyDown = (event: any) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "r") {
+        event.preventDefault();
+        console.log("Ctrl+R is disabled");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  useEffect(() => {
     setTimeout(() => {
-      setCameraReady(true)
+      setCameraReady(true);
     }, 4000);
     if (screenfull.isEnabled) {
-      screenfull.on('change', handleFullscreenChange);
+      screenfull.on("change", handleFullscreenChange);
     }
     return () => {
       if (webcamRef?.current) {
-        webcamRef?.current?.video?.srcObject?.getTracks()?.forEach((track: any) => track?.stop());
+        webcamRef?.current?.video?.srcObject
+          ?.getTracks()
+          ?.forEach((track: any) => track?.stop());
         webcamRef.current.video.srcObject = null;
       }
       if (screenfull.isEnabled) {
-        screenfull.off('change', handleFullscreenChange);
+        screenfull.off("change", handleFullscreenChange);
       }
     };
   }, []);
 
   const handleFullscreenChange = () => {
     if (!screenfull.isFullscreen) {
-      setIsExitFullScreen(true)
+      setIsExitFullScreen(true);
     }
   };
-  const fullScreenElev: any = document.getElementById('fullscreenDiv');
+  const fullScreenElev: any = document.getElementById("fullscreenDiv");
   const onExitAction = (type: any) => {
     if (type === "cancel") {
       if (screenfull.isEnabled && !screenfull.isFullscreen) {
@@ -158,121 +195,150 @@ function StartMCQTest () {
       }
     }
     if (type === "exit") {
-      submitTestClicked()
+      submitTestClicked();
     }
-    setIsExitFullScreen(false)
-  }
+    setIsExitFullScreen(false);
+  };
 
   const onQuestionSelection = (option: any) => {
-    let optionValue = ""
+    let optionValue = "";
     if (option !== selectedQuestion) {
-      optionValue = option
+      optionValue = option;
     }
-    let updateQuestion = [...moduleQuestions]
-    updateQuestion[questionIndex] = { ...updateQuestion[questionIndex], answer: optionValue }
-    setModuleQuestions(updateQuestion)
-    setSelectedQuestion(optionValue)
-  }
+    let updateQuestion = [...moduleQuestions];
+    updateQuestion[questionIndex] = {
+      ...updateQuestion[questionIndex],
+      answer: optionValue,
+    };
+    setModuleQuestions(updateQuestion);
+    setSelectedQuestion(optionValue);
+  };
 
   const onPrevClicked = () => {
     if (questionIndex - 1 === 0) {
-      setDisablePrevBtn(true)
+      setDisablePrevBtn(true);
     } else {
-      setDisablePrevBtn(false)
+      setDisablePrevBtn(false);
     }
     if (questionIndex) {
-      setSelectedQuestion(moduleQuestions?.[questionIndex - 1 === 0 ? 0 : questionIndex - 1]?.answer || "")
+      setSelectedQuestion(
+        moduleQuestions?.[questionIndex - 1 === 0 ? 0 : questionIndex - 1]
+          ?.answer || ""
+      );
       setQuestionIndex((prev) => {
-        return prev - 1
-      })
+        return prev - 1;
+      });
     }
-    setDisableNextBtn(false)
-  }
+    setDisableNextBtn(false);
+  };
 
   const onNextClicked = () => {
     if (moduleQuestions?.length - 2 === questionIndex) {
-      setDisableNextBtn(true)
+      setDisableNextBtn(true);
     } else {
-      setDisableNextBtn(false)
+      setDisableNextBtn(false);
     }
     if (moduleQuestions?.length - 1 > questionIndex) {
-      setSelectedQuestion(moduleQuestions?.[moduleQuestions?.length - 1 === questionIndex ? 0 : questionIndex + 1]?.answer || "")
+      setSelectedQuestion(
+        moduleQuestions?.[
+          moduleQuestions?.length - 1 === questionIndex ? 0 : questionIndex + 1
+        ]?.answer || ""
+      );
       setQuestionIndex((prev) => {
-        return prev + 1
-      })
+        return prev + 1;
+      });
     }
-    setDisablePrevBtn(false)
-  }
+    setDisablePrevBtn(false);
+  };
 
   const directQuestionClicked = (index: number) => {
-    setSelectedQuestion(moduleQuestions?.[index - 1]?.answer || "")
-    setQuestionIndex(index - 1)
+    setSelectedQuestion(moduleQuestions?.[index - 1]?.answer || "");
+    setQuestionIndex(index - 1);
     if (index === moduleQuestions?.length) {
-      setDisableNextBtn(true)
+      setDisableNextBtn(true);
     } else {
-      setDisableNextBtn(false)
+      setDisableNextBtn(false);
     }
     if (index === 1) {
-      setDisablePrevBtn(true)
+      setDisablePrevBtn(true);
     } else {
-      setDisablePrevBtn(false)
+      setDisablePrevBtn(false);
     }
-  }
+  };
 
   const onSubmission = (type: string) => {
     if (type === "submit") {
-      submitTestClicked()
+      submitTestClicked();
     }
-    setSubmitTest(false)
-  }
+    setSubmitTest(false);
+  };
 
   const submitTestClicked = async () => {
     try {
-      const res = await dispatcher(getModuleSubmissionDispatcher({
-        moduleId: testId,
-        question: moduleQuestions
-      }))
+      const res = await dispatcher(
+        getModuleSubmissionDispatcher({
+          moduleId: testId,
+          question: moduleQuestions,
+        })
+      );
       if (res?.payload.data?.status) {
-        toast.success(`${assessmentModule.module?.name} completed successfully!`, {});
+        toast.success(
+          `${assessmentModule.module?.name} completed successfully!`,
+          {}
+        );
         // navigate(-1)
         // screenfull.exit()
-        window.location.href = `/assessment/${userId}/${assessmentId}/modules`
+        window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
       } else {
         toast.error("Oops! Submission is failed", {});
       }
     } catch (error) {
-      console.log('error=>', error)
+      console.log("error=>", error);
       toast.error("Oops! Internal server error", {});
     }
-  }
+  };
 
   const onTimeout = () => {
     if (Number(assessmentModule.module?.time) > 0) {
-      submitTestClicked()
+      submitTestClicked();
     }
-  }
+  };
 
   const onReview = () => {
-    let updateQuestion = [...moduleQuestions]
-    updateQuestion[questionIndex] = { ...updateQuestion[questionIndex], review: !updateQuestion[questionIndex]?.review }
-    setModuleQuestions(updateQuestion)
-  }
+    let updateQuestion = [...moduleQuestions];
+    updateQuestion[questionIndex] = {
+      ...updateQuestion[questionIndex],
+      review: !updateQuestion[questionIndex]?.review,
+    };
+    setModuleQuestions(updateQuestion);
+  };
   return (
     <>
       <div className="md:px-20 md:pt-12 px-4">
-        { toggleRef?.current && <CustomToaster message={ prevFaceDataRef?.current } onClose={ () => { toggleRef.current = false } } /> }
-        <TimerCounterWithProgress timestamp={ assessmentModule.module?.time || 0 } title={ assessmentModule.module?.name } onTimeout={ onTimeout } />
+        {toggleRef?.current && (
+          <CustomToaster
+            message={prevFaceDataRef?.current}
+            onClose={() => {
+              toggleRef.current = false;
+            }}
+          />
+        )}
+        <TimerCounterWithProgress
+          timestamp={assessmentModule.module?.time || 0}
+          title={assessmentModule.module?.name}
+          onTimeout={onTimeout}
+        />
         <div className="flex md:flex-row flex-col font-sansation mt-10">
           <div className="basis-[30%] w-full md:mr-12">
             <div className="w-full bg-white border border-gray-200 rounded-lg shadow overflow-hidden">
               <div className="flex flex-row items-center mx-6 py-5 border-solid border-b-[3px] border-[#E6E6E6]">
                 <img
                   className="w-16 h-16 rounded-full shadow-lg"
-                  src={ UserIcon }
+                  src={UserIcon}
                   alt="user"
                 />
                 <h5 className="text-[24px] font-medium text-black ml-5 capitalize">
-                  { myAssessments && myAssessments?.[0]?.name }
+                  {myAssessments && myAssessments?.[0]?.name}
                 </h5>
               </div>
               <div className="flex flex-col mx-8 pt-4">
@@ -296,41 +362,43 @@ function StartMCQTest () {
                   </h5>
                 </div>
                 <div className=" flex flex-wrap w-full gap-5 my-5 max-h-72 overflow-y-scroll">
-                  { moduleQuestions?.map((question: any, index: number) => (
+                  {moduleQuestions?.map((question: any, index: number) => (
                     <QuestionNumberBox
-                      questionNo={ index + 1 }
-                      checked={ question?.answer }
-                      key={ question?._id }
-                      review={ question?.review }
-                      directQuestionClicked={ directQuestionClicked }
+                      questionNo={index + 1}
+                      checked={question?.answer}
+                      key={question?._id}
+                      review={question?.review}
+                      directQuestionClicked={directQuestionClicked}
                     />
-                  )) }
+                  ))}
                 </div>
               </div>
               <button
                 type="button"
-                onClick={ () => { setSubmitTest(true) } }
-                className={ `flex w-full text-white bg-[#31B06B] tracking-wide font-semibold text-md px-12 py-2.5 text-center justify-center items-center font-sansation cursor-pointer` }
+                onClick={() => {
+                  setSubmitTest(true);
+                }}
+                className={`flex w-full text-white bg-[#31B06B] tracking-wide font-semibold text-md px-12 py-2.5 text-center justify-center items-center font-sansation cursor-pointer`}
               >
                 Submit
               </button>
             </div>
           </div>
           <Webcam
-            ref={ webcamRef }
+            ref={webcamRef}
             forceScreenshotSourceSize
-            onUserMedia={ () => {
+            onUserMedia={() => {
               setCameraStats(true);
-            } }
-            onUserMediaError={ () => {
+            }}
+            onUserMediaError={() => {
               setCameraStats(false);
-            } }
-            style={ {
+            }}
+            style={{
               height,
               width,
-              position: 'absolute',
-              display: "none"
-            } }
+              position: "absolute",
+              display: "none",
+            }}
           />
           <div className="basis-[70%] relative md:border-l-[2px] md:border-[#DCDCD9]">
             <div className="mcq-q pb-44">
@@ -338,22 +406,36 @@ function StartMCQTest () {
                 <div className="flex">
                   <div>
                     <h5 className="text-[22px] font-normal text-black select-none">
-                      Q{ questionIndex + 1 }.
+                      Q{questionIndex + 1}.
                     </h5>
                   </div>
                   <div className="mr-8">
                     <h5 className="text-[22px] font-normal text-black pl-[10px] select-none">
-                      { moduleQuestions?.[questionIndex]?.title || "" }
+                      {moduleQuestions?.[questionIndex]?.title || ""}
                     </h5>
                   </div>
-                  <div onClick={ onReview } className=" absolute -top-1 right-2">
-                    { moduleQuestions?.[questionIndex]?.review ? <img src={ ReviewedIcon } /> : <img src={ ReviewIcon } /> }
+                  <div onClick={onReview} className=" absolute -top-1 right-2">
+                    {moduleQuestions?.[questionIndex]?.review ? (
+                      <img src={ReviewedIcon} />
+                    ) : (
+                      <img src={ReviewIcon} />
+                    )}
                   </div>
                 </div>
                 <div className="space-y-5 mt-6 ml-10">
-                  { moduleQuestions?.[questionIndex]?.options?.map((option: any, index: number) => (
-                    <QuestionOptionBox key={ option } onSelection={ (v: any) => { onQuestionSelection(v) } } option={ option } index={ index } checked={ selectedQuestion } />
-                  )) }
+                  {moduleQuestions?.[questionIndex]?.options?.map(
+                    (option: any, index: number) => (
+                      <QuestionOptionBox
+                        key={option}
+                        onSelection={(v: any) => {
+                          onQuestionSelection(v);
+                        }}
+                        option={option}
+                        index={index}
+                        checked={selectedQuestion}
+                      />
+                    )
+                  )}
                 </div>
               </div>
             </div>
@@ -370,34 +452,56 @@ function StartMCQTest () {
               <div className="flex w-full md:justify-between md:flex-row flex-col justify-center items-center md:gap-0 gap-4">
                 <button
                   type="button"
-                  disabled={ disablePrevBtn }
-                  onClick={ onPrevClicked }
-                  className={ `md:mx-20 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg ${disablePrevBtn ? "cursor-not-allowed" : ""}` }
+                  disabled={disablePrevBtn}
+                  onClick={onPrevClicked}
+                  className={`md:mx-20 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg ${
+                    disablePrevBtn ? "cursor-not-allowed" : ""
+                  }`}
                 >
                   <FaArrowLeft className="mr-2" />
                   PREVIOUS
                 </button>
-                { moduleQuestions?.length - 1 === questionIndex ? <button
-                  type="button"
-                  onClick={ () => { setSubmitTest(true) } }
-                  className="md:mx-20 mx-6 flex text-white bg-[#31B06B] font-semibold text-md w-40 py-2.5 text-center justify-center items-center rounded-lg cursor-pointer"
-                >
-                  SUBMIT
-                </button> : <button
-                  type="button"
-                  disabled={ disableNextBtn }
-                  onClick={ onNextClicked }
-                  className="md:mx-20 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
-                >
-                  NEXT<FaArrowRight className="ml-2" />
-                </button> }
+                {moduleQuestions?.length - 1 === questionIndex ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSubmitTest(true);
+                    }}
+                    className="md:mx-20 mx-6 flex text-white bg-[#31B06B] font-semibold text-md w-40 py-2.5 text-center justify-center items-center rounded-lg cursor-pointer"
+                  >
+                    SUBMIT
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={disableNextBtn}
+                    onClick={onNextClicked}
+                    className="md:mx-20 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
+                  >
+                    NEXT
+                    <FaArrowRight className="ml-2" />
+                  </button>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
-      { submitTest ? <ModuleConfirmationModal onPress={ (v) => { onSubmission(v) } } title={ assessmentModule.module?.name } /> : null }
-      { isExitFullScreen ? <ExitFullScreenModal onPress={ (v) => { onExitAction(v) } } /> : null }
+      {submitTest ? (
+        <ModuleConfirmationModal
+          onPress={(v) => {
+            onSubmission(v);
+          }}
+          title={assessmentModule.module?.name}
+        />
+      ) : null}
+      {isExitFullScreen ? (
+        <ExitFullScreenModal
+          onPress={(v) => {
+            onExitAction(v);
+          }}
+        />
+      ) : null}
     </>
   );
 }

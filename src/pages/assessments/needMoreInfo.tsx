@@ -47,7 +47,7 @@ function PersonNeedMoreInfo() {
           if (element?.name?.includes("Backlog")) {
             if (
               pattern.test(element?.answer) &&
-              element?.answer?.length === 2
+              element?.answer?.length === 1
             ) {
             } else {
               flag = false;
@@ -112,6 +112,16 @@ function PersonNeedMoreInfo() {
     setAssessmentQuestion(newQuestions);
   };
 
+  const getErrorText = (name: any) => {
+    if (name?.includes("Semester")) {
+      return `Please enter valid ${name} (Eg. 1,2,3,4)`;
+    }
+    if (name?.includes("Backlog")) {
+      return `Please enter valid ${name} (Eg. 0,1,2,3,4)`;
+    }
+    return `Please enter valid ${name}`;
+  };
+
   return (
     <>
       <div className="sm:p-8 md:px-20 md:py-12 p-4">
@@ -133,15 +143,16 @@ function PersonNeedMoreInfo() {
                   onChange={(e) => {
                     onValueChange(e.target.value, index, v);
                   }}
-                  type="text"
-                  max={1}
+                  // type="text"
+                  type={`${v?.name.trim() == "Semester" ? "number" : "text"}`}
+                  maxLength={v?.name.trim() == "Phone Number" ? 10 : 30}
                   id="error"
                   className="bg-[#F2F1F1] font-sansation border border-[#C2C2C2] text-[#222222] placeholder-[#9F9D9D] text-sm rounded-[5px] block w-full p-2.5"
                   placeholder={`Enter ${v?.title}`}
                 />
                 {v?.isValid ? (
                   <p className="mt-1 text-sm text-[#FB2121] font-sansation">
-                    {`Please enter valid ${v?.name}`}
+                    {getErrorText(v?.name)}
                   </p>
                 ) : null}
               </div>
