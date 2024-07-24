@@ -11,8 +11,8 @@ import {
   getAssessmentQuestionSelector,
 } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import { toast } from "react-toastify";
-
-function PersonNeedMoreInfo () {
+const pattern = /^[0-9]*$/;
+function PersonNeedMoreInfo() {
   const navigate = useNavigate();
   const dispatcher = useAppDispatch();
   const { assessmentId, userId } = useParams();
@@ -25,11 +25,38 @@ function PersonNeedMoreInfo () {
     let flag = true;
     let updateAssessmentQuestion = [...assessmentQuestion];
     updateAssessmentQuestion = updateAssessmentQuestion?.map((element) => {
+      let isValid = false;
       if (!element?.answer) {
         flag = false;
         return { ...element, isValid: true };
       }
-      return { ...element, isValid: false };
+      if (element?.name?.trim() === "Phone Number") {
+        if (pattern.test(element?.answer) && element?.answer?.length === 10) {
+        } else {
+          isValid = true;
+          flag = false;
+        }
+      } else {
+        if (element?.name?.trim() === "Semester") {
+          if (pattern.test(element?.answer) && element?.answer?.length === 1) {
+          } else {
+            flag = false;
+            isValid = true;
+          }
+        } else {
+          if (element?.name?.includes("Backlog")) {
+            if (
+              pattern.test(element?.answer) &&
+              element?.answer?.length === 2
+            ) {
+            } else {
+              flag = false;
+              isValid = true;
+            }
+          }
+        }
+      }
+      return { ...element, isValid: isValid };
     });
     if (flag) {
       dispatcher(
@@ -44,21 +71,22 @@ function PersonNeedMoreInfo () {
       setAssessmentQuestion(updateAssessmentQuestion);
     }
   };
-
   // //Disable Right click
-  if (document.addEventListener) {
-    document.addEventListener(
-      "contextmenu",
-      function (e) {
-        e.preventDefault();
-      },
-      false
-    );
-  }
+  // if (document.addEventListener) {
+  //   document.addEventListener(
+  //     "contextmenu",
+  //     function (e) {
+  //       e.preventDefault();
+  //     },
+  //     false
+  //   );
+  // }
 
   React.useEffect(() => {
     if (assessmentId && myAssessments?.length) {
-      const data = myAssessments?.filter((v) => v?.assessmentId === assessmentId);
+      const data = myAssessments?.filter(
+        (v) => v?.assessmentId === assessmentId
+      );
       setSelectAssessment(data?.[0]);
       setAssessmentQuestion(data?.[0]?.question);
     } else {
@@ -73,7 +101,7 @@ function PersonNeedMoreInfo () {
     }
   }, [dispatcher, userId]);
 
-  const onValueChange = (value: string, index: number) => {
+  const onValueChange = (value: string, index: number, v: any) => {
     const updatedQuestions = {
       ...assessmentQuestion[index],
       answer: value,
@@ -93,37 +121,39 @@ function PersonNeedMoreInfo () {
             Enter your Details
           </span>
           <div className="grid grid-cols-3 gap-y-6 gap-x-12 mb-4 pt-4">
-            { assessmentQuestion?.map((v: any, index: number) => (
-              <div className="flex flex-col min-h-20" key={ v?._id }>
+            {assessmentQuestion?.map((v: any, index: number) => (
+              <div className="flex flex-col min-h-20" key={v?._id}>
                 <label className="block mb-2 text-[18px] font-medium text-[#7D7C7C] font-sansation">
-                  { v?.title }
+                  {v?.title}
                   <span className="text-[#FB2121]">*</span>
                 </label>
                 <input
-                  defaultValue={ v?.answer }
-                  onChange={ (e) => {
-                    onValueChange(e.target.value, index);
-                  } }
+                  defaultValue={v?.answer}
+                  value={v?.answer}
+                  onChange={(e) => {
+                    onValueChange(e.target.value, index, v);
+                  }}
                   type="text"
+                  max={1}
                   id="error"
                   className="bg-[#F2F1F1] font-sansation border border-[#C2C2C2] text-[#222222] placeholder-[#9F9D9D] text-sm rounded-[5px] block w-full p-2.5"
-                  placeholder={ `Enter ${v?.title}` }
+                  placeholder={`Enter ${v?.title}`}
                 />
-                { v?.isValid ? (
+                {v?.isValid ? (
                   <p className="mt-1 text-sm text-[#FB2121] font-sansation">
-                    { `Please enter valid ${v?.name}` }
+                    {`Please enter valid ${v?.name}`}
                   </p>
-                ) : null }
+                ) : null}
               </div>
-            )) }
+            ))}
           </div>
         </div>
         <div className="flex items-center justify-end mt-12">
           <button
             type="button"
-            onClick={ () => {
+            onClick={() => {
               onSaveClicked();
-            } }
+            }}
             className="text-white font-sansation bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center"
           >
             Save
