@@ -134,7 +134,7 @@ function PersonNeedMoreInfo() {
             {assessmentQuestion?.map((v: any, index: number) => (
               <div className="flex flex-col min-h-20" key={v?._id}>
                 <label className="block mb-2 text-[18px] font-medium text-[#7D7C7C] font-sansation">
-                  {v?.title}
+                  {v?.title || v?.name}
                   <span className="text-[#FB2121]">*</span>
                 </label>
                 <input
@@ -148,7 +148,7 @@ function PersonNeedMoreInfo() {
                   maxLength={v?.name.trim() == "Phone Number" ? 10 : 30}
                   id="error"
                   className="bg-[#F2F1F1] font-sansation border border-[#C2C2C2] text-[#222222] placeholder-[#9F9D9D] text-sm rounded-[5px] block w-full p-2.5"
-                  placeholder={`Enter ${v?.title}`}
+                  placeholder={`Enter ${v?.title || v?.name}`}
                 />
                 {v?.isValid ? (
                   <p className="mt-1 text-sm text-[#FB2121] font-sansation">
