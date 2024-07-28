@@ -125,7 +125,7 @@ function PersonNeedMoreInfo() {
   return (
     <>
       <div className="sm:p-8 md:px-20 md:py-12 p-4">
-        <AssessmentCard />
+        <AssessmentCard onExpired={()=>{}} />
         <div className="flex flex-col mb-10 rounded-2xl bg-white p-8 shadow-lg">
           <span className="text-[22px] font-semibold text-black font-sansation">
             Enter your Details

@@ -3,17 +3,24 @@ import MicIcon from "../../assets/svg/micIcon2.svg";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
-import Webcam from 'react-webcam';
+import Webcam from "react-webcam";
 import { toast } from "react-toastify";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
 import { v4 as uuidv4 } from "uuid";
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { getAssessmentModuleSelector, getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
-import { getModuleSubmissionDispatcher, getUserActivityDispatcher, setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
+import {
+  getAssessmentModuleSelector,
+  getAssessmentsSelector,
+} from "../../store/slices/dashboard-slice/dashboard-selectors";
+import {
+  getModuleSubmissionDispatcher,
+  getUserActivityDispatcher,
+  setAssessmentModuleDispatcher,
+} from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection";
 import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
-import screenfull from 'screenfull';
+import screenfull from "screenfull";
 
 const VoiceToVoice = () => {
   const webcamRef = useRef<any>(null);
@@ -27,25 +34,25 @@ const VoiceToVoice = () => {
   );
   // console.log('myAssessments=>', myAssessments)
   const assessmentModule = useAppSelector(getAssessmentModuleSelector);
-  const [submitTestModal, setSubmitTestModal] = useState(false)
+  const [submitTestModal, setSubmitTestModal] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(0);
   const [isRecording, setIsRecording] = useState(true);
   const [userMute, setUserMute] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isExitFullScreen, setIsExitFullScreen] = useState(false)
+  const [isExitFullScreen, setIsExitFullScreen] = useState(false);
   const [question, setQuestion] = useState({
     title: "",
-    answer: ""
+    answer: "",
   });
   const [conversationAns, setConversationAns] = useState<string>("");
   const [moduleQuestions, setModuleQuestions] = useState<any>([]);
   const [aiChats, setAIChat] = useState<any>([]);
   let streamRef: any = useRef(null);
-  useUserActivityDetection()
-  let audioElement = useRef(new Audio())
+  useUserActivityDetection();
+  let audioElement = useRef(new Audio());
 
-  let speakTimeout: any = null
+  let speakTimeout: any = null;
 
   useEffect(() => {
     scrollToBottom();
@@ -64,28 +71,30 @@ const VoiceToVoice = () => {
 
   useEffect(() => {
     if (assessmentModule?.module?.question) {
-      const questions = assessmentModule?.module?.question?.map((v: any) => { return { ...v, answer: v?.answer ? v?.answer : "" } })
+      const questions = assessmentModule?.module?.question?.map((v: any) => {
+        return { ...v, answer: v?.answer ? v?.answer : "" };
+      });
       setModuleQuestions(questions);
     }
   }, [assessmentModule]);
 
   useEffect(() => {
     if (screenfull.isEnabled) {
-      screenfull.on('change', handleFullscreenChange);
+      screenfull.on("change", handleFullscreenChange);
     }
     return () => {
       if (screenfull.isEnabled) {
-        screenfull.off('change', handleFullscreenChange);
+        screenfull.off("change", handleFullscreenChange);
       }
     };
   }, []);
 
   const handleFullscreenChange = () => {
     if (!screenfull.isFullscreen) {
-      setIsExitFullScreen(true)
+      setIsExitFullScreen(true);
     }
   };
-  const fullScreenElev: any = document.getElementById('fullscreenDiv');
+  const fullScreenElev: any = document.getElementById("fullscreenDiv");
   const onExitAction = (type: any) => {
     if (type === "cancel") {
       if (screenfull.isEnabled && !screenfull.isFullscreen) {
@@ -95,8 +104,8 @@ const VoiceToVoice = () => {
     if (type === "exit") {
       submitTest();
     }
-    setIsExitFullScreen(false)
-  }
+    setIsExitFullScreen(false);
+  };
 
   useEffect(() => {
     dispatcher(
@@ -109,7 +118,7 @@ const VoiceToVoice = () => {
   }, [dispatcher, assessmentId, testId, userId]);
 
   const scrollToBottom = () => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   // //Disable Right click
@@ -120,10 +129,13 @@ const VoiceToVoice = () => {
   // }
 
   useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ audio: true })
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
       .then((stream) => {
         streamRef.current = stream;
-        setMediaRecorder(new MediaRecorder(stream, { mimeType: 'audio/webm; codecs=opus' }));
+        setMediaRecorder(
+          new MediaRecorder(stream, { mimeType: "audio/webm; codecs=opus" })
+        );
       })
       .catch((error) => {
         console.error("Error accessing microphone:", error);
@@ -135,17 +147,23 @@ const VoiceToVoice = () => {
     if (mediaRecorder && userId && moduleQuestions && myAssessments) {
       const newSocket = io("wss://talorexvoice.com", {
         query: {
-          userId: userId
-        }
+          userId: userId,
+        },
       });
       console.log("socket id", newSocket.id);
       newSocket.on("connect", () => {
-        console.log("connected to server", { title: moduleQuestions?.[0]?.title, name: myAssessments && myAssessments?.[0]?.name });
-        newSocket.emit("prompt", { title: moduleQuestions?.[0]?.title, name: myAssessments && myAssessments?.[0]?.name })
+        console.log("connected to server", {
+          title: moduleQuestions?.[0]?.title,
+          name: myAssessments && myAssessments?.[0]?.name,
+        });
+        newSocket.emit("prompt", {
+          title: moduleQuestions?.[0]?.title,
+          name: myAssessments && myAssessments?.[0]?.name,
+        });
         mediaRecorder.start(1500);
         mediaRecorder.ondataavailable = async (event) => {
           if (event?.data?.size > 0) {
-            console.log('START AI')
+            console.log("START AI");
             try {
               const arrayBuffer = await event.data.arrayBuffer();
               const base64String = arrayBufferToBase64(arrayBuffer);
@@ -159,46 +177,46 @@ const VoiceToVoice = () => {
         newSocket.emit("start", { streamSid: newSocket.id, callSid: uuidv4() });
       });
       newSocket.on("question", (data) => {
-        console.log('conversationAns question=>', data)
+        console.log("conversationAns question=>", data);
         setQuestion({ ...question, ...data });
         setAIChat((prev: any) => {
-          return [...prev, { type: 'ai', text: data?.title }]
-        })
+          return [...prev, { type: "ai", text: data?.title }];
+        });
         setConversationAns((prev) => {
-          return prev + `AI:${data?.title} `
-        })
-      })
-      newSocket.on('answer', (data) => {
-        setIsSpeaking(2)
-        console.log('conversationAns answer=>', data)
+          return prev + `AI:${data?.title} `;
+        });
+      });
+      newSocket.on("answer", (data) => {
+        setIsSpeaking(2);
+        console.log("conversationAns answer=>", data);
         audioElement.current.pause();
         audioElement.current.currentTime = 0;
-        setIsPlaying(true)
+        setIsPlaying(true);
         setAIChat((prev: any) => {
-          return [...prev, { type: 'user', text: data?.answer }]
-        })
+          return [...prev, { type: "user", text: data?.answer }];
+        });
         setConversationAns((prev) => {
-          return prev + `User:${data?.answer} `
-        })
-      })
+          return prev + `User:${data?.answer} `;
+        });
+      });
 
       newSocket.on("audioData", (data) => {
         const audioBlob = base64ToBlob(data.audio, "audio/mpeg");
         const audioUrl = URL.createObjectURL(audioBlob);
-        clearTimeout(speakTimeout)
-        setIsSpeaking(1)
+        clearTimeout(speakTimeout);
+        setIsSpeaking(1);
         audioElement?.current?.pause();
         audioElement.current.currentTime = 0;
         audioElement.current.src = "";
         speakTimeout = setTimeout(() => {
-          audioElement.current.src = audioUrl
-          setIsPlaying(true)
+          audioElement.current.src = audioUrl;
+          setIsPlaying(true);
           audioElement?.current?.play();
-        }, 200)
+        }, 200);
         audioElement.current.onended = () => {
-          setIsSpeaking(0)
-          setIsPlaying(false)
-        }
+          setIsSpeaking(0);
+          setIsPlaying(false);
+        };
       });
 
       newSocket.on("disconnect", () => {
@@ -213,14 +231,14 @@ const VoiceToVoice = () => {
         mediaRecorder?.stop();
         audioElement?.current?.pause();
         audioElement.current.currentTime = 0;
-        mediaRecorder.removeEventListener("dataavailable", () => { });
+        mediaRecorder.removeEventListener("dataavailable", () => {});
         newSocket?.disconnect();
       };
     }
   }, [mediaRecorder, userId, moduleQuestions, myAssessments]);
 
-  function arrayBufferToBase64 (buffer: ArrayBuffer): string {
-    let binary = '';
+  function arrayBufferToBase64(buffer: ArrayBuffer): string {
+    let binary = "";
     const bytes = new Uint8Array(buffer);
     const len = bytes.byteLength;
     for (let i = 0; i < len; i++) {
@@ -255,15 +273,17 @@ const VoiceToVoice = () => {
   }, [isRecording, mediaRecorder]);
 
   const onTimeout = () => {
-    navigate(-1)
-  }
+    if (Number(assessmentModule?.module?.time) > 0) {
+      submitTest();
+    }
+  };
 
   const onSubmitTest = (type: string) => {
-    setSubmitTestModal(false)
+    setSubmitTestModal(false);
     if (type === "submit") {
-      submitTest()
+      submitTest();
     }
-  }
+  };
 
   const submitTest = async () => {
     try {
@@ -283,14 +303,17 @@ const VoiceToVoice = () => {
       const res = await dispatcher(
         getModuleSubmissionDispatcher({
           moduleId: testId,
-          question: [{ ...moduleQuestions?.[0], answer: conversationAns }]
+          question: [{ ...moduleQuestions?.[0], answer: conversationAns }],
         })
       );
       if (res?.payload.data?.status) {
-        toast.success(`${assessmentModule?.module?.name} completed successfully!`, {});
+        toast.success(
+          `${assessmentModule?.module?.name} completed successfully!`,
+          {}
+        );
         // navigate(-1)
         // screenfull.exit()
-        window.location.href = `/assessment/${userId}/${assessmentId}/modules`
+        window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
       } else {
         toast.error("Oops! Submission is failed", {});
       }
@@ -302,10 +325,15 @@ const VoiceToVoice = () => {
 
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4">
-      <TimerCounterWithProgress timestamp={ 20 || 0 } title={ "Voice Round" } onTimeout={ onTimeout } />
+      <TimerCounterWithProgress
+        timestamp={assessmentModule.module?.time || 0}
+        title={"Voice Round"}
+        onTimeout={onTimeout}
+      />
       <div className="flex">
         <span className="text-[20px] text-black font-sansation font-semibold">
-          TALBot is your interviewer, please listen carefully and respond to the questions asked by TALBot
+          TALBot is your interviewer, please listen carefully and respond to the
+          questions asked by TALBot
         </span>
       </div>
       {/* <div className="flex mb-3">
@@ -317,7 +345,11 @@ const VoiceToVoice = () => {
         <div className="flex flex-col w-[80%] h-1/2 md:flex-row justify-between">
           <div className="relative flex w-[50%] h-[470px] bg-[#474646] justify-center items-center rounded-xl border border-[#E5A971] mr-4">
             <div className="flex justify-center items-center">
-              <div className={ `h-10 w-10 md:h-40 md:w-40 bg-white text-[#E5A971] rounded-full text-[20px] md:text-[60px] font-semibold font-sansation flex justify-center items-center ${isSpeaking === 1 ? "animation-pulse" : ""}` }>
+              <div
+                className={`h-10 w-10 md:h-40 md:w-40 bg-white text-[#E5A971] rounded-full text-[20px] md:text-[60px] font-semibold font-sansation flex justify-center items-center ${
+                  isSpeaking === 1 ? "animation-pulse" : ""
+                }`}
+              >
                 Ai
               </div>
             </div>
@@ -325,48 +357,63 @@ const VoiceToVoice = () => {
               Ai Bot
             </div>
             <div className="absolute right-2 bottom-4 text-white  px-4 py-1  ">
-              <img src={ MicIcon } className="h-8 w-10" alt="mic" />
+              <img src={MicIcon} className="h-8 w-10" alt="mic" />
             </div>
           </div>
           <div className="relative flex w-[50%] h-[470px] bg-[#E5A971] justify-center items-center rounded-xl border border-[#E5A971] mr-4">
             <div className="flex justify-center items-center">
-              <div className={ `h-10 w-10 md:h-40 md:w-40 bg-white text-[#E5A971] rounded-full text-[20px] md:text-[60px] font-semibold font-sansation flex justify-center items-center capitalize ${isSpeaking === 2 ? "animation-pulse" : ""}` }>
-                { myAssessments && myAssessments?.[0]?.name ? myAssessments?.[0]?.name?.substring(0, 1) : "" }
+              <div
+                className={`h-10 w-10 md:h-40 md:w-40 bg-white text-[#E5A971] rounded-full text-[20px] md:text-[60px] font-semibold font-sansation flex justify-center items-center capitalize ${
+                  isSpeaking === 2 ? "animation-pulse" : ""
+                }`}
+              >
+                {myAssessments && myAssessments?.[0]?.name
+                  ? myAssessments?.[0]?.name?.substring(0, 1)
+                  : ""}
               </div>
             </div>
             <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation capitalize">
-              { myAssessments && myAssessments?.[0]?.name || "Candidate" }
+              {(myAssessments && myAssessments?.[0]?.name) || "Candidate"}
             </div>
             <div className="absolute right-2 bottom-4 text-white  px-4 py-1  ">
-              <img src={ MicIcon } className="h-8 w-10" alt="mic" />
+              <img src={MicIcon} className="h-8 w-10" alt="mic" />
             </div>
           </div>
         </div>
         <div className="flex flex-col w-[20%] bg-white shadow rounded-lg p-4">
           <div className="flex w-full flex-col h-[440px]">
             <div className="flex gap-2 px-2 pb-2">
-              <img src={ VoiceIcon } alt="icn" />
+              <img src={VoiceIcon} alt="icn" />
               <span className="text-xs text-gray-300 mt-2">CC/Subtitle </span>
             </div>
             <div className="flex flex-col mx-2 bg-white overflow-y-scroll space-y-2">
-              { Array.from(
+              {Array.from(
                 new Map(aiChats?.map((itm: any) => [itm?.text, itm])).values()
               )?.map((item: any, index: number) => {
                 if (item?.type === "ai") {
-                  return (<div key={ item?.text + index } className="flex flex-col gap-1 w-full max-w-[80%]">
-                    <div className="flex flex-col leading-1.5 p-4 border-gray-200 bg-[#F5F2F2] rounded-xl">
-                      <p className="text-sm font-normal text-gray-900">{ item?.text }</p>
+                  return (
+                    <div
+                      key={item?.text + index}
+                      className="flex flex-col gap-1 w-full max-w-[80%]"
+                    >
+                      <div className="flex flex-col leading-1.5 p-4 border-gray-200 bg-[#F5F2F2] rounded-xl">
+                        <p className="text-sm font-normal text-gray-900">
+                          {item?.text}
+                        </p>
+                      </div>
                     </div>
-                  </div>)
+                  );
                 } else {
-                  return (<div key={ item?.text + index } className="flex justify-end">
-                    <div className="bg-[#F5F2F2] text-black p-2 rounded-lg max-w-[80%]">
-                      { item?.text }
+                  return (
+                    <div key={item?.text + index} className="flex justify-end">
+                      <div className="bg-[#F5F2F2] text-black p-2 rounded-lg max-w-[80%]">
+                        {item?.text}
+                      </div>
                     </div>
-                  </div>)
+                  );
                 }
-              }) }
-              <div ref={ chatEndRef } />
+              })}
+              <div ref={chatEndRef} />
             </div>
           </div>
         </div>
@@ -374,13 +421,28 @@ const VoiceToVoice = () => {
       <div className="flex justify-end py-6 mt-4 font-sansation">
         <button
           className="flex justify-center bg-[#40B24B] px-12 py-2 rounded-lg text-white font-semibold font-sansation"
-          onClick={ () => { setSubmitTestModal(true) } }
+          onClick={() => {
+            setSubmitTestModal(true);
+          }}
         >
           Submit
         </button>
       </div>
-      { submitTestModal ? <ModuleConfirmationModal onPress={ (v) => { onSubmitTest(v) } } title={ assessmentModule.module?.name } /> : null }
-      { isExitFullScreen ? <ExitFullScreenModal onPress={ (v) => { onExitAction(v) } } /> : null }
+      {submitTestModal ? (
+        <ModuleConfirmationModal
+          onPress={(v) => {
+            onSubmitTest(v);
+          }}
+          title={assessmentModule.module?.name}
+        />
+      ) : null}
+      {isExitFullScreen ? (
+        <ExitFullScreenModal
+          onPress={(v) => {
+            onExitAction(v);
+          }}
+        />
+      ) : null}
     </div>
   );
 };

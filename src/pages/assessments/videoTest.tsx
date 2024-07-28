@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import Webcam from "react-webcam";
-import AWS from 'aws-sdk';
+import AWS from "aws-sdk";
 import { CameraOptions, useFaceDetection } from "react-use-face-detection";
 import FaceDetection from "@mediapipe/face_detection";
 import { Camera } from "@mediapipe/camera_utils";
@@ -26,19 +26,19 @@ import {
 import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection";
 import CustomToaster from "../../components/Modals/CustomToaster";
 import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
-import screenfull from 'screenfull';
+import screenfull from "screenfull";
 
 const width = 650;
 const height = 650;
 let partNumber = 1;
 let multipartMap: any = { Parts: [] };
-const bucketName = 'masters-unoin';
+const bucketName = "masters-unoin";
 const key = `live-video/${Date.now()}.webm`;
 
 AWS.config.update({
-  accessKeyId: 'AKIAXYKJWKKMP33E5KUS',
-  secretAccessKey: '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',
-  region: 'ap-south-1'
+  accessKeyId: "AKIAXYKJWKKMP33E5KUS",
+  secretAccessKey: "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",
+  region: "ap-south-1",
 });
 
 const s3 = new AWS.S3();
@@ -52,9 +52,9 @@ const VideoTest = () => {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
   );
-  const [liveVideoMediaRecorder, setLiveVideoMediaRecorder] = useState<MediaRecorder | any>(
-    null
-  );
+  const [liveVideoMediaRecorder, setLiveVideoMediaRecorder] = useState<
+    MediaRecorder | any
+  >(null);
   const assessmentModule = useAppSelector(getAssessmentModuleSelector);
   const [submitTestModal, setSubmitTestModal] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -62,7 +62,7 @@ const VideoTest = () => {
   const [cameraStats, setCameraStats] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
   const [userMute, setUserMute] = useState(true);
-  const [isExitFullScreen, setIsExitFullScreen] = useState(false)
+  const [isExitFullScreen, setIsExitFullScreen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [question, setQuestion] = useState({
     title: "",
@@ -77,7 +77,7 @@ const VideoTest = () => {
 
   useUserActivityDetection();
   // const audioElement = new Audio();
-  let audioElement = useRef(new Audio())
+  let audioElement = useRef(new Audio());
   let speakTimeout: any = null;
   let toasterTimeout: any = null;
   let streamRef: any = useRef(null);
@@ -102,34 +102,39 @@ const VideoTest = () => {
   useEffect(() => {
     if (!detected && !isToasterDisplayed && cameraStats && cameraReady) {
       setToastMsg("Face not detected");
-      displayToasterFun()
+      displayToasterFun();
       updateUserActivity();
     }
-    if (facesDetected > 1 && !isToasterDisplayed && cameraStats && cameraReady) {
+    if (
+      facesDetected > 1 &&
+      !isToasterDisplayed &&
+      cameraStats &&
+      cameraReady
+    ) {
       setToastMsg("Multiple face detected");
-      displayToasterFun()
+      displayToasterFun();
       updateUserActivity();
     }
   }, [detected, facesDetected, cameraStats, cameraReady]);
 
   useEffect(() => {
     if (screenfull.isEnabled) {
-      screenfull.on('change', handleFullscreenChange);
+      screenfull.on("change", handleFullscreenChange);
     }
     return () => {
       if (screenfull.isEnabled) {
-        screenfull.off('change', handleFullscreenChange);
+        screenfull.off("change", handleFullscreenChange);
       }
     };
   }, []);
 
   const handleFullscreenChange = () => {
     if (!screenfull.isFullscreen) {
-      setIsExitFullScreen(true)
+      setIsExitFullScreen(true);
     }
   };
 
-  const fullScreenElev: any = document.getElementById('fullscreenDiv');
+  const fullScreenElev: any = document.getElementById("fullscreenDiv");
   const onExitAction = (type: any) => {
     if (type === "cancel") {
       if (screenfull.isEnabled && !screenfull.isFullscreen) {
@@ -138,18 +143,18 @@ const VideoTest = () => {
     }
     if (type === "exit") {
       // submitTest();
-      stopRecording()
+      stopRecording();
     }
-    setIsExitFullScreen(false)
-  }
+    setIsExitFullScreen(false);
+  };
 
   const displayToasterFun = () => {
-    clearTimeout(toasterTimeout)
+    clearTimeout(toasterTimeout);
     toasterTimeout = setTimeout(() => {
-      setIsToasterDisplayed(false)
+      setIsToasterDisplayed(false);
     }, 1000);
-    setIsToasterDisplayed(true)
-  }
+    setIsToasterDisplayed(true);
+  };
 
   useEffect(() => {
     scrollToBottom();
@@ -198,10 +203,13 @@ const VideoTest = () => {
   };
 
   useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ audio: true })
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
       .then((stream) => {
         streamRef.current = stream;
-        setMediaRecorder(new MediaRecorder(stream, { mimeType: "audio/webm; codecs=opus" }));
+        setMediaRecorder(
+          new MediaRecorder(stream, { mimeType: "audio/webm; codecs=opus" })
+        );
       })
       .catch((error) => {
         console.error("Error accessing microphone:", error);
@@ -212,8 +220,13 @@ const VideoTest = () => {
   // Live video recording
   useEffect(() => {
     const initMedia = async () => {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      const recorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp8' });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      const recorder = new MediaRecorder(stream, {
+        mimeType: "video/webm; codecs=vp8",
+      });
       setLiveVideoMediaRecorder(recorder);
     };
     initMedia();
@@ -228,9 +241,9 @@ const VideoTest = () => {
       });
       console.log("socket id", newSocket.id);
       newSocket.on("connect", () => {
-        setIsSocketConnected(true)
+        setIsSocketConnected(true);
         setTimeout(() => {
-          setCameraReady(true)
+          setCameraReady(true);
         }, 4000);
         console.log("connected to server", {
           title: moduleQuestions?.[0]?.title,
@@ -316,10 +329,12 @@ const VideoTest = () => {
         mediaRecorder?.stop();
         audioElement.current?.pause();
         audioElement.current.currentTime = 0;
-        mediaRecorder.removeEventListener("dataavailable", () => { });
+        mediaRecorder.removeEventListener("dataavailable", () => {});
         newSocket?.disconnect();
         if (streamRef?.current) {
-          streamRef.current?.getTracks()?.forEach((track: any) => track?.stop());
+          streamRef.current
+            ?.getTracks()
+            ?.forEach((track: any) => track?.stop());
           streamRef.current = null;
         }
       };
@@ -337,57 +352,61 @@ const VideoTest = () => {
       setIsRecording(true);
       try {
         // Initiate multipart upload
-        const createMultipartUpload = await s3.createMultipartUpload({
-          Bucket: bucketName,
-          Key: key,
-          ContentType: 'video/webm'
-        }).promise();
-        uploadIdRef.current = createMultipartUpload.UploadId
-        console.log('Multipart upload initiated:', createMultipartUpload);
+        const createMultipartUpload = await s3
+          .createMultipartUpload({
+            Bucket: bucketName,
+            Key: key,
+            ContentType: "video/webm",
+          })
+          .promise();
+        uploadIdRef.current = createMultipartUpload.UploadId;
+        console.log("Multipart upload initiated:", createMultipartUpload);
       } catch (err) {
-        console.error('Error initiating multipart upload:', err);
+        console.error("Error initiating multipart upload:", err);
       }
-    }
+    };
     if (liveVideoMediaRecorder) {
-      mediaListner()
+      mediaListner();
     }
   }, [liveVideoMediaRecorder]);
 
-  async function uploadChunk (blob: any) {
+  async function uploadChunk(blob: any) {
     const params = {
       Body: blob,
       Bucket: bucketName,
       Key: key,
       PartNumber: partNumber,
-      UploadId: uploadIdRef.current
+      UploadId: uploadIdRef.current,
     };
-    console.log('params=>', params, uploadIdRef.current)
+    console.log("params=>", params, uploadIdRef.current);
     try {
       const uploadPart = await s3.uploadPart(params).promise();
-      console.log('UploadPart response:', uploadPart);
+      console.log("UploadPart response:", uploadPart);
       if (uploadPart && uploadPart.ETag) {
         multipartMap.Parts.push({
           ETag: uploadPart.ETag,
-          PartNumber: partNumber
+          PartNumber: partNumber,
         });
         partNumber++;
-        console.log('Uploaded part:', partNumber - 1);
+        console.log("Uploaded part:", partNumber - 1);
       } else {
-        console.error('ETag is undefined in uploadPart response:', uploadPart);
+        console.error("ETag is undefined in uploadPart response:", uploadPart);
       }
     } catch (err) {
-      console.error('Error uploading part:', err);
+      console.error("Error uploading part:", err);
     }
   }
 
-  async function stopRecording () {
-    dispatcher(setLoadingDispatcher(true))
+  async function stopRecording() {
+    dispatcher(setLoadingDispatcher(true));
     liveVideoMediaRecorder?.stop();
     clearTimeout(speakTimeout);
     audioElement?.current?.pause();
     audioElement.current.currentTime = 0;
     audioElement.current.src = "";
-    webcamRef.current?.video?.srcObject?.getTracks()?.forEach((track: any) => track?.stop());
+    webcamRef.current?.video?.srcObject
+      ?.getTracks()
+      ?.forEach((track: any) => track?.stop());
     webcamRef.current.video.srcObject = null;
     setIsSpeaking(false);
     if (streamRef?.current) {
@@ -404,25 +423,27 @@ const VideoTest = () => {
       Bucket: bucketName,
       Key: key,
       UploadId: uploadIdRef.current,
-      MultipartUpload: multipartMap
-    })
+      MultipartUpload: multipartMap,
+    });
     try {
       // Complete multipart upload
-      const completeMultipartUpload = await s3.completeMultipartUpload({
-        Bucket: bucketName,
-        Key: key,
-        UploadId: uploadIdRef.current,
-        MultipartUpload: multipartMap
-      }).promise();
-      submitTest(completeMultipartUpload?.Location || "")
-      console.log('Multipart upload completed:', completeMultipartUpload);
+      const completeMultipartUpload = await s3
+        .completeMultipartUpload({
+          Bucket: bucketName,
+          Key: key,
+          UploadId: uploadIdRef.current,
+          MultipartUpload: multipartMap,
+        })
+        .promise();
+      submitTest(completeMultipartUpload?.Location || "");
+      console.log("Multipart upload completed:", completeMultipartUpload);
     } catch (err) {
-      console.error('Error completing multipart upload:', err);
-      submitTest("")
+      console.error("Error completing multipart upload:", err);
+      submitTest("");
     }
   }
 
-  function arrayBufferToBase64 (buffer: ArrayBuffer): string {
+  function arrayBufferToBase64(buffer: ArrayBuffer): string {
     let binary = "";
     const bytes = new Uint8Array(buffer);
     const len = bytes.byteLength;
@@ -458,7 +479,9 @@ const VideoTest = () => {
   }, [isRecording, mediaRecorder]);
 
   const onTimeout = () => {
-    navigate(-1);
+    if (Number(assessmentModule?.module?.time) > 0) {
+      stopRecording();
+    }
   };
   const videoConstraints = {
     facingMode: "user",
@@ -468,7 +491,7 @@ const VideoTest = () => {
     setSubmitTestModal(false);
     if (type === "submit") {
       // submitTest();
-      stopRecording()
+      stopRecording();
     }
   };
 
@@ -488,25 +511,32 @@ const VideoTest = () => {
         );
         // navigate(-1);
         // screenfull.exit()
-        window.location.href = `/assessment/${userId}/${assessmentId}/modules`
+        window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
       } else {
         toast.error("Oops! Submission is failed", {});
-        dispatcher(setLoadingDispatcher(false))
+        dispatcher(setLoadingDispatcher(false));
       }
     } catch (error) {
       toast.error("Oops! Internal server error", {});
       console.log("error=>", error);
-      dispatcher(setLoadingDispatcher(false))
+      dispatcher(setLoadingDispatcher(false));
     }
   };
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4">
-      { isToasterDisplayed && <CustomToaster message={ toastMsg } onClose={ () => { setIsToasterDisplayed(false) } } /> }
+      {isToasterDisplayed && (
+        <CustomToaster
+          message={toastMsg}
+          onClose={() => {
+            setIsToasterDisplayed(false);
+          }}
+        />
+      )}
       <TimerCounterWithProgress
-        timestamp={ 20 || 0 }
-        title={ "Video Round" }
-        onTimeout={ onTimeout }
-        showTimer={ false }
+        timestamp={assessmentModule.module?.time || 0}
+        title={"Video Round"}
+        onTimeout={onTimeout}
+        showTimer={false}
       />
       <div className="flex">
         <span className="text-[20px] text-black font-sansation font-semibold">
@@ -524,8 +554,9 @@ const VideoTest = () => {
           <div className="relative flex w-[50%] h-[470px] bg-[#474646] justify-center items-center rounded-xl border border-[#E5A971] mr-4">
             <div className="flex justify-center items-center">
               <div
-                className={ `h-10 w-10 md:h-40 md:w-40 bg-white text-[#E5A971] rounded-full text-[20px] md:text-[60px] font-semibold font-sansation flex justify-center items-center ${isSpeaking ? "animation-pulse" : ""
-                  }` }
+                className={`h-10 w-10 md:h-40 md:w-40 bg-white text-[#E5A971] rounded-full text-[20px] md:text-[60px] font-semibold font-sansation flex justify-center items-center ${
+                  isSpeaking ? "animation-pulse" : ""
+                }`}
               >
                 Ai
               </div>
@@ -534,34 +565,36 @@ const VideoTest = () => {
               Ai Bot
             </div>
             <div className="absolute right-2 bottom-4 text-white  px-4 py-1  ">
-              <img src={ MicIcon } className="h-8 w-10" alt="mic" />
+              <img src={MicIcon} className="h-8 w-10" alt="mic" />
             </div>
           </div>
           <div className="flex relative h-1/2 w-[50%] rounded-xl overflow-hidden">
             <div className="flex rounded-xl w-full overflow-hidden h-[470px] bg-gray-200">
-              { isSocketConnected && <Webcam
-                ref={ webcamRef }
-                screenshotFormat="image/jpeg"
-                screenshotQuality={ 1 }
-                // audio={userMute}
-                videoConstraints={ videoConstraints }
-                onUserMedia={ () => {
-                  setCameraStats(true);
-                } }
-                onUserMediaError={ () => {
-                  setCameraStats(false);
-                } }
-                className="overflow-hidden rounded-xl bg-gray-200 object-cover w-full"
-              /> }
+              {isSocketConnected && (
+                <Webcam
+                  ref={webcamRef}
+                  screenshotFormat="image/jpeg"
+                  screenshotQuality={1}
+                  // audio={userMute}
+                  videoConstraints={videoConstraints}
+                  onUserMedia={() => {
+                    setCameraStats(true);
+                  }}
+                  onUserMediaError={() => {
+                    setCameraStats(false);
+                  }}
+                  className="overflow-hidden rounded-xl bg-gray-200 object-cover w-full"
+                />
+              )}
               <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation capitalize">
-                { (myAssessments && myAssessments?.[0]?.name) || "Candidate" }
+                {(myAssessments && myAssessments?.[0]?.name) || "Candidate"}
               </div>
               <div className="absolute right-6 bottom-4 text-white  px-4 py-1  ">
                 <img
-                  onClick={ () => {
+                  onClick={() => {
                     setUserMute(!userMute);
-                  } }
-                  src={ MicIcon }
+                  }}
+                  src={MicIcon}
                   className="h-8 w-10"
                   alt="mic"
                 />
@@ -572,37 +605,37 @@ const VideoTest = () => {
         <div className="flex flex-col w-[20%] bg-white shadow rounded-lg p-4 ml-4">
           <div className="flex w-full flex-col h-[440px]">
             <div className="flex gap-2 px-2 pb-2">
-              <img src={ VoiceIcon } alt="icn" />
+              <img src={VoiceIcon} alt="icn" />
               <span className="text-xs text-gray-300 mt-2">CC/Subtitle </span>
             </div>
             <div className="flex flex-col mx-2 bg-white overflow-y-scroll space-y-2">
-              { Array.from(
+              {Array.from(
                 new Map(aiChats?.map((itm: any) => [itm?.text, itm])).values()
               )?.map((item: any, index: number) => {
                 if (item?.type === "ai") {
                   return (
                     <div
-                      key={ item?.text + index }
+                      key={item?.text + index}
                       className="flex flex-col gap-1 w-full max-w-[80%]"
                     >
                       <div className="flex flex-col leading-1.5 p-4 border-gray-200 bg-[#F5F2F2] rounded-xl">
                         <p className="text-sm font-normal text-gray-900">
-                          { item?.text }
+                          {item?.text}
                         </p>
                       </div>
                     </div>
                   );
                 } else {
                   return (
-                    <div key={ item?.text + index } className="flex justify-end">
+                    <div key={item?.text + index} className="flex justify-end">
                       <div className="bg-[#F5F2F2] text-black p-2 rounded-lg max-w-[80%]">
-                        { item?.text }
+                        {item?.text}
                       </div>
                     </div>
                   );
                 }
-              }) }
-              <div ref={ chatEndRef } />
+              })}
+              <div ref={chatEndRef} />
             </div>
           </div>
         </div>
@@ -610,22 +643,28 @@ const VideoTest = () => {
       <div className="flex justify-end py-6 mt-4 font-sansation">
         <button
           className="flex justify-center bg-[#40B24B] px-12 py-2 rounded-lg text-white font-semibold font-sansation"
-          onClick={ () => {
+          onClick={() => {
             setSubmitTestModal(true);
-          } }
+          }}
         >
           Submit
         </button>
       </div>
-      { submitTestModal ? (
+      {submitTestModal ? (
         <ModuleConfirmationModal
-          onPress={ (v) => {
+          onPress={(v) => {
             onSubmitTest(v);
-          } }
-          title={ assessmentModule.module?.name }
+          }}
+          title={assessmentModule.module?.name}
         />
-      ) : null }
-      { isExitFullScreen ? <ExitFullScreenModal onPress={ (v) => { onExitAction(v) } } /> : null }
+      ) : null}
+      {isExitFullScreen ? (
+        <ExitFullScreenModal
+          onPress={(v) => {
+            onExitAction(v);
+          }}
+        />
+      ) : null}
     </div>
   );
 };
