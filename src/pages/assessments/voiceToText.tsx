@@ -62,8 +62,33 @@ const VoiceToText = () => {
     );
     return EditorState.createWithContent(contentState);
   };
+  const detectBrowser = () => {
+    const userAgent = navigator.userAgent;
+
+    if (/chrome|crios|crmo/i.test(userAgent) && !/edge|edg|opr/i.test(userAgent)) {
+      return 'Chrome';
+    } else if (/firefox|iceweasel|fxios/i.test(userAgent)) {
+      return 'Firefox';
+    } else if (/safari/i.test(userAgent) && !/chrome|crios|crmo|opr/i.test(userAgent)) {
+      return 'Safari';
+    } else if (/opr\//i.test(userAgent)) {
+      return 'Opera';
+    } else if (/edg|edge|edgios|edga/i.test(userAgent)) {
+      return 'Edge';
+    } else {
+      return 'Other';
+    }
+  };
+  const checkDevTools = () => {
+    const widthThreshold = window.outerWidth - window.innerWidth > 300;
+    const heightThreshold = window.outerHeight - window.innerHeight > 200;
+    if (widthThreshold || heightThreshold) {
+      alert(`Alert: Your Dev Tools Opened, Please close them before proceed! ${widthThreshold} - ${heightThreshold} - ${detectBrowser()}`);
+    }
+  };
 
   React.useEffect(() => {
+    // checkDevTools()
     dispatcher(
       setAssessmentModuleDispatcher({
         moduleId: testId,
@@ -193,14 +218,14 @@ const VoiceToText = () => {
         onTimeout={ onTimeout }
       />
       <div className="flex items-start justify-start flex-col w-[100%] h-[100%] ">
-        <div className="flex">
+        {/* <div className="flex">
           <span className="text-[20px] text-black font-sansation font-semibold">
             The AI will pose the question{ " " }
             <span className="text-[#CC484E]">only once, </span>candidate please
             share your response in the provided text box.
           </span>
-        </div>
-        <div className="flex justify-between flex-col md:flex-row w-full gap-4 p-2 h-[500px] mt-14">
+        </div> */}
+        <div className="flex justify-between flex-col md:flex-row w-full gap-4 p-2 h-[500px] mt-8">
           <div className="flex md:w-2/5 w-full h-full rounded-xl bg-white">
             <div className="w-full flex-col rounded-xl relative">
               <div className="flex w-full px-5 py-3 border-b border-[#DCDCD9]">
@@ -209,7 +234,7 @@ const VoiceToText = () => {
                 </h5>
               </div>
               <div className="flex p-4 overflow-y-scroll overflow-x-hidden h-[400px]">
-                <h5 className="text-[22px] font-normal text-black pl-[10px] select-none">
+                <h5 className="text-[18px] font-normal text-black pl-[10px] select-none">
                   { moduleQuestions?.[currentIndex]?.title }
                 </h5>
               </div>
