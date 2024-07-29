@@ -62,33 +62,8 @@ const VoiceToText = () => {
     );
     return EditorState.createWithContent(contentState);
   };
-  const detectBrowser = () => {
-    const userAgent = navigator.userAgent;
-
-    if (/chrome|crios|crmo/i.test(userAgent) && !/edge|edg|opr/i.test(userAgent)) {
-      return 'Chrome';
-    } else if (/firefox|iceweasel|fxios/i.test(userAgent)) {
-      return 'Firefox';
-    } else if (/safari/i.test(userAgent) && !/chrome|crios|crmo|opr/i.test(userAgent)) {
-      return 'Safari';
-    } else if (/opr\//i.test(userAgent)) {
-      return 'Opera';
-    } else if (/edg|edge|edgios|edga/i.test(userAgent)) {
-      return 'Edge';
-    } else {
-      return 'Other';
-    }
-  };
-  const checkDevTools = () => {
-    const widthThreshold = window.outerWidth - window.innerWidth > 300;
-    const heightThreshold = window.outerHeight - window.innerHeight > 200;
-    if (widthThreshold || heightThreshold) {
-      alert(`Alert: Your Dev Tools Opened, Please close them before proceed! ${widthThreshold} - ${heightThreshold} - ${detectBrowser()}`);
-    }
-  };
 
   React.useEffect(() => {
-    // checkDevTools()
     dispatcher(
       setAssessmentModuleDispatcher({
         moduleId: testId,

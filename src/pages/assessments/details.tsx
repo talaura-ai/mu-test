@@ -67,10 +67,27 @@ function AssessmentDetails () {
     }
     onNextClicked()
   }
-
+  const detectBrowser = () => {
+    const userAgent = navigator.userAgent;
+    if (/chrome|crios|crmo/i.test(userAgent) && !/edge|edg|opr/i.test(userAgent)) {
+      return 'Chrome';
+    } else if (/firefox|iceweasel|fxios/i.test(userAgent)) {
+      return 'Firefox';
+    } else if (/safari/i.test(userAgent) && !/chrome|crios|crmo|opr/i.test(userAgent)) {
+      return 'Safari';
+    } else if (/opr\//i.test(userAgent)) {
+      return 'Opera';
+    } else if (/edg|edge|edgios|edga/i.test(userAgent)) {
+      return 'Edge';
+    } else {
+      return 'Other';
+    }
+  };
   const checkDevTools = () => {
-    const widthThreshold = window.outerWidth - window.innerWidth > 10;
-    const heightThreshold = window.outerHeight - window.innerHeight > 121;
+    let h = detectBrowser() === "Edge" ? 200 : 100
+    let w = detectBrowser() === "Edge" ? 300 : 50
+    const widthThreshold = window.outerWidth - window.innerWidth > w;
+    const heightThreshold = window.outerHeight - window.innerHeight > h;
     if (widthThreshold || heightThreshold) {
       toast.error(`Alert: Your Dev Tools Opened, Please close them before proceed!`, {});
     } else {
