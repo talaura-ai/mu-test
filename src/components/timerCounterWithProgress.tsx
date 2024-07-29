@@ -2,7 +2,7 @@ import React from "react";
 import TimeLeftIcon from "../assets/svg/timeLeftIcon.svg";
 import { useTimer } from "react-timer-hook";
 
-export default function TimerCounterWithProgress({
+export default function TimerCounterWithProgress ({
   timestamp,
   title,
   onTimeout,
@@ -28,32 +28,32 @@ export default function TimerCounterWithProgress({
   return (
     <>
       <div className="flex md:flex-row flex-col items-center md:justify-between mb-6 font-sansation  w-[100%]">
-        <div className="flex items-center justify-start w-[75%] flex-wrap text-wrap">
+        <div className="flex items-center justify-start w-[65%] flex-wrap text-wrap">
           <span className="font-bold text-black self-center text-2xl md:text-[32px] flex">
-            {title}
+            { title }
           </span>
         </div>
-        {showTimer ? (
+        { showTimer ? (
           <div className="flex items-center mt-4 md:mt-0">
             <div className="w-full flex">
               <p className="text-[18px] text-[#FB2121] font-semibold">
                 Time left
               </p>
-              <img src={TimeLeftIcon} className="px-2" alt="left icon" />
-              <p className="text-[18px] text-[#FB2121] font-semibold min-w-24">
-                {minutes<10?`0${minutes}`:minutes}:{seconds<10?`0${seconds}`:seconds} min
+              <img src={ TimeLeftIcon } className="px-2" alt="left icon" />
+              <p className="text-[18px] text-[#FB2121] font-semibold min-w-56">
+                auto submit in { minutes < 10 ? `0${minutes}` : minutes }:{ seconds < 10 ? `0${seconds}` : seconds } min
               </p>
             </div>
           </div>
-        ) : null}
+        ) : null }
       </div>
       <div className="flex items-center mb-2 px-4 font-sansation">
         <div className="w-full bg-[#C7C6C0] rounded-full h-2.5 mb-4 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
           <div
             className="bg-gradient-to-r from-[#E5A971] to-[#F3BC84] h-2.5 rounded-full"
-            style={{
+            style={ {
               width: `${((minutes * 60 + seconds) * 100) / (timestamp * 60)}%`,
-            }}
+            } }
           ></div>
         </div>
       </div>

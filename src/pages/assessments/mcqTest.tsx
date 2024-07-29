@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Webcam from "react-webcam";
 import UserIcon from "../../assets/svg/userIcon.svg";
 import QuestionNumberBox from "../../components/questionNumberBox";
@@ -7,6 +7,7 @@ import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 import React, { memo, useEffect, useRef, useState } from "react";
 import { CameraOptions, useFaceDetection } from "react-use-face-detection";
 import FaceDetection from "@mediapipe/face_detection";
+import { useNetworkState } from 'react-use';
 import { Camera } from "@mediapipe/camera_utils";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
@@ -27,12 +28,12 @@ import ReviewedIcon from "../../assets/svg/reviewed.svg";
 import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
 import screenfull from "screenfull";
 import CustomToaster from "../../components/Modals/CustomToaster";
+import InternetModal from "../../components/Modals/internetModal";
 const width = 650;
 const height = 650;
 
 function StartMCQTest () {
   const dispatcher = useAppDispatch();
-  const navigate = useNavigate();
   const assessmentModule = useAppSelector(getAssessmentModuleSelector);
   const myAssessments = useAppSelector(getAssessmentsSelector);
   const [moduleQuestions, setModuleQuestions] = React.useState<any>([]);
@@ -44,14 +45,15 @@ function StartMCQTest () {
   const [isExitFullScreen, setIsExitFullScreen] = React.useState(false);
   const { assessmentId, testId, userId } = useParams();
   const [isToasterDisplayed, setIsToasterDisplayed] = useState(false);
-  const [toastMsg, setToastMsg] = useState("");
   const [cameraStats, setCameraStats] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
+  const [networkChecking, setNetworkChecking] = React.useState(false);
   const prevFaceDataRef: any = useRef();
   const toggleRef: any = useRef();
 
   let toasterTimeout: any = null;
-
+  const state = useNetworkState();
+  let internetTimer: any = null
   useUserActivityDetection();
 
   const { webcamRef, isLoading, detected, facesDetected }: any =
@@ -72,6 +74,24 @@ function StartMCQTest () {
     });
 
   useEffect(() => {
+    if (state) {
+      checkInternet(state?.online)
+    }
+  }, [state]);
+
+  const checkInternet = (isInternet: any) => {
+    clearTimeout(internetTimer)
+    if (isInternet) {
+      setNetworkChecking(false)
+    } else {
+      setNetworkChecking(true)
+      internetTimer = setTimeout(() => {
+        window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+      }, 200000);
+    }
+  }
+
+  useEffect(() => {
     if (!detected && !isToasterDisplayed && cameraStats && cameraReady) {
       // setToastMsg("Face not detected");
       displayToasterFun();
@@ -89,13 +109,6 @@ function StartMCQTest () {
       updateUserActivity();
       prevFaceDataRef.current = "Multiple face detected";
     }
-    console.log(
-      "cameraStats=>",
-      cameraStats,
-      detected,
-      facesDetected,
-      cameraReady
-    );
   }, [detected, facesDetected, cameraStats, cameraReady]);
 
   const displayToasterFun = () => {
@@ -476,6 +489,7 @@ function StartMCQTest () {
           } }
         />
       ) : null }
+      { networkChecking && <InternetModal /> }
     </>
   );
 }

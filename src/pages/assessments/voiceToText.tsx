@@ -6,6 +6,7 @@ import {
   convertFromHTML,
   convertToRaw,
 } from "draft-js";
+import { useNetworkState } from 'react-use';
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 import { Editor } from "react-draft-wysiwyg";
 import draftToHtml from "draftjs-to-html";
@@ -22,6 +23,7 @@ import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
 import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection";
 import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
 import screenfull from "screenfull";
+import InternetModal from "../../components/Modals/internetModal";
 
 const VoiceToText = () => {
   const dispatcher = useAppDispatch();
@@ -36,7 +38,11 @@ const VoiceToText = () => {
   const [isExitFullScreen, setIsExitFullScreen] = React.useState(false);
   const [disableNextBtn, setDisableNextBtn] = React.useState(false);
   const [disablePrevBtn, setDisablePrevBtn] = React.useState(true);
+  const [networkChecking, setNetworkChecking] = React.useState(false);
+
+  const state = useNetworkState();
   useUserActivityDetection();
+  let internetTimer: any = null
   React.useEffect(() => {
     if (assessmentModule?.module?.question) {
       const questions = assessmentModule?.module?.question?.map((v: any) => {
@@ -53,6 +59,24 @@ const VoiceToText = () => {
       }
     }
   }, [assessmentModule]);
+
+  useEffect(() => {
+    if (state) {
+      checkInternet(state?.online)
+    }
+  }, [state]);
+
+  const checkInternet = (isInternet: any) => {
+    clearTimeout(internetTimer)
+    if (isInternet) {
+      setNetworkChecking(false)
+    } else {
+      setNetworkChecking(true)
+      internetTimer = setTimeout(() => {
+        window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+      }, 200000);
+    }
+  }
 
   const getEditorData = (data: any) => {
     const blocksFromHTML = convertFromHTML(data);
@@ -283,6 +307,7 @@ const VoiceToText = () => {
           } }
         />
       ) : null }
+      { networkChecking && <InternetModal /> }
     </div>
   );
 };
