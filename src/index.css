@@ -214,3 +214,7 @@ code {
   .animate-slide-down {
 	animation: slide-down 0.2s ease-out forwards;
   }
+
+	.rdw-editor-main{
+		height: 78% !important;
+	}

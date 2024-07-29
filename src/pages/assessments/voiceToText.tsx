@@ -280,14 +280,14 @@ const VoiceToText = () => {
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4">
       <TimerCounterWithProgress
-        timestamp={assessmentModule.module?.time || 0}
-        title={assessmentModule.module?.name}
-        onTimeout={onTimeout}
+        timestamp={ assessmentModule.module?.time || 0 }
+        title={ assessmentModule.module?.name }
+        onTimeout={ onTimeout }
       />
       <div className="flex items-start justify-start flex-col w-[100%] h-[100%] ">
         <div className="flex">
           <span className="text-[20px] text-black font-sansation font-semibold">
-            The AI will pose the question{" "}
+            The AI will pose the question{ " " }
             <span className="text-[#CC484E]">only once, </span>candidate please
             share your response in the provided text box.
           </span>
@@ -299,35 +299,6 @@ const VoiceToText = () => {
         </div> */}
 
         <div className="flex justify-between flex-col md:flex-row w-full gap-4 p-2 h-[500px] mt-14">
-          {/* <div className="flex md:w-2/5 w-full h-[500px] md:h-full overflow-hidden border border-[#E5A971] rounded-xl">
-            <div className="flex p-4 overflow-y-scroll">
-              
-              <div className="">
-                <h5 className="text-[22px] font-normal text-black pl-[10px] select-none">
-                  Lorem Ipsum is simply dummy text of the printing and
-                  typesetting industry. Lorem Ipsum has been the industry's
-                  standard dummy text ever since the 1500s, when an unknown
-                  printer took a galley of type and scrambled it to make a type
-                  specimen book. It has survived not only five centuries, but
-                  also the leap into electronic typesetting, remaining
-                  essentially unchanged. It was popularised in the 1960s with
-                  the release of Letraset sheets containing Lorem Ipsum
-                  passages, and more recently with desktop publishing software
-                  like Aldus PageMaker including versions of Lorem Ipsum. Lorem
-                  Ipsum is simply dummy text of the printing and typesetting
-                  industry. Lorem Ipsum has been the industry's standard dummy
-                  text ever since the 1500s, when an unknown printer took a
-                  galley of type and scrambled it to make a type specimen book.
-                  It has survived not only five centuries, but also the leap
-                  into electronic typesetting, remaining essentially unchanged.
-                  It was popularised in the 1960s with the release of Letraset
-                  sheets containing Lorem Ipsum passages, and more recently with
-                  desktop publishing software like Aldus PageMaker including
-                  versions of Lorem Ipsum.
-                </h5>
-              </div>
-            </div>
-          </div> */}
           <div className="flex md:w-2/5 w-full h-full rounded-xl bg-white">
             <div className="w-full flex-col rounded-xl relative">
               <div className="flex w-full px-5 py-3 border-b border-[#DCDCD9]">
@@ -335,94 +306,82 @@ const VoiceToText = () => {
                   Question 1
                 </h5>
               </div>
-              <div className="flex p-4 overflow-scroll h-[400px]">
+              <div className="flex p-4 overflow-y-scroll overflow-x-hidden h-[400px]">
                 <h5 className="text-[22px] font-normal text-black pl-[10px] select-none">
-                  {moduleQuestions?.[0]?.title}
+                  { moduleQuestions?.[0]?.title }
                 </h5>
               </div>
             </div>
           </div>
           <div className="flex md:w-3/5 w-full h-full rounded-xl bg-white">
-            <div className="w-full h-full flex overflow-hidden rounded-xl">
+            <div className="w-full flex overflow-hidden rounded-xl">
               <Editor
-                editorState={editorState}
+                editorState={ editorState }
                 toolbarClassName="toolbarClassName"
                 wrapperClassName="wrapperClassName"
                 editorClassName="editorClassName"
-                wrapperStyle={{ width: "100%", overflow: "hidden" }}
-                editorStyle={{
+                wrapperStyle={ { width: "100%" } }
+                editorStyle={ {
                   paddingLeft: 20,
                   paddingRight: 20,
                   width: "100%",
-                  overflow: "hidden",
-                }}
-                onEditorStateChange={onEditorStateChange}
+                } }
+                onEditorStateChange={ onEditorStateChange }
               />
             </div>
           </div>
         </div>
 
         <div className="flex items-center justify-end py-6 px-2 w-3/5 self-end  ">
-          {/* <button
-            onClick={ () => {
-              setSubmitTestModal(true)
-            } }
-            type="button"
-            className="font-sansation text-white bg-[#CC8448] hover:bg-[#CC8448]/80 focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2.5 text-center inline-flex items-center"
-          >
-            Submit Test
-          </button> */}
-          {moduleQuestions?.length - 1 === currentIndex ? (
+          { moduleQuestions?.length - 1 === currentIndex ? (
             <button
-              onClick={() => {
+              onClick={ () => {
                 setSubmitTestModal(true);
-              }}
-              disabled={isSpeaking || loading}
+              } }
+              disabled={ isSpeaking || loading }
               type="button"
-              className={`font-sansation text-white hover:bg-[#40B24B]/80 ${
-                isSpeaking ? "bg-[#40B24B]/60" : "bg-[#40B24B]"
-              } focus:ring-4 focus:outline-none tracking-wide focus:ring-[#40B24B]/50 font-semibold rounded-lg text-md px-12 py-2 text-center inline-flex items-center`}
+              className={ `font-sansation text-white hover:bg-[#40B24B]/80 ${isSpeaking ? "bg-[#40B24B]/60" : "bg-[#40B24B]"
+                } focus:ring-4 focus:outline-none tracking-wide focus:ring-[#40B24B]/50 font-semibold rounded-lg text-md px-12 py-2 text-center inline-flex items-center` }
             >
               Submit
             </button>
           ) : (
             <button
-              onClick={() => {
+              onClick={ () => {
                 onNextClicked(currentIndex);
-              }}
-              disabled={isSpeaking || loading}
+              } }
+              disabled={ isSpeaking || loading }
               type="button"
-              className={`font-sansation text-white hover:bg-[#CC8448]/80 ${
-                isSpeaking ? "bg-[#CC8448]/60" : "bg-[#CC8448]"
-              } focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2 text-center inline-flex items-center`}
+              className={ `font-sansation text-white hover:bg-[#CC8448]/80 ${isSpeaking ? "bg-[#CC8448]/60" : "bg-[#CC8448]"
+                } focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2 text-center inline-flex items-center` }
             >
               Next
             </button>
-          )}
+          ) }
         </div>
       </div>
-      {startTest ? (
+      { startTest ? (
         <ModuletestStartModal
-          onPress={(v) => {
+          onPress={ (v) => {
             onSubmission(v);
-          }}
+          } }
         />
-      ) : null}
-      {submitTestModal ? (
+      ) : null }
+      { submitTestModal ? (
         <ModuleConfirmationModal
-          onPress={(v) => {
+          onPress={ (v) => {
             onSubmitTest(v);
-          }}
-          title={assessmentModule.module?.name}
+          } }
+          title={ assessmentModule.module?.name }
         />
-      ) : null}
-      {isExitFullScreen ? (
+      ) : null }
+      { isExitFullScreen ? (
         <ExitFullScreenModal
-          onPress={(v) => {
+          onPress={ (v) => {
             onExitAction(v);
-          }}
+          } }
         />
-      ) : null}
+      ) : null }
     </div>
   );
 };
