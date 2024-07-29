@@ -1,48 +1,42 @@
-import React, { useEffect, useRef } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useParams } from "react-router-dom";
 import {
   ContentState,
   EditorState,
   convertFromHTML,
   convertToRaw,
 } from "draft-js";
+import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 import { Editor } from "react-draft-wysiwyg";
 import draftToHtml from "draftjs-to-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
-import ModuletestStartModal from "../../components/Modals/testStartModal";
 import {
   getModuleSubmissionDispatcher,
   setAssessmentModuleDispatcher,
 } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
-import axios from "axios";
 import { toast } from "react-toastify";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
-import { htmlToText } from "html-to-text";
 import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection";
 import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
 import screenfull from "screenfull";
 
 const VoiceToText = () => {
   const dispatcher = useAppDispatch();
-  const navigate = useNavigate();
   const { assessmentId, testId, userId } = useParams();
   const assessmentModule = useAppSelector(getAssessmentModuleSelector);
   const [moduleQuestions, setModuleQuestions] = React.useState<any>([]);
-  const [startTest, setStartTest] = React.useState(false);
   const [currentIndex, setCurrentIndex] = React.useState<any>(0);
-  const [isSpeaking, setIsSpeaking] = React.useState<boolean>(false);
   const [editorState, setEditorState] = React.useState(
     EditorState.createEmpty()
   );
   const [submitTestModal, setSubmitTestModal] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
   const [isExitFullScreen, setIsExitFullScreen] = React.useState(false);
-
+  const [disableNextBtn, setDisableNextBtn] = React.useState(false);
+  const [disablePrevBtn, setDisablePrevBtn] = React.useState(true);
   useUserActivityDetection();
-  const audioRef = useRef(new Audio());
   React.useEffect(() => {
     if (assessmentModule?.module?.question) {
       const questions = assessmentModule?.module?.question?.map((v: any) => {
@@ -90,27 +84,6 @@ const VoiceToText = () => {
     );
   }, [dispatcher, assessmentId, testId, userId]);
 
-  const onSubmission = (type: string) => {
-    if (type === "start") {
-      playText(moduleQuestions?.[currentIndex]?.title);
-    } else {
-      navigate(-1);
-    }
-    setStartTest(false);
-  };
-
-  useEffect(() => {
-    // let timer = setTimeout(() => {
-    //   setStartTest(true);
-    // }, 500);
-    return () => {
-      window?.speechSynthesis?.cancel?.();
-      // clearTimeout(timer);
-      audioRef?.current?.pause?.();
-      audioRef.current.currentTime = 0;
-    };
-  }, []);
-
   useEffect(() => {
     if (screenfull.isEnabled) {
       screenfull.on("change", handleFullscreenChange);
@@ -140,61 +113,27 @@ const VoiceToText = () => {
     setIsExitFullScreen(false);
   };
 
-  const textToSpeech = async (text: string) => {
-    setLoading(true);
-    try {
-      const response = await axios.post(
-        "https://api.openai.com/v1/audio/speech",
-        {
-          model: "tts-1",
-          input: text,
-          voice: "nova",
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:
-              "Bearer sk-proj-2fodzEcqP1ztgSnrh3oLT3BlbkFJ2igg3I9HXE58UNyVcy0F",
-          },
-          responseType: "arraybuffer", // Specify the response type as arraybuffer
-        }
-      );
-      setIsSpeaking(true);
-      const blob = new Blob([response.data], { type: "audio/mp3" });
-      const audioUrl = URL.createObjectURL(blob);
-      audioRef.current.src = audioUrl;
-      audioRef?.current?.play();
-      audioRef.current.onended = () => {
-        setIsSpeaking(false);
-        setLoading(false);
-        audioRef?.current?.pause?.();
-        audioRef.current.currentTime = 0;
-      };
-    } catch (error) {
-      setIsSpeaking(false);
-      setLoading(false);
-    }
-  };
-
-  const playText = (text: string) => {
-    setLoading(true);
-    if (!("speechSynthesis" in window)) {
-      setLoading(false);
-      console.error("Text-to-Speech not supported in this browser.");
+  const onPrevClicked = () => {
+    if (currentIndex - 1 === 0) {
+      setDisablePrevBtn(true);
     } else {
-      console.log("Text-to-Speech is supported in this browser.");
-      if (text) {
-        textToSpeech(text);
+      setDisablePrevBtn(false);
+    }
+    if (currentIndex) {
+      if (moduleQuestions?.[currentIndex - 1 === 0 ? 0 : currentIndex - 1]?.answer) {
+        setEditorState(getEditorData(moduleQuestions?.[currentIndex - 1 === 0 ? 0 : currentIndex - 1]?.answer));
       } else {
-        setLoading(false);
+        setEditorState(EditorState.createEmpty());
       }
+      setCurrentIndex((prev: any) => {
+        return prev - 1;
+      });
     }
   };
 
-  const onNextClicked = (i: any) => {
-    const index = i + 1;
+  const onNextClicked = () => {
+    const index = currentIndex + 1;
     if (index < moduleQuestions?.length) {
-      playText(moduleQuestions?.[index]?.title);
       setCurrentIndex((prev: any) => index);
       if (moduleQuestions?.[index]?.answer) {
         setEditorState(getEditorData(moduleQuestions?.[index]?.answer));
@@ -203,38 +142,18 @@ const VoiceToText = () => {
       }
     } else {
       if (moduleQuestions?.length > 0) {
-        submitTest();
+        // submitTest();
       }
     }
+    setDisablePrevBtn(false);
   };
-  const getAnswered = () => {
-    return moduleQuestions;
-    // return moduleQuestions?.map((v: any) => {
-    //   if (v?.answer) {
-    //     let text = htmlToText(v?.answer, {
-    //       wordwrap: 130,
-    //     });
-    //     text = text?.replace(/\n/g, " ")?.trim();
-    //     text = text?.replace(/\s+/g, " ")?.trim();
-    //     return {
-    //       ...v,
-    //       answer: text,
-    //     };
-    //   } else {
-    //     return v;
-    //   }
-    // });
-  };
+
   const submitTest = async () => {
     try {
-      // setIsSpeaking(false);
-      // audioRef?.current?.pause();
-      // audioRef.current.currentTime = 0;
-      // audioRef.current.src = "";
       const res = await dispatcher(
         getModuleSubmissionDispatcher({
           moduleId: testId,
-          question: getAnswered(),
+          question: moduleQuestions,
         })
       );
       if (res?.payload.data?.status) {
@@ -292,23 +211,17 @@ const VoiceToText = () => {
             share your response in the provided text box.
           </span>
         </div>
-        {/* <div className="flex mb-2">
-          <span className="text-[32px] font-semibold font-sansation text-[#CC8448]">
-            Case Study
-          </span>
-        </div> */}
-
         <div className="flex justify-between flex-col md:flex-row w-full gap-4 p-2 h-[500px] mt-14">
           <div className="flex md:w-2/5 w-full h-full rounded-xl bg-white">
             <div className="w-full flex-col rounded-xl relative">
               <div className="flex w-full px-5 py-3 border-b border-[#DCDCD9]">
                 <h5 className="text-[22px] text-[#CC8448] select-none font-semibold">
-                  Question 1
+                  Question { currentIndex + 1 }
                 </h5>
               </div>
               <div className="flex p-4 overflow-y-scroll overflow-x-hidden h-[400px]">
                 <h5 className="text-[22px] font-normal text-black pl-[10px] select-none">
-                  { moduleQuestions?.[0]?.title }
+                  { moduleQuestions?.[currentIndex]?.title }
                 </h5>
               </div>
             </div>
@@ -332,41 +245,40 @@ const VoiceToText = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-end py-6 px-2 w-3/5 self-end  ">
+        <div className="flex items-center justify-between py-6 px-2 w-full">
+          <button
+            type="button"
+            disabled={ disablePrevBtn }
+            onClick={ () => onPrevClicked() }
+            className={ `flex text-white font-medium text-md w-40 py-2.5 text-center font-sansation justify-center items-center rounded-lg ${disablePrevBtn ? "cursor-not-allowed bg-[#CC8448]/50" : "bg-[#CC8448]"
+              }` }
+          >
+            <FaArrowLeft className="mr-2" />
+            PREVIOUS
+          </button>
           { moduleQuestions?.length - 1 === currentIndex ? (
             <button
               onClick={ () => {
                 setSubmitTestModal(true);
               } }
-              disabled={ isSpeaking || loading }
               type="button"
-              className={ `font-sansation text-white hover:bg-[#40B24B]/80 ${isSpeaking ? "bg-[#40B24B]/60" : "bg-[#40B24B]"
-                } focus:ring-4 focus:outline-none tracking-wide focus:ring-[#40B24B]/50 font-semibold rounded-lg text-md px-12 py-2 text-center inline-flex items-center` }
+              className={ `font-sansation text-white hover:bg-[#40B24B]/80 bg-[#40B24B] focus:ring-4 focus:outline-none tracking-wide focus:ring-[#40B24B]/50 font-semibold rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center` }
             >
               Submit
             </button>
           ) : (
             <button
-              onClick={ () => {
-                onNextClicked(currentIndex);
-              } }
-              disabled={ isSpeaking || loading }
               type="button"
-              className={ `font-sansation text-white hover:bg-[#CC8448]/80 ${isSpeaking ? "bg-[#CC8448]/60" : "bg-[#CC8448]"
-                } focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-16 py-2 text-center inline-flex items-center` }
+              disabled={ disableNextBtn }
+              onClick={ () => onNextClicked() }
+              className="flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg font-sansation"
             >
-              Next
+              NEXT
+              <FaArrowRight className="ml-2" />
             </button>
           ) }
         </div>
       </div>
-      { startTest ? (
-        <ModuletestStartModal
-          onPress={ (v) => {
-            onSubmission(v);
-          } }
-        />
-      ) : null }
       { submitTestModal ? (
         <ModuleConfirmationModal
           onPress={ (v) => {

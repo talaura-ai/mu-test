@@ -454,8 +454,8 @@ function StartMCQTest() {
                   type="button"
                   disabled={disablePrevBtn}
                   onClick={onPrevClicked}
-                  className={`md:mx-20 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg ${
-                    disablePrevBtn ? "cursor-not-allowed" : ""
+                  className={`md:mx-20 mx-6 flex text-white font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg ${
+                    disablePrevBtn ? "cursor-not-allowed bg-[#CC8448]/50" : "bg-[#CC8448]"
                   }`}
                 >
                   <FaArrowLeft className="mr-2" />
