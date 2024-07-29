@@ -183,17 +183,6 @@ const VideoTest = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // //Disable Right click
-  // if (document.addEventListener) {
-  //   document.addEventListener(
-  //     "contextmenu",
-  //     function (e) {
-  //       e.preventDefault();
-  //     },
-  //     false
-  //   );
-  // }
-
   const updateUserActivity = () => {
     dispatcher(
       getUserActivityDispatcher({

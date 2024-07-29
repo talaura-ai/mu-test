@@ -79,5 +79,36 @@ function useUserActivityDetection () {
     };
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (event: any) => {
+      if (
+        event?.key === 'F5' ||
+        (event?.ctrlKey && event?.key === 'r') ||
+        (event?.metaKey && event?.key === 'r') ||
+        (event?.ctrlKey && event?.shiftKey && event?.key === 'r') ||
+        (event?.metaKey && event?.shiftKey && event?.key === 'r')
+      ) {
+        event?.preventDefault();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+  //Disable Right click
+  useEffect(() => {
+    const handleContextMenu = (event: any) => {
+      event.preventDefault();
+    };
+
+    window.addEventListener('contextmenu', handleContextMenu);
+
+    return () => {
+      window.removeEventListener('contextmenu', handleContextMenu);
+    };
+  }, []);
+
 }
 export default useUserActivityDetection

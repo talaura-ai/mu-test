@@ -30,7 +30,7 @@ import CustomToaster from "../../components/Modals/CustomToaster";
 const width = 650;
 const height = 650;
 
-function StartMCQTest() {
+function StartMCQTest () {
   const dispatcher = useAppDispatch();
   const navigate = useNavigate();
   const assessmentModule = useAppSelector(getAssessmentModuleSelector);
@@ -136,31 +136,6 @@ function StartMCQTest() {
     );
   }, [dispatcher, assessmentId, testId, userId]);
 
-  // //Disable Right click
-  // if (document.addEventListener) {
-  //   document.addEventListener(
-  //     "contextmenu",
-  //     function (e) {
-  //       e.preventDefault();
-  //     },
-  //     false
-  //   );
-  // }
-
-  useEffect(() => {
-    const handleKeyDown = (event: any) => {
-      if ((event.ctrlKey || event.metaKey) && event.key === "r") {
-        event.preventDefault();
-        console.log("Ctrl+R is disabled");
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
 
   useEffect(() => {
     setTimeout(() => {
@@ -315,18 +290,18 @@ function StartMCQTest() {
   return (
     <>
       <div className="md:px-20 md:pt-12 px-4">
-        {toggleRef?.current && (
+        { toggleRef?.current && (
           <CustomToaster
-            message={prevFaceDataRef?.current}
-            onClose={() => {
+            message={ prevFaceDataRef?.current }
+            onClose={ () => {
               toggleRef.current = false;
-            }}
+            } }
           />
-        )}
+        ) }
         <TimerCounterWithProgress
-          timestamp={assessmentModule.module?.time || 0}
-          title={assessmentModule.module?.name}
-          onTimeout={onTimeout}
+          timestamp={ assessmentModule.module?.time || 0 }
+          title={ assessmentModule.module?.name }
+          onTimeout={ onTimeout }
         />
         <div className="flex md:flex-row flex-col font-sansation mt-10">
           <div className="basis-[30%] w-full md:mr-12">
@@ -334,11 +309,11 @@ function StartMCQTest() {
               <div className="flex flex-row items-center mx-6 py-5 border-solid border-b-[3px] border-[#E6E6E6]">
                 <img
                   className="w-16 h-16 rounded-full shadow-lg"
-                  src={UserIcon}
+                  src={ UserIcon }
                   alt="user"
                 />
                 <h5 className="text-[24px] font-medium text-black ml-5 capitalize">
-                  {myAssessments && myAssessments?.[0]?.name}
+                  { myAssessments && myAssessments?.[0]?.name }
                 </h5>
               </div>
               <div className="flex flex-col mx-8 pt-4">
@@ -362,43 +337,43 @@ function StartMCQTest() {
                   </h5>
                 </div>
                 <div className=" flex flex-wrap w-full gap-5 my-5 max-h-72 overflow-y-scroll">
-                  {moduleQuestions?.map((question: any, index: number) => (
+                  { moduleQuestions?.map((question: any, index: number) => (
                     <QuestionNumberBox
-                      questionNo={index + 1}
-                      checked={question?.answer}
-                      key={question?._id}
-                      review={question?.review}
-                      directQuestionClicked={directQuestionClicked}
+                      questionNo={ index + 1 }
+                      checked={ question?.answer }
+                      key={ question?._id }
+                      review={ question?.review }
+                      directQuestionClicked={ directQuestionClicked }
                     />
-                  ))}
+                  )) }
                 </div>
               </div>
               <button
                 type="button"
-                onClick={() => {
+                onClick={ () => {
                   setSubmitTest(true);
-                }}
-                className={`flex w-full text-white bg-[#31B06B] tracking-wide font-semibold text-md px-12 py-2.5 text-center justify-center items-center font-sansation cursor-pointer`}
+                } }
+                className={ `flex w-full text-white bg-[#31B06B] tracking-wide font-semibold text-md px-12 py-2.5 text-center justify-center items-center font-sansation cursor-pointer` }
               >
                 Submit
               </button>
             </div>
           </div>
           <Webcam
-            ref={webcamRef}
+            ref={ webcamRef }
             forceScreenshotSourceSize
-            onUserMedia={() => {
+            onUserMedia={ () => {
               setCameraStats(true);
-            }}
-            onUserMediaError={() => {
+            } }
+            onUserMediaError={ () => {
               setCameraStats(false);
-            }}
-            style={{
+            } }
+            style={ {
               height,
               width,
               position: "absolute",
               display: "none",
-            }}
+            } }
           />
           <div className="basis-[70%] relative md:border-l-[2px] md:border-[#DCDCD9]">
             <div className="mcq-q pb-44">
@@ -406,36 +381,36 @@ function StartMCQTest() {
                 <div className="flex">
                   <div>
                     <h5 className="text-[22px] font-normal text-black select-none">
-                      Q{questionIndex + 1}.
+                      Q{ questionIndex + 1 }.
                     </h5>
                   </div>
                   <div className="mr-8">
                     <h5 className="text-[22px] font-normal text-black pl-[10px] select-none">
-                      {moduleQuestions?.[questionIndex]?.title || ""}
+                      { moduleQuestions?.[questionIndex]?.title || "" }
                     </h5>
                   </div>
-                  <div onClick={onReview} className=" absolute -top-1 right-2">
-                    {moduleQuestions?.[questionIndex]?.review ? (
-                      <img src={ReviewedIcon} />
+                  <div onClick={ onReview } className=" absolute -top-1 right-2">
+                    { moduleQuestions?.[questionIndex]?.review ? (
+                      <img src={ ReviewedIcon } />
                     ) : (
-                      <img src={ReviewIcon} />
-                    )}
+                      <img src={ ReviewIcon } />
+                    ) }
                   </div>
                 </div>
                 <div className="space-y-5 mt-6 ml-10">
-                  {moduleQuestions?.[questionIndex]?.options?.map(
+                  { moduleQuestions?.[questionIndex]?.options?.map(
                     (option: any, index: number) => (
                       <QuestionOptionBox
-                        key={option}
-                        onSelection={(v: any) => {
+                        key={ option }
+                        onSelection={ (v: any) => {
                           onQuestionSelection(v);
-                        }}
-                        option={option}
-                        index={index}
-                        checked={selectedQuestion}
+                        } }
+                        option={ option }
+                        index={ index }
+                        checked={ selectedQuestion }
                       />
                     )
-                  )}
+                  ) }
                 </div>
               </div>
             </div>
@@ -452,21 +427,20 @@ function StartMCQTest() {
               <div className="flex w-full md:justify-between md:flex-row flex-col justify-center items-center md:gap-0 gap-4">
                 <button
                   type="button"
-                  disabled={disablePrevBtn}
-                  onClick={onPrevClicked}
-                  className={`md:mx-20 mx-6 flex text-white font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg ${
-                    disablePrevBtn ? "cursor-not-allowed bg-[#CC8448]/50" : "bg-[#CC8448]"
-                  }`}
+                  disabled={ disablePrevBtn }
+                  onClick={ onPrevClicked }
+                  className={ `md:mx-20 mx-6 flex text-white font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg ${disablePrevBtn ? "cursor-not-allowed bg-[#CC8448]/50" : "bg-[#CC8448]"
+                    }` }
                 >
                   <FaArrowLeft className="mr-2" />
                   PREVIOUS
                 </button>
-                {moduleQuestions?.length - 1 === questionIndex ? (
+                { moduleQuestions?.length - 1 === questionIndex ? (
                   <button
                     type="button"
-                    onClick={() => {
+                    onClick={ () => {
                       setSubmitTest(true);
-                    }}
+                    } }
                     className="md:mx-20 mx-6 flex text-white bg-[#31B06B] font-semibold text-md w-40 py-2.5 text-center justify-center items-center rounded-lg cursor-pointer"
                   >
                     SUBMIT
@@ -474,34 +448,34 @@ function StartMCQTest() {
                 ) : (
                   <button
                     type="button"
-                    disabled={disableNextBtn}
-                    onClick={onNextClicked}
+                    disabled={ disableNextBtn }
+                    onClick={ onNextClicked }
                     className="md:mx-20 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
                   >
                     NEXT
                     <FaArrowRight className="ml-2" />
                   </button>
-                )}
+                ) }
               </div>
             </div>
           </div>
         </div>
       </div>
-      {submitTest ? (
+      { submitTest ? (
         <ModuleConfirmationModal
-          onPress={(v) => {
+          onPress={ (v) => {
             onSubmission(v);
-          }}
-          title={assessmentModule.module?.name}
+          } }
+          title={ assessmentModule.module?.name }
         />
-      ) : null}
-      {isExitFullScreen ? (
+      ) : null }
+      { isExitFullScreen ? (
         <ExitFullScreenModal
-          onPress={(v) => {
+          onPress={ (v) => {
             onExitAction(v);
-          }}
+          } }
         />
-      ) : null}
+      ) : null }
     </>
   );
 }
