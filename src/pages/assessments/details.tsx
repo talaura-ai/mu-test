@@ -84,7 +84,7 @@ function AssessmentDetails () {
     }
   };
   const checkDevTools = () => {
-    let h = detectBrowser() === "Edge" ? 200 : 100
+    let h = detectBrowser() === "Edge" ? 200 : 121
     let w = detectBrowser() === "Edge" ? 300 : 50
     const widthThreshold = window.outerWidth - window.innerWidth > w;
     const heightThreshold = window.outerHeight - window.innerHeight > h;
