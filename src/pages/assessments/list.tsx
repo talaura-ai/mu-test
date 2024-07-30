@@ -11,7 +11,7 @@ import moment from "moment";
 import { assessmentTotalTime, getExpiredIn } from "../../utils/helper";
 import CountdownTimer from "../../components/countdownTimer";
 
-function MyAssessments() {
+function MyAssessments () {
   const navigate = useNavigate();
   const { userId } = useParams();
   const [deviceConfigModal, setDeviceConfigModal] = React.useState(false);
@@ -83,14 +83,14 @@ function MyAssessments() {
 
   return (
     <>
-      {deviceConfigModal && (
+      { deviceConfigModal && (
         <DeviceConfigTestModal
-          onClose={() => {
+          onClose={ () => {
             setDeviceConfigModal(false);
-          }}
-          onNextClicked={onNextClicked}
+          } }
+          onNextClicked={ onNextClicked }
         />
-      )}
+      ) }
       <div className="sm:p-6 md:px-20 md:py-7 p-4">
         <div className="flex items-center justify-between mb-6 mt-5">
           <div className="flex items-center justify-start">
@@ -119,15 +119,15 @@ function MyAssessments() {
             </div>
           </div>
         </div>
-        {myAssessments?.map((item, index) => (
+        { myAssessments?.map((item, index) => (
           <div
-            key={item?.assessmentId + index}
+            key={ item?.assessmentId + index }
             className="flex flex-wrap items-center justify-around mb-6 rounded-2xl bg-white relative shadow-lg"
           >
             <div className="w-[10px] md:h-[64px] sm:h-[130px] bg-gradient-to-r from-[#E5A971] to-[rgb(243,188,132)] rounded-r-xl absolute top-auto left-0 bottom-auto"></div>
             <div className="flex flex-col items-center justify-center py-6 md:w-[40%] sm:w-full">
               <span className="text-[36px] font-semibold text-[#F2BC84] self-center justify-center pr-4 pl-7 leading-[38px] font-sansation">
-                {item?.assessmentName || ""}
+                { item?.assessmentName || "" }
               </span>
               {/* <span className="text-[18px] font-semibold text-[#BDBDBD] self-center leading-[20px] font-sansation">
                 Sales Department
@@ -135,35 +135,35 @@ function MyAssessments() {
             </div>
             <div className="flex items-center sm:justify-around md:justify-between md:w-[40%] sm:w-full px-2">
               <div className="flex flex-col justify-center">
-                <img src={CalenderIcon} className="h-[20px] w-[20px]" alt="" />
+                <img src={ CalenderIcon } className="h-[20px] w-[20px]" alt="" />
                 <span className="text-[16px] font-medium text-[#5C7CFA] leading-[18px] font-sansation">
                   Started On
                 </span>
                 <span className="text-[16px] font-semibold text-black leading-[16px] font-sansation">
-                  {moment(item?.startsAt).format("MMM DD, YYYY, hh:mm A")}
+                  { moment(item?.startsAt).format("MMM DD, YYYY, hh:mm A") }
                 </span>
               </div>
               <div className="flex flex-col justify-center">
-                <img src={DurationIcon} className="h-[20px] w-[20px]" alt="" />
+                <img src={ DurationIcon } className="h-[20px] w-[20px]" alt="" />
                 <span className="text-[16px] font-medium text-[#E9BF3E] leading-[18px] font-sansation">
                   Duration
                 </span>
                 <span className="text-[16px] font-semibold text-black leading-[16px] font-sansation">
-                  {assessmentTotalTime(item?.module)} minutes
+                  { assessmentTotalTime(item?.module) } minutes
                 </span>
               </div>
               <div className="flex flex-col justify-center">
-                <img src={ExpireIcon} className="h-[20px] w-[20px]" alt="" />
+                <img src={ ExpireIcon } className="h-[20px] w-[20px]" alt="" />
                 <span className="text-[16px] font-medium text-[#7951E6] leading-[18px] font-sansation">
                   Expires In
                 </span>
                 <span className="text-[16px] font-semibold text-black leading-[16px] font-sansation">
-                  {/* { getExpiredIn(item?.startsAt, ) } */}
+                  {/* { getExpiredIn(item?.startsAt, ) } */ }
                   <CountdownTimer
-                    onTimeout={() => {
+                    onTimeout={ () => {
                       onExpired(item?.assessmentId);
-                    }}
-                    timestamp={moment(item?.endsOn).diff(moment(), "minutes")}
+                    } }
+                    timestamp={ moment(item?.endsOn).diff(moment(), "minutes") }
                   />
                 </span>
               </div>
@@ -199,21 +199,21 @@ function MyAssessments() {
                   getAssessmentStatus(item?.module) ||
                   assessmentExpired[item?.assessmentId]
                 } // Enable the disabled attribute
-                onClick={() => {
+                onClick={ () => {
                   setDeviceConfigModal(true);
                   setSelectAssessment(item);
-                }}
-                className={`text-white font-sansation bg-[#CC8448] hover:bg-[#CC8448]/80
+                } }
+                className={ `text-white font-sansation bg-[#CC8448]
         ${isDisabled ? "cursor-not-allowed bg-[#CC8448]/60" : ""}
-        ${getAssessmentStatus(item?.module) ? "px-6" : "px-12"}
+        ${getAssessmentStatus(item?.module) ? "px-6 cursor-not-allowed bg-[#CC8448]/60" : "px-12"}
         ${assessmentExpired[item?.assessmentId] ? "px-12" : ""}
         focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md py-2.5 text-center inline-flex items-center`}
               >
-                {getAssessmentStatus(item?.module) ? "Completed" : "Start"}
+                { getAssessmentStatus(item?.module) ? "Completed" : "Start" }
               </button>
             </div>
           </div>
-        ))}
+        )) }
       </div>
     </>
   );
