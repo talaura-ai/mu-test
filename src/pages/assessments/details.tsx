@@ -9,6 +9,8 @@ import { setAssessmentDispatcher } from "../../store/slices/dashboard-slice/dash
 import { getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import { toast } from "react-toastify";
 import CompletedIcon from "../../assets/svg/completedIcon.svg"
+import { ReactInternetSpeedMeter } from "react-internet-meter";
+import InternetSpeedModal from "../../components/Modals/internetSpeedModal";
 
 function AssessmentDetails () {
   const navigate = useNavigate();
@@ -19,6 +21,8 @@ function AssessmentDetails () {
   const myAssessments = useAppSelector(getAssessmentsSelector)
   const [selectAssessment, setSelectAssessment] = React.useState<any>({});
   const [assessmentExpired, setAssessmentExpired] = React.useState<boolean>(false);
+  const [checkSpeed, setCheckSpeed] = React.useState(0);
+  const [speedLaoding, setSpeedLaoding] = React.useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -54,6 +58,15 @@ function AssessmentDetails () {
       navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/video-interview`);
     }
   };
+
+  const checkInternetSpeed = () => {
+    if (Math.ceil(checkSpeed) >= 5) {
+      openFullscreen()
+    } else {
+      setStartTestModal(false);
+      setSpeedLaoding(true)
+    }
+  }
   /* View in fullscreen */
   const fullScreenElev: any = document.getElementById('fullscreenDiv');
 
@@ -91,7 +104,7 @@ function AssessmentDetails () {
     if (widthThreshold || heightThreshold) {
       toast.error(`Alert: Your Dev Tools Opened, Please close them before proceed!`, {});
     } else {
-      openFullscreen()
+      checkInternetSpeed()
     }
   };
 
@@ -115,9 +128,25 @@ function AssessmentDetails () {
   const onExpired = () => {
     setAssessmentExpired(true)
   }
-
+  const onClose = () => {
+    setSpeedLaoding(false)
+  }
   return (
     <>
+      <ReactInternetSpeedMeter
+        outputType=""
+        pingInterval={ 1000 } // milliseconds
+        thresholdUnit="megabyte" // "byte" , "kilobyte", "megabyte"
+        threshold={ 5 }
+        imageUrl="https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png"
+        downloadSize="500000" //bytes
+        callbackFunctionOnNetworkDown={ (data: any) =>
+          console.log(`callbackFunctionOnNetworkDown Internet speed : ${data}`)
+        }
+        callbackFunctionOnNetworkTest={ (data: any) => {
+          setCheckSpeed(data)
+        } }
+      />
       <div className="sm:p-8 md:px-20 md:py-12 p-4">
         <AssessmentCard onExpired={ onExpired } />
         { selectAssessment?.module?.map((item: any) => (
@@ -227,6 +256,7 @@ function AssessmentDetails () {
           selectedTest={ selectedTest }
         />
       ) }
+      { speedLaoding && <InternetSpeedModal onClose={ () => { onClose() } } /> }
     </>
   );
 }

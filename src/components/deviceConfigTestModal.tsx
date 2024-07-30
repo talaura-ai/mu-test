@@ -93,13 +93,13 @@ export default function DeviceConfigTestModal (props: any) {
       >
         <ReactInternetSpeedMeter
           outputType=""
-          pingInterval={ 5000 } // milliseconds
+          pingInterval={ 2000 } // milliseconds
           thresholdUnit="megabyte" // "byte" , "kilobyte", "megabyte"
-          threshold={ 10 }
+          threshold={ 5 }
           imageUrl="https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png"
           downloadSize="500000" //bytes
           callbackFunctionOnNetworkDown={ (data: any) =>
-            console.log(`Internet speed : ${data}`)
+            console.log(`callbackFunctionOnNetworkDown Internet speed : ${data}`)
           }
           callbackFunctionOnNetworkTest={ (data: any) => {
             setCheckSpeed(data)
