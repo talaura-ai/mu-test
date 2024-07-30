@@ -18,8 +18,6 @@ const CodingTest: React.FC<any> = (props) => {
   const assessmentModule = useAppSelector(getAssessmentModuleSelector)
   const [moduleQuestions, setModuleQuestions] = React.useState<any>([])
 
-  console.log('assessmentModule---', assessmentModule)
-
   useUserActivityDetection()
 
   React.useEffect(() => {

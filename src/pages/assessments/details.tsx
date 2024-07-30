@@ -172,12 +172,19 @@ function AssessmentDetails () {
                 </span>
               </div>
               <div className="flex flex-col text-center">
-                { item?.status === "Completed" ? <button
+                { ["Completed"].includes(item?.status) ? <button
                   type="button"
                   className="text-white bg-[#CC8448]/80 font-sansation tracking-wide font-medium rounded-lg text-md px-6 py-2.5 text-center inline-flex items-center cursor-not-allowed"
                 >
                   Completed
-                </button> : <button
+                </button> : null }
+                { ["Pending"].includes(item?.status) ? <button
+                  type="button"
+                  className="text-white bg-[#EE4B2B]/80 font-sansation tracking-wide font-medium rounded-lg text-md px-6 py-2.5 text-center inline-flex items-center cursor-not-allowed"
+                >
+                  Interrupted
+                </button> : null }
+                { ["Not Started"].includes(item?.status) ? <button
                   type="button"
                   disabled={ item?.isLocked || assessmentExpired }
                   onClick={ () => {
@@ -187,7 +194,7 @@ function AssessmentDetails () {
                   className={ `text-white bg-[#CC8448] hover:bg-[#CC8448]/80 ${item?.isLocked || assessmentExpired ? "bg-[#CC8448]/80 cursor-not-allowed" : ""} font-sansation focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center` }
                 >
                   Start
-                </button> }
+                </button> : null }
               </div>
             </div>
             {/* <div className="flex items-center justify-center py-6 md:w-[15%] sm:w-full">
