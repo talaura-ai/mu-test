@@ -38,8 +38,10 @@ export const dashboardSlice = createSlice({
       })
       .addCase(setAssessmentModuleDispatcher.fulfilled, (state: any, action: any) => {
         if (action.payload?.data?.status) {
+          const { moduleId, candidateId } = action?.meta?.arg
           state.assessmentModuleData = action?.payload?.data
-          localStorage.setItem("talaura-test-crs", action?.payload?.data?.userToken)
+          sessionStorage.setItem("talaura-test-crs", action?.payload?.data?.userToken)
+          sessionStorage.setItem(`${moduleId}-${candidateId}`, btoa(JSON.stringify(action?.payload?.data)))
         }
         state.loading = false;
       })

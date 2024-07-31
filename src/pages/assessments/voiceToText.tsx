@@ -28,7 +28,7 @@ import InternetModal from "../../components/Modals/internetModal";
 const VoiceToText = () => {
   const dispatcher = useAppDispatch();
   const { assessmentId, testId, userId } = useParams();
-  const assessmentModule = useAppSelector(getAssessmentModuleSelector);
+  // const assessmentModule = useAppSelector(getAssessmentModuleSelector);
   const [moduleQuestions, setModuleQuestions] = React.useState<any>([]);
   const [currentIndex, setCurrentIndex] = React.useState<any>(0);
   const [editorState, setEditorState] = React.useState(
@@ -39,26 +39,50 @@ const VoiceToText = () => {
   const [disableNextBtn, setDisableNextBtn] = React.useState(false);
   const [disablePrevBtn, setDisablePrevBtn] = React.useState(true);
   const [networkChecking, setNetworkChecking] = React.useState(false);
+  const [assessmentModule, setAssessmentModule] = React.useState<any>({})
 
   const state = useNetworkState();
   useUserActivityDetection();
   let internetTimer: any = null
-  React.useEffect(() => {
-    if (assessmentModule?.module?.question) {
-      const questions = assessmentModule?.module?.question?.map((v: any) => {
-        return { ...v, answer: v?.answer ? v?.answer : "" };
-      });
-      setModuleQuestions(questions);
-      if (
-        assessmentModule?.module?.question?.length &&
-        assessmentModule?.module?.question?.[0]?.answer
-      ) {
-        setEditorState(
-          getEditorData(assessmentModule?.module?.question?.[0]?.answer)
-        );
+  // React.useEffect(() => {
+  //   if (assessmentModule?.module?.question) {
+  //     const questions = assessmentModule?.module?.question?.map((v: any) => {
+  //       return { ...v, answer: v?.answer ? v?.answer : "" };
+  //     });
+  //     setModuleQuestions(questions);
+  //     if (
+  //       assessmentModule?.module?.question?.length &&
+  //       assessmentModule?.module?.question?.[0]?.answer
+  //     ) {
+  //       setEditorState(
+  //         getEditorData(assessmentModule?.module?.question?.[0]?.answer)
+  //       );
+  //     }
+  //   }
+  // }, [assessmentModule]);
+
+  useEffect(() => {
+    const res = sessionStorage.getItem(`${testId}-${userId}`)
+    if (res) {
+      const assessmentTestData: any = JSON.parse(atob(res))
+      console.log('assessmentTestData=>', assessmentTestData)
+      setAssessmentModule(assessmentTestData)
+      if (assessmentTestData?.module?.question) {
+        const questions = assessmentTestData?.module?.question?.map((v: any) => {
+          return { ...v, answer: v?.answer ? v?.answer : "" };
+        });
+        setModuleQuestions(questions);
+        if (
+          assessmentTestData?.module?.question?.length &&
+          assessmentTestData?.module?.question?.[0]?.answer
+        ) {
+          setEditorState(
+            getEditorData(assessmentTestData?.module?.question?.[0]?.answer)
+          );
+        }
       }
     }
-  }, [assessmentModule]);
+  }, [])
 
   useEffect(() => {
     if (state) {
@@ -87,15 +111,15 @@ const VoiceToText = () => {
     return EditorState.createWithContent(contentState);
   };
 
-  React.useEffect(() => {
-    dispatcher(
-      setAssessmentModuleDispatcher({
-        moduleId: testId,
-        candidateId: userId,
-        assessmentId: assessmentId,
-      })
-    );
-  }, [dispatcher, assessmentId, testId, userId]);
+  // React.useEffect(() => {
+  //   dispatcher(
+  //     setAssessmentModuleDispatcher({
+  //       moduleId: testId,
+  //       candidateId: userId,
+  //       assessmentId: assessmentId,
+  //     })
+  //   );
+  // }, [dispatcher, assessmentId, testId, userId]);
 
   useEffect(() => {
     if (screenfull.isEnabled) {
@@ -194,7 +218,7 @@ const VoiceToText = () => {
   };
 
   const onTimeout = () => {
-    if (Number(assessmentModule.module?.time) > 0) {
+    if (Number(assessmentModule?.module?.time) > 0) {
       submitTest();
     }
   };
@@ -212,8 +236,8 @@ const VoiceToText = () => {
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4">
       <TimerCounterWithProgress
-        timestamp={ assessmentModule.module?.time || 0 }
-        title={ assessmentModule.module?.name }
+        timestamp={ assessmentModule?.module?.time || 0 }
+        title={ assessmentModule?.module?.name }
         onTimeout={ onTimeout }
       />
       <div className="flex items-start justify-start flex-col w-[100%] h-[100%] ">
@@ -297,7 +321,7 @@ const VoiceToText = () => {
           onPress={ (v) => {
             onSubmitTest(v);
           } }
-          title={ assessmentModule.module?.name }
+          title={ assessmentModule?.module?.name }
         />
       ) : null }
       { isExitFullScreen ? (

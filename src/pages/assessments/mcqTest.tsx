@@ -29,7 +29,7 @@ import FaceDetectionComponent from "../../components/faceDetection";
 
 function StartMCQTest () {
   const dispatcher = useAppDispatch();
-  const assessmentModule = useAppSelector(getAssessmentModuleSelector);
+  // const assessmentModule = useAppSelector(getAssessmentModuleSelector);
   const myAssessments = useAppSelector(getAssessmentsSelector);
   const [moduleQuestions, setModuleQuestions] = React.useState<any>([]);
   const [questionIndex, setQuestionIndex] = React.useState(0);
@@ -41,6 +41,7 @@ function StartMCQTest () {
   const { assessmentId, testId, userId } = useParams();
   const [cameraReady, setCameraReady] = useState(false);
   const [togglePopup, setTogglePopup] = useState(false);
+  const [assessmentModule, setAssessmentModule] = useState<any>({})
   const [networkChecking, setNetworkChecking] = React.useState(false);
   const prevFaceDataRef: any = useRef();
   const toggleRef: any = useRef();
@@ -67,34 +68,40 @@ function StartMCQTest () {
       }, 200000);
     }
   }
-
-  const updateUserActivity = () => {
-    dispatcher(
-      getUserActivityDispatcher({
-        candidateId: userId,
-      })
-    );
-  };
-
   React.useEffect(() => {
-    if (assessmentModule?.module?.question) {
-      const questions = assessmentModule?.module?.question?.map((v: any) => {
-        return { ...v, answer: "" };
-      });
-      setModuleQuestions(questions);
-      setQuestionIndex(0);
+    const res = sessionStorage.getItem(`${testId}-${userId}`)
+    if (res) {
+      const assessmentTestData: any = JSON.parse(atob(res))
+      console.log('assessmentTestData=>', assessmentTestData)
+      setAssessmentModule(assessmentTestData)
+      if (assessmentTestData?.module?.question) {
+        const questions = assessmentTestData?.module?.question?.map((v: any) => {
+          return { ...v, answer: "" };
+        });
+        setModuleQuestions(questions);
+        setQuestionIndex(0);
+      }
     }
-  }, [assessmentModule]);
+  }, [])
+  // React.useEffect(() => {
+  //   if (assessmentModule?.module?.question) {
+  //     const questions = assessmentModule?.module?.question?.map((v: any) => {
+  //       return { ...v, answer: "" };
+  //     });
+  //     setModuleQuestions(questions);
+  //     setQuestionIndex(0);
+  //   }
+  // }, [assessmentModule]);
 
-  React.useEffect(() => {
-    dispatcher(
-      setAssessmentModuleDispatcher({
-        moduleId: testId,
-        candidateId: userId,
-        assessmentId: assessmentId,
-      })
-    );
-  }, [dispatcher, assessmentId, testId, userId]);
+  // React.useEffect(() => {
+  //   dispatcher(
+  //     setAssessmentModuleDispatcher({
+  //       moduleId: testId,
+  //       candidateId: userId,
+  //       assessmentId: assessmentId,
+  //     })
+  //   );
+  // }, [dispatcher, assessmentId, testId, userId]);
 
 
   useEffect(() => {
@@ -215,7 +222,7 @@ function StartMCQTest () {
       );
       if (res?.payload.data?.status) {
         toast.success(
-          `${assessmentModule.module?.name} completed successfully!`,
+          `${assessmentModule?.module?.name} completed successfully!`,
           {}
         );
         // navigate(-1)
@@ -231,7 +238,7 @@ function StartMCQTest () {
   };
 
   const onTimeout = () => {
-    if (Number(assessmentModule.module?.time) > 0) {
+    if (Number(assessmentModule?.module?.time) > 0) {
       submitTestClicked();
     }
   };
@@ -262,8 +269,8 @@ function StartMCQTest () {
           />
         ) }
         <TimerCounterWithProgress
-          timestamp={ assessmentModule.module?.time || 0 }
-          title={ assessmentModule.module?.name }
+          timestamp={ assessmentModule?.module?.time || 0 }
+          title={ assessmentModule?.module?.name }
           onTimeout={ onTimeout }
         />
         <div className="flex md:flex-row flex-col font-sansation mt-10">
@@ -405,7 +412,7 @@ function StartMCQTest () {
           onPress={ (v) => {
             onSubmission(v);
           } }
-          title={ assessmentModule.module?.name }
+          title={ assessmentModule?.module?.name }
         />
       ) : null }
       { isExitFullScreen ? (

@@ -35,7 +35,7 @@ const VoiceToVoice = () => {
     null
   );
   // console.log('myAssessments=>', myAssessments)
-  const assessmentModule = useAppSelector(getAssessmentModuleSelector);
+  // const assessmentModule = useAppSelector(getAssessmentModuleSelector);
   const [submitTestModal, setSubmitTestModal] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(0);
@@ -51,6 +51,8 @@ const VoiceToVoice = () => {
   const [moduleQuestions, setModuleQuestions] = useState<any>([]);
   const [aiChats, setAIChat] = useState<any>([]);
   const [networkChecking, setNetworkChecking] = useState(false);
+  const [assessmentModule, setAssessmentModule] = useState<any>({})
+
   let streamRef: any = useRef(null);
   useUserActivityDetection();
   let audioElement = useRef(new Audio());
@@ -81,14 +83,29 @@ const VoiceToVoice = () => {
     }
   }
 
+  // useEffect(() => {
+  //   if (assessmentModule?.module?.question) {
+  //     const questions = assessmentModule?.module?.question?.map((v: any) => {
+  //       return { ...v, answer: v?.answer ? v?.answer : "" };
+  //     });
+  //     setModuleQuestions(questions);
+  //   }
+  // }, [assessmentModule]);
+
   useEffect(() => {
-    if (assessmentModule?.module?.question) {
-      const questions = assessmentModule?.module?.question?.map((v: any) => {
-        return { ...v, answer: v?.answer ? v?.answer : "" };
-      });
-      setModuleQuestions(questions);
+    const res = sessionStorage.getItem(`${testId}-${userId}`)
+    if (res) {
+      const assessmentTestData: any = JSON.parse(atob(res))
+      console.log('assessmentTestData=>', assessmentTestData)
+      setAssessmentModule(assessmentTestData)
+      if (assessmentTestData?.module?.question) {
+        const questions = assessmentTestData?.module?.question?.map((v: any) => {
+          return { ...v, answer: v?.answer ? v?.answer : "" };
+        });
+        setModuleQuestions(questions);
+      }
     }
-  }, [assessmentModule]);
+  }, [])
 
   useEffect(() => {
     if (screenfull.isEnabled) {
@@ -119,15 +136,15 @@ const VoiceToVoice = () => {
     setIsExitFullScreen(false);
   };
 
-  useEffect(() => {
-    dispatcher(
-      setAssessmentModuleDispatcher({
-        moduleId: testId,
-        candidateId: userId,
-        assessmentId: assessmentId,
-      })
-    );
-  }, [dispatcher, assessmentId, testId, userId]);
+  // useEffect(() => {
+  //   dispatcher(
+  //     setAssessmentModuleDispatcher({
+  //       moduleId: testId,
+  //       candidateId: userId,
+  //       assessmentId: assessmentId,
+  //     })
+  //   );
+  // }, [dispatcher, assessmentId, testId, userId]);
 
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -331,7 +348,7 @@ const VoiceToVoice = () => {
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4">
       <TimerCounterWithProgress
-        timestamp={ assessmentModule.module?.time || 0 }
+        timestamp={ assessmentModule?.module?.time || 0 }
         title={ "Voice Round" }
         onTimeout={ onTimeout }
       />
@@ -436,7 +453,7 @@ const VoiceToVoice = () => {
           onPress={ (v) => {
             onSubmitTest(v);
           } }
-          title={ assessmentModule.module?.name }
+          title={ assessmentModule?.module?.name }
         />
       ) : null }
       { isExitFullScreen ? (
