@@ -28,7 +28,7 @@ const CommonLayout = () => {
 
 	React.useEffect(() => {
 		if (userId) {
-			localStorage.setItem("talaura-x-u-r", userId)
+			sessionStorage.setItem("talaura-x-u-r", userId)
 		}
 	}, [userId]);
 

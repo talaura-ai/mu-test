@@ -10,7 +10,9 @@ export default function CountdownTimer ({
   const { seconds, minutes, hours, restart, days } = useTimer({
     expiryTimestamp: time,
     onExpire: () => {
-      onTimeout();
+      if (timestamp > 0) {
+        onTimeout();
+      }
     },
   });
 
