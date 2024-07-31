@@ -10,6 +10,7 @@ import { getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashb
 import moment from "moment";
 import { assessmentTotalTime, getExpiredIn } from "../../utils/helper";
 import CountdownTimer from "../../components/countdownTimer";
+import ModuleExpiredModal from "../../components/Modals/moduleExpired";
 
 function MyAssessments () {
   const navigate = useNavigate();
@@ -17,14 +18,9 @@ function MyAssessments () {
   const [deviceConfigModal, setDeviceConfigModal] = React.useState(false);
   const [selectAssessment, setSelectAssessment] = React.useState<any>({});
   const [assessmentExpired, setAssessmentExpired] = React.useState<any>({});
+  const [isModuleExpired, setIsModuleExpired] = React.useState<boolean>(false);
   const dispatcher = useAppDispatch();
   const myAssessments = useAppSelector(getAssessmentsSelector);
-
-  console.log(
-    "myAssessments111",
-    moment().valueOf(),
-    myAssessments?.[0]?.startsAt
-  );
 
   const onNextClicked = () => {
     setDeviceConfigModal(false);
@@ -74,13 +70,45 @@ function MyAssessments () {
     let expire = { ...assessmentExpired };
     expire[id] = "true";
     setAssessmentExpired(expire);
-    console.log("id=>", id);
   };
 
   const currentTime = moment().valueOf();
   const startTime = myAssessments?.[0]?.startsAt;
   const isDisabled = currentTime < startTime;
 
+  const getStatus = (item: any) => {
+    const flag = getAssessmentStatus(item?.module)
+    if (flag) {
+      return "Completed"
+    } else {
+      const currentTime = moment().valueOf();
+      const endsOn = item?.endsOn;
+      const startTime = item?.startsAt;
+      if (startTime < currentTime && currentTime < endsOn) {
+        return "Start"
+      } else {
+        if (endsOn < currentTime) {
+          return "Expired"
+        } else {
+          return "Start"
+        }
+      }
+    }
+  }
+  const onStartModule = (item: any) => {
+    const currentTime = moment().valueOf();
+    const endsOn = item?.endsOn;
+    const startTime = item?.startsAt;
+    if (startTime < currentTime && currentTime < endsOn) {
+      setDeviceConfigModal(true);
+      setSelectAssessment(item);
+    } else {
+      if (endsOn < currentTime) {
+        dispatcher(setAssessmentDispatcher({ userId }));
+        setIsModuleExpired(true)
+      }
+    }
+  }
   return (
     <>
       { deviceConfigModal && (
@@ -200,8 +228,7 @@ function MyAssessments () {
                   assessmentExpired[item?.assessmentId]
                 } // Enable the disabled attribute
                 onClick={ () => {
-                  setDeviceConfigModal(true);
-                  setSelectAssessment(item);
+                  onStartModule(item)
                 } }
                 className={ `text-white font-sansation bg-[#CC8448]
         ${isDisabled ? "cursor-not-allowed bg-[#CC8448]/60" : ""}
@@ -209,12 +236,13 @@ function MyAssessments () {
         ${assessmentExpired[item?.assessmentId] ? "px-12" : ""}
         focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md py-2.5 text-center inline-flex items-center`}
               >
-                { getAssessmentStatus(item?.module) ? "Completed" : "Start" }
+                { getStatus(item) }
               </button>
             </div>
           </div>
         )) }
       </div>
+      { isModuleExpired && <ModuleExpiredModal onClose={ () => { setIsModuleExpired(false) } } /> }
     </>
   );
 }

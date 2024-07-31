@@ -1,14 +1,10 @@
 import { useParams } from "react-router-dom";
-import Webcam from "react-webcam";
 import UserIcon from "../../assets/svg/userIcon.svg";
 import QuestionNumberBox from "../../components/questionNumberBox";
 import QuestionOptionBox from "../../components/displayQuestionOptions";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 import React, { memo, useEffect, useRef, useState } from "react";
-import { CameraOptions, useFaceDetection } from "react-use-face-detection";
-import FaceDetection from "@mediapipe/face_detection";
 import { useNetworkState } from 'react-use';
-import { Camera } from "@mediapipe/camera_utils";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
   getAssessmentModuleSelector,
@@ -29,8 +25,7 @@ import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
 import screenfull from "screenfull";
 import CustomToaster from "../../components/Modals/CustomToaster";
 import InternetModal from "../../components/Modals/internetModal";
-const width = 650;
-const height = 650;
+import FaceDetectionComponent from "../../components/faceDetection";
 
 function StartMCQTest () {
   const dispatcher = useAppDispatch();
@@ -44,9 +39,8 @@ function StartMCQTest () {
   const [disablePrevBtn, setDisablePrevBtn] = React.useState(true);
   const [isExitFullScreen, setIsExitFullScreen] = React.useState(false);
   const { assessmentId, testId, userId } = useParams();
-  const [isToasterDisplayed, setIsToasterDisplayed] = useState(false);
-  const [cameraStats, setCameraStats] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
+  const [togglePopup, setTogglePopup] = useState(false);
   const [networkChecking, setNetworkChecking] = React.useState(false);
   const prevFaceDataRef: any = useRef();
   const toggleRef: any = useRef();
@@ -55,23 +49,6 @@ function StartMCQTest () {
   const state = useNetworkState();
   let internetTimer: any = null
   useUserActivityDetection();
-
-  const { webcamRef, isLoading, detected, facesDetected }: any =
-    useFaceDetection({
-      faceDetectionOptions: {
-        model: "short",
-      },
-      faceDetection: new FaceDetection.FaceDetection({
-        locateFile: (file) =>
-          `https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/${file}`,
-      }),
-      camera: ({ mediaSrc, onFrame }: CameraOptions) =>
-        new Camera(mediaSrc, {
-          onFrame,
-          width,
-          height,
-        }),
-    });
 
   useEffect(() => {
     if (state) {
@@ -90,36 +67,6 @@ function StartMCQTest () {
       }, 200000);
     }
   }
-
-  useEffect(() => {
-    if (!detected && !isToasterDisplayed && cameraStats && cameraReady) {
-      // setToastMsg("Face not detected");
-      displayToasterFun();
-      updateUserActivity();
-      prevFaceDataRef.current = "Face not detected";
-    }
-    if (
-      facesDetected > 1 &&
-      !isToasterDisplayed &&
-      cameraStats &&
-      cameraReady
-    ) {
-      // setToastMsg("Multiple face detected");
-      displayToasterFun();
-      updateUserActivity();
-      prevFaceDataRef.current = "Multiple face detected";
-    }
-  }, [detected, facesDetected, cameraStats, cameraReady]);
-
-  const displayToasterFun = () => {
-    clearTimeout(toasterTimeout);
-    toasterTimeout = setTimeout(() => {
-      // setIsToasterDisplayed(false)
-      toggleRef.current = false;
-    }, 1000);
-    // setIsToasterDisplayed(true)
-    toggleRef.current = true;
-  };
 
   const updateUserActivity = () => {
     dispatcher(
@@ -158,12 +105,6 @@ function StartMCQTest () {
       screenfull.on("change", handleFullscreenChange);
     }
     return () => {
-      if (webcamRef?.current) {
-        webcamRef?.current?.video?.srcObject
-          ?.getTracks()
-          ?.forEach((track: any) => track?.stop());
-        webcamRef.current.video.srcObject = null;
-      }
       if (screenfull.isEnabled) {
         screenfull.off("change", handleFullscreenChange);
       }
@@ -190,12 +131,12 @@ function StartMCQTest () {
 
   const onQuestionSelection = (option: any, optionIndex: number) => {
     let optionValue = "";
+    let updateQuestion = [...moduleQuestions];
     let index = -1
-    if (option !== selectedQuestion) {
+    if (option !== selectedQuestion || updateQuestion?.[questionIndex]?.selectedOptionIndex !== optionIndex) {
       optionValue = option;
       index = optionIndex
     }
-    let updateQuestion = [...moduleQuestions];
     updateQuestion[questionIndex] = {
       ...updateQuestion[questionIndex],
       answer: optionValue,
@@ -303,15 +244,20 @@ function StartMCQTest () {
     };
     setModuleQuestions(updateQuestion);
   };
-  console.log('moduleQuestions=>', moduleQuestions)
+  const onRefChange = (flag: any, msg: string) => {
+    prevFaceDataRef.current = msg
+    toggleRef.current = flag;
+    setTogglePopup(flag)
+  }
   return (
     <>
       <div className="md:px-20 md:pt-12 px-4">
-        { toggleRef?.current && (
+        { togglePopup && (
           <CustomToaster
             message={ prevFaceDataRef?.current }
             onClose={ () => {
               toggleRef.current = false;
+              setTogglePopup(false)
             } }
           />
         ) }
@@ -360,7 +306,7 @@ function StartMCQTest () {
                       checked={ question?.answer }
                       key={ question?._id }
                       review={ question?.review }
-                      directQuestionClicked={ directQuestionClicked }
+                      directQuestionClicked={ (no: any) => directQuestionClicked(no) }
                     />
                   )) }
                 </div>
@@ -376,22 +322,7 @@ function StartMCQTest () {
               </button>
             </div>
           </div>
-          <Webcam
-            ref={ webcamRef }
-            forceScreenshotSourceSize
-            onUserMedia={ () => {
-              setCameraStats(true);
-            } }
-            onUserMediaError={ () => {
-              setCameraStats(false);
-            } }
-            style={ {
-              height,
-              width,
-              position: "absolute",
-              display: "none",
-            } }
-          />
+          <FaceDetectionComponent onRefChange={ (v: any, msg: string) => { onRefChange(v, msg) } } />
           <div className="basis-[70%] relative md:border-l-[2px] md:border-[#DCDCD9]">
             <div className="mcq-q pb-44">
               <div className="md:px-12 px-6 md:pt-0 pt-6">
@@ -406,7 +337,7 @@ function StartMCQTest () {
                       { moduleQuestions?.[questionIndex]?.title || "" }
                     </h5>
                   </div>
-                  <div onClick={ onReview } className=" absolute -top-1 right-2">
+                  <div onClick={ () => onReview() } className=" absolute -top-1 right-2">
                     { moduleQuestions?.[questionIndex]?.review ? (
                       <img src={ ReviewedIcon } />
                     ) : (
@@ -418,7 +349,7 @@ function StartMCQTest () {
                   { moduleQuestions?.[questionIndex]?.options?.map(
                     (option: any, index: number) => (
                       <QuestionOptionBox
-                        key={ option }
+                        key={ `${option}-${index}-${questionIndex}` }
                         onSelection={ (v: any) => {
                           onQuestionSelection(v, index);
                         } }
@@ -432,20 +363,11 @@ function StartMCQTest () {
               </div>
             </div>
             <div className="w-full absolute bottom-0 left-0 right-0 bg-[#F9F7F0] pb-6 pt-6">
-              {/* <div className="flex w-full md:justify-end justify-center mb-3">
-                <button
-                  type="button"
-                  onClick={ onReview }
-                  className="md:mx-20 mx-6 flex text-white bg-[#F15C2E] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
-                >
-                  Review
-                </button>
-              </div> */}
               <div className="flex w-full md:justify-between md:flex-row flex-col justify-center items-center md:gap-0 gap-4">
                 <button
                   type="button"
                   disabled={ disablePrevBtn }
-                  onClick={ onPrevClicked }
+                  onClick={ () => onPrevClicked() }
                   className={ `md:mx-20 mx-6 flex text-white font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg ${disablePrevBtn ? "cursor-not-allowed bg-[#CC8448]/50" : "bg-[#CC8448]"
                     }` }
                 >
@@ -466,7 +388,7 @@ function StartMCQTest () {
                   <button
                     type="button"
                     disabled={ disableNextBtn }
-                    onClick={ onNextClicked }
+                    onClick={ () => onNextClicked() }
                     className="md:mx-20 mx-6 flex text-white bg-[#CC8448] font-medium text-md w-40 py-2.5 text-center justify-center items-center rounded-lg"
                   >
                     NEXT
