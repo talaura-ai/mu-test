@@ -119,7 +119,11 @@ function StartMCQTest () {
       }
     };
   }, []);
-
+  useEffect(() => {
+    if (screenfull.isEnabled && !screenfull.isFullscreen) {
+      setIsExitFullScreen(true);
+    }
+  }, [screenfull.isFullscreen]);
   const handleFullscreenChange = () => {
     if (!screenfull.isFullscreen) {
       setIsExitFullScreen(true);

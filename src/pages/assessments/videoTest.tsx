@@ -123,7 +123,6 @@ const VideoTest = () => {
       updateUserActivity();
     }
   }, [detected, facesDetected, cameraStats, cameraReady]);
-
   useEffect(() => {
     if (screenfull.isEnabled) {
       screenfull.on("change", handleFullscreenChange);
@@ -134,6 +133,12 @@ const VideoTest = () => {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (screenfull.isEnabled && !screenfull.isFullscreen) {
+      setIsExitFullScreen(true);
+    }
+  }, [screenfull.isFullscreen]);
 
   const handleFullscreenChange = () => {
     if (!screenfull.isFullscreen) {
