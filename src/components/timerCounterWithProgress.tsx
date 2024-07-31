@@ -34,14 +34,14 @@ export default function TimerCounterWithProgress ({
           </span>
         </div>
         { showTimer ? (
-          <div className="flex items-center mt-4 md:mt-0">
+          <div className="flex items-center mt-4 md:mt-0 justify-end">
             <div className="w-full flex">
               <p className="text-[18px] text-[#FB2121] font-semibold">
-                Time left
+                Auto submit in
               </p>
               <img src={ TimeLeftIcon } className="px-2" alt="left icon" />
-              <p className="text-[18px] text-[#FB2121] font-semibold min-w-56">
-                auto submit in { minutes < 10 ? `0${minutes}` : minutes }:{ seconds < 10 ? `0${seconds}` : seconds } min
+              <p className="text-[18px] text-[#FB2121] font-semibold min-w-24">
+                { minutes < 10 ? `0${minutes}` : minutes }:{ seconds < 10 ? `0${seconds}` : seconds } min
               </p>
             </div>
           </div>
