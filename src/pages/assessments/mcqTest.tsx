@@ -188,15 +188,18 @@ function StartMCQTest () {
     setIsExitFullScreen(false);
   };
 
-  const onQuestionSelection = (option: any) => {
+  const onQuestionSelection = (option: any, optionIndex: number) => {
     let optionValue = "";
+    let index = -1
     if (option !== selectedQuestion) {
       optionValue = option;
+      index = optionIndex
     }
     let updateQuestion = [...moduleQuestions];
     updateQuestion[questionIndex] = {
       ...updateQuestion[questionIndex],
       answer: optionValue,
+      selectedOptionIndex: index
     };
     setModuleQuestions(updateQuestion);
     setSelectedQuestion(optionValue);
@@ -300,6 +303,7 @@ function StartMCQTest () {
     };
     setModuleQuestions(updateQuestion);
   };
+  console.log('moduleQuestions=>', moduleQuestions)
   return (
     <>
       <div className="md:px-20 md:pt-12 px-4">
@@ -416,11 +420,11 @@ function StartMCQTest () {
                       <QuestionOptionBox
                         key={ option }
                         onSelection={ (v: any) => {
-                          onQuestionSelection(v);
+                          onQuestionSelection(v, index);
                         } }
                         option={ option }
                         index={ index }
-                        checked={ selectedQuestion }
+                        checked={ moduleQuestions?.[questionIndex]?.selectedOptionIndex === index ? selectedQuestion : "" }
                       />
                     )
                   ) }
