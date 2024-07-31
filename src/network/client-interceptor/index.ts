@@ -9,7 +9,7 @@ const AxiosService = axios.create({
 AxiosService.interceptors.request.use(
   async function (request) {
     if (request?.url === Endpoints.submitTest) {
-      const token = localStorage.getItem("talaura-test-crs");
+      const token = sessionStorage.getItem("talaura-test-crs");
       if (token) {
         request.headers['Authorization'] = `Bearer ${token}`
       }

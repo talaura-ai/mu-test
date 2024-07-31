@@ -19,8 +19,8 @@ export const setAssessmentDispatcher: any = createAsyncThunk("assessment", async
 export const setAssessmentModuleDispatcher: any = createAsyncThunk("module", async (request: string) => {
   try {
     return await Services.DashboardService.getAssessmentModules(request)
-  } catch (e) {
-    return { error: JSON.parse(JSON.stringify(e)) }
+  } catch (e: any) {
+    return { error: JSON.parse(JSON.stringify(e?.response?.data)) }
   }
 })
 

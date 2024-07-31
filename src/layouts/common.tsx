@@ -44,7 +44,7 @@ const CommonLayout = () => {
 				<div className="px-3 lg:px-5 lg:pl-3 flex w-full items-center h-16">
 					<div className="flex items-center justify-between w-full">
 						<div className="flex items-center justify-start rtl:justify-end">
-							<a href={ `/assessment/${userId}/dashboard` } className="flex md:ms-12 ms-2">
+							<a href={ `/assessment/${userId}/dashboard` } className="flex md:ms-16 ms-2">
 								<span className="text-xl font-semibold font-sansation text-transparent bg-clip-text bg-gradient-to-r from-[#E4A76F] to-[#F3BD85] self-center sm:text-2xl whitespace-nowrap">
 									TalAura
 								</span>

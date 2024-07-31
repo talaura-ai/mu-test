@@ -57,7 +57,7 @@ const VideoTest = () => {
   const [liveVideoMediaRecorder, setLiveVideoMediaRecorder] = useState<
     MediaRecorder | any
   >(null);
-  const assessmentModule = useAppSelector(getAssessmentModuleSelector);
+  // const assessmentModule = useAppSelector(getAssessmentModuleSelector);
   const [submitTestModal, setSubmitTestModal] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isRecording, setIsRecording] = useState(true);
@@ -77,6 +77,7 @@ const VideoTest = () => {
   const [cameraReady, setCameraReady] = useState(false);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const [networkChecking, setNetworkChecking] = useState(false);
+  const [assessmentModule, setAssessmentModule] = useState<any>({})
 
   const state = useNetworkState();
   let internetTimer: any = null
@@ -186,23 +187,38 @@ const VideoTest = () => {
   }, [aiChats]);
 
   useEffect(() => {
-    if (assessmentModule?.module?.question) {
-      const questions = assessmentModule?.module?.question?.map((v: any) => {
-        return { ...v, answer: v?.answer ? v?.answer : "" };
-      });
-      setModuleQuestions(questions);
+    const res = sessionStorage.getItem(`${testId}-${userId}`)
+    if (res) {
+      const assessmentTestData: any = JSON.parse(atob(res))
+      console.log('assessmentTestData=>', assessmentTestData)
+      setAssessmentModule(assessmentTestData)
+      if (assessmentTestData?.module?.question) {
+        const questions = assessmentTestData?.module?.question?.map((v: any) => {
+          return { ...v, answer: v?.answer ? v?.answer : "" };
+        });
+        setModuleQuestions(questions);
+      }
     }
-  }, [assessmentModule]);
+  }, [])
 
-  useEffect(() => {
-    dispatcher(
-      setAssessmentModuleDispatcher({
-        moduleId: testId,
-        candidateId: userId,
-        assessmentId: assessmentId,
-      })
-    );
-  }, [dispatcher, assessmentId, testId, userId]);
+  // useEffect(() => {
+  //   if (assessmentModule?.module?.question) {
+  //     const questions = assessmentModule?.module?.question?.map((v: any) => {
+  //       return { ...v, answer: v?.answer ? v?.answer : "" };
+  //     });
+  //     setModuleQuestions(questions);
+  //   }
+  // }, [assessmentModule]);
+
+  // useEffect(() => {
+  //   dispatcher(
+  //     setAssessmentModuleDispatcher({
+  //       moduleId: testId,
+  //       candidateId: userId,
+  //       assessmentId: assessmentId,
+  //     })
+  //   );
+  // }, [dispatcher, assessmentId, testId, userId]);
 
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -547,7 +563,7 @@ const VideoTest = () => {
         />
       ) }
       <TimerCounterWithProgress
-        timestamp={ assessmentModule.module?.time || 0 }
+        timestamp={ assessmentModule?.module?.time || 0 }
         title={ "Video Round" }
         onTimeout={ onTimeout }
         showTimer={ false }
@@ -668,7 +684,7 @@ const VideoTest = () => {
           onPress={ (v) => {
             onSubmitTest(v);
           } }
-          title={ assessmentModule.module?.name }
+          title={ assessmentModule?.module?.name }
         />
       ) : null }
       { isExitFullScreen ? (

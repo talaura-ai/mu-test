@@ -5,7 +5,7 @@ import LockNextIcon from "../../assets/svg/lockIcon.svg";
 import StartTestConfirmationModal from "../../components/startTestConfirmationModal";
 import AssessmentCard from "../../components/assessmentCard";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { setAssessmentDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
+import { setAssessmentDispatcher, setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import { getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import { toast } from "react-toastify";
 import CompletedIcon from "../../assets/svg/completedIcon.svg"
@@ -44,24 +44,59 @@ function AssessmentDetails () {
 
   const onNextClicked = () => {
     setStartTestModal(false);
-    const type = String(selectedTest?.type).toLocaleLowerCase()
-    // navigate("/assessment/668bcd8a086338396878dfbf/668ade6b286b95c1e420962b/668bcd8a086338396878dfcc")
-    if (type === "Quiz"?.toLocaleLowerCase()) {
-      navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}`);
-    } else if (type === "Sandbox"?.toLocaleLowerCase()) {
-      navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/coding`);
-    } else if (type === "Voice To Voice"?.toLocaleLowerCase()) {
-      navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/voice-to-voice`);
-    } else if (type === "Voice To Text"?.toLocaleLowerCase()) {
-      navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/voice-to-text`);
-    } else if (type === "AI Video Interview"?.toLocaleLowerCase()) {
-      navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/video-interview`);
-    }
+    getTestData(selectedTest?._id)
   };
+
+  const getTestData = async (testId: string) => {
+    try {
+      const res = await dispatcher(
+        setAssessmentModuleDispatcher({
+          moduleId: testId,
+          candidateId: userId,
+          assessmentId: assessmentId,
+        })
+      );
+      // navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}`);
+      console.log('res=>', res)
+      if (res?.payload?.data?.status) {
+        const { module } = res?.payload?.data
+        if (!module?.isLocked && module?.question?.length > 0 && ['Not Started']?.includes(module?.status)) {
+          // Full screen
+          if (fullScreenElev?.requestFullscreen) {
+            fullScreenElev?.requestFullscreen();
+          } else if (fullScreenElev?.webkitRequestFullscreen) { /* Safari */
+            fullScreenElev?.webkitRequestFullscreen();
+          } else if (fullScreenElev?.msRequestFullscreen) { /* IE11 */
+            fullScreenElev?.msRequestFullscreen();
+          }
+
+          const type = String(selectedTest?.type).toLocaleLowerCase()
+          if (type === "Quiz"?.toLocaleLowerCase()) {
+            navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}`);
+          } else if (type === "Sandbox"?.toLocaleLowerCase()) {
+            navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/coding`);
+          } else if (type === "Voice To Voice"?.toLocaleLowerCase()) {
+            navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/voice-to-voice`);
+          } else if (type === "Voice To Text"?.toLocaleLowerCase()) {
+            navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/voice-to-text`);
+          } else if (type === "AI Video Interview"?.toLocaleLowerCase()) {
+            navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/video-interview`);
+          }
+
+        }
+      } else {
+        if (res?.payload?.error) {
+          toast.error(res?.payload?.error?.message, {});
+        }
+      }
+    } catch (error) {
+      console.log('res=> error', error)
+    }
+  }
 
   const checkInternetSpeed = () => {
     if (Math.ceil(checkSpeed) >= 5) {
-      openFullscreen()
+      onNextClicked()
     } else {
       setStartTestModal(false);
       setSpeedLaoding(true)
@@ -71,13 +106,13 @@ function AssessmentDetails () {
   const fullScreenElev: any = document.getElementById('fullscreenDiv');
 
   function openFullscreen () {
-    if (fullScreenElev?.requestFullscreen) {
-      fullScreenElev?.requestFullscreen();
-    } else if (fullScreenElev?.webkitRequestFullscreen) { /* Safari */
-      fullScreenElev?.webkitRequestFullscreen();
-    } else if (fullScreenElev?.msRequestFullscreen) { /* IE11 */
-      fullScreenElev?.msRequestFullscreen();
-    }
+    // if (fullScreenElev?.requestFullscreen) {
+    //   fullScreenElev?.requestFullscreen();
+    // } else if (fullScreenElev?.webkitRequestFullscreen) { /* Safari */
+    //   fullScreenElev?.webkitRequestFullscreen();
+    // } else if (fullScreenElev?.msRequestFullscreen) { /* IE11 */
+    //   fullScreenElev?.msRequestFullscreen();
+    // }
     onNextClicked()
   }
   const detectBrowser = () => {
