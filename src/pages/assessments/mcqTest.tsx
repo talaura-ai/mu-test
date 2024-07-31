@@ -26,6 +26,7 @@ import screenfull from "screenfull";
 import CustomToaster from "../../components/Modals/CustomToaster";
 import InternetModal from "../../components/Modals/internetModal";
 import FaceDetectionComponent from "../../components/faceDetection";
+import ModuleTimeoutModal from "../../components/Modals/timeoutModal";
 
 function StartMCQTest () {
   const dispatcher = useAppDispatch();
@@ -43,6 +44,7 @@ function StartMCQTest () {
   const [togglePopup, setTogglePopup] = useState(false);
   const [assessmentModule, setAssessmentModule] = useState<any>({})
   const [networkChecking, setNetworkChecking] = React.useState(false);
+  const [isTimeout, setIsTimeout] = React.useState(false);
   const prevFaceDataRef: any = useRef();
   const toggleRef: any = useRef();
 
@@ -131,7 +133,7 @@ function StartMCQTest () {
       }
     }
     if (type === "exit") {
-      submitTestClicked();
+      submitTestClicked("");
     }
     setIsExitFullScreen(false);
   };
@@ -207,12 +209,12 @@ function StartMCQTest () {
 
   const onSubmission = (type: string) => {
     if (type === "submit") {
-      submitTestClicked();
+      submitTestClicked("");
     }
     setSubmitTest(false);
   };
 
-  const submitTestClicked = async () => {
+  const submitTestClicked = async (type: string) => {
     try {
       const res = await dispatcher(
         getModuleSubmissionDispatcher({
@@ -225,9 +227,11 @@ function StartMCQTest () {
           `${assessmentModule?.module?.name} completed successfully!`,
           {}
         );
-        // navigate(-1)
-        // screenfull.exit()
-        window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+        if (type === "auto") {
+          setIsTimeout(true)
+        } else {
+          window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+        }
       } else {
         toast.error("Oops! Submission is failed", {});
       }
@@ -239,7 +243,7 @@ function StartMCQTest () {
 
   const onTimeout = () => {
     if (Number(assessmentModule?.module?.time) > 0) {
-      submitTestClicked();
+      submitTestClicked("auto");
     }
   };
 
@@ -256,6 +260,10 @@ function StartMCQTest () {
     toggleRef.current = flag;
     setTogglePopup(flag)
   }
+  const onCloseTimeout = () => {
+    setIsTimeout(false)
+    window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+  }
   return (
     <>
       <div className="md:px-20 md:pt-12 px-4">
@@ -271,7 +279,7 @@ function StartMCQTest () {
         <TimerCounterWithProgress
           timestamp={ assessmentModule?.module?.time || 0 }
           title={ assessmentModule?.module?.name }
-          onTimeout={ onTimeout }
+          onTimeout={ () => onTimeout() }
         />
         <div className="flex md:flex-row flex-col font-sansation mt-10">
           <div className="basis-[30%] w-full md:mr-12">
@@ -423,6 +431,7 @@ function StartMCQTest () {
         />
       ) : null }
       { networkChecking && <InternetModal /> }
+      { isTimeout && <ModuleTimeoutModal onClose={ () => { onCloseTimeout() } } /> }
     </>
   );
 }

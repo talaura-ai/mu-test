@@ -23,6 +23,7 @@ import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection
 import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
 import screenfull from "screenfull";
 import InternetModal from "../../components/Modals/internetModal";
+import ModuleTimeoutModal from "../../components/Modals/timeoutModal";
 
 const VoiceToVoice = () => {
   const webcamRef = useRef<any>(null);
@@ -52,6 +53,7 @@ const VoiceToVoice = () => {
   const [aiChats, setAIChat] = useState<any>([]);
   const [networkChecking, setNetworkChecking] = useState(false);
   const [assessmentModule, setAssessmentModule] = useState<any>({})
+  const [isTimeout, setIsTimeout] = useState(false);
 
   let streamRef: any = useRef(null);
   useUserActivityDetection();
@@ -131,7 +133,7 @@ const VoiceToVoice = () => {
       }
     }
     if (type === "exit") {
-      submitTest();
+      submitTest("");
     }
     setIsExitFullScreen(false);
   };
@@ -296,18 +298,18 @@ const VoiceToVoice = () => {
 
   const onTimeout = () => {
     if (Number(assessmentModule?.module?.time) > 0) {
-      submitTest();
+      submitTest("auto");
     }
   };
 
   const onSubmitTest = (type: string) => {
     setSubmitTestModal(false);
     if (type === "submit") {
-      submitTest();
+      submitTest("");
     }
   };
 
-  const submitTest = async () => {
+  const submitTest = async (type: string) => {
     try {
       if (streamRef?.current) {
         streamRef.current?.getTracks()?.forEach((track: any) => track?.stop());
@@ -333,9 +335,11 @@ const VoiceToVoice = () => {
           `${assessmentModule?.module?.name} completed successfully!`,
           {}
         );
-        // navigate(-1)
-        // screenfull.exit()
-        window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+        if (type === "auto") {
+          setIsTimeout(true)
+        } else {
+          window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+        }
       } else {
         toast.error("Oops! Submission is failed", {});
       }
@@ -344,13 +348,16 @@ const VoiceToVoice = () => {
       console.log("error=>", error);
     }
   };
-
+  const onCloseTimeout = () => {
+    setIsTimeout(false)
+    window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+  }
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4">
       <TimerCounterWithProgress
         timestamp={ assessmentModule?.module?.time || 0 }
         title={ "Voice Round" }
-        onTimeout={ onTimeout }
+        onTimeout={ () => onTimeout() }
       />
       <div className="flex">
         <span className="text-[20px] text-black font-sansation font-semibold">
@@ -464,6 +471,7 @@ const VoiceToVoice = () => {
         />
       ) : null }
       { networkChecking && <InternetModal /> }
+      { isTimeout && <ModuleTimeoutModal onClose={ () => { onCloseTimeout() } } /> }
     </div>
   );
 };
