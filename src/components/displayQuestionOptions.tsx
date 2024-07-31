@@ -1,7 +1,7 @@
+import { memo } from "react";
 import { alphabetArray } from "../utils/helper";
 
-export default function QuestionOptionBox ({ checked, option, index, onSelection }: any) {
-
+const QuestionOptionBox = ({ checked, option, index, onSelection }: any) => {
   return (
     <>
       <div
@@ -26,3 +26,5 @@ export default function QuestionOptionBox ({ checked, option, index, onSelection
     </>
   );
 }
+
+export default memo(QuestionOptionBox);
