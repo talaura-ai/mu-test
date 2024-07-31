@@ -261,7 +261,7 @@ function StartMCQTest () {
     setTogglePopup(flag)
   }
   const onCloseTimeout = () => {
-    setIsTimeout(true)
+    setIsTimeout(false)
     window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
   }
   return (

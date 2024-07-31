@@ -24,6 +24,7 @@ import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection
 import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
 import screenfull from "screenfull";
 import InternetModal from "../../components/Modals/internetModal";
+import ModuleTimeoutModal from "../../components/Modals/timeoutModal";
 
 const VoiceToText = () => {
   const dispatcher = useAppDispatch();
@@ -40,7 +41,7 @@ const VoiceToText = () => {
   const [disablePrevBtn, setDisablePrevBtn] = React.useState(true);
   const [networkChecking, setNetworkChecking] = React.useState(false);
   const [assessmentModule, setAssessmentModule] = React.useState<any>({})
-
+  const [isTimeout, setIsTimeout] = React.useState(false);
   const state = useNetworkState();
   useUserActivityDetection();
   let internetTimer: any = null
@@ -145,7 +146,7 @@ const VoiceToText = () => {
       }
     }
     if (type === "exit") {
-      submitTest();
+      submitTest("");
     }
     setIsExitFullScreen(false);
   };
@@ -185,7 +186,7 @@ const VoiceToText = () => {
     setDisablePrevBtn(false);
   };
 
-  const submitTest = async () => {
+  const submitTest = async (type: string) => {
     try {
       const res = await dispatcher(
         getModuleSubmissionDispatcher({
@@ -198,9 +199,11 @@ const VoiceToText = () => {
           `${assessmentModule?.module?.name} completed successfully!`,
           {}
         );
-        // navigate(-1)
-        // screenfull.exit()
-        window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+        if (type === "auto") {
+          setIsTimeout(true)
+        } else {
+          window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+        }
       } else {
         toast.error("Oops! Submission is failed", {});
       }
@@ -213,13 +216,13 @@ const VoiceToText = () => {
   const onSubmitTest = (type: string) => {
     setSubmitTestModal(false);
     if (type === "submit") {
-      submitTest();
+      submitTest("");
     }
   };
 
   const onTimeout = () => {
     if (Number(assessmentModule?.module?.time) > 0) {
-      submitTest();
+      submitTest("auto");
     }
   };
 
@@ -232,13 +235,16 @@ const VoiceToText = () => {
     };
     setModuleQuestions(questions);
   };
-
+  const onCloseTimeout = () => {
+    setIsTimeout(false)
+    window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+  }
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4">
       <TimerCounterWithProgress
         timestamp={ assessmentModule?.module?.time || 0 }
         title={ assessmentModule?.module?.name }
-        onTimeout={ onTimeout }
+        onTimeout={ () => onTimeout() }
       />
       <div className="flex items-start justify-start flex-col w-[100%] h-[100%] ">
         {/* <div className="flex">
@@ -332,6 +338,7 @@ const VoiceToText = () => {
         />
       ) : null }
       { networkChecking && <InternetModal /> }
+      { isTimeout && <ModuleTimeoutModal onClose={ () => { onCloseTimeout() } } /> }
     </div>
   );
 };
