@@ -34,7 +34,7 @@ export const dashboardSlice = createSlice({
       })
     builder
       .addCase(setAssessmentModuleDispatcher.pending, (state: any) => {
-        // state.loading = true;
+        state.loading = true;
       })
       .addCase(setAssessmentModuleDispatcher.fulfilled, (state: any, action: any) => {
         if (action.payload?.data?.status) {

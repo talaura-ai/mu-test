@@ -183,7 +183,7 @@ function AssessmentDetails () {
         } }
       />
       <div className="sm:p-8 md:px-20 md:py-12 p-4">
-        <AssessmentCard onExpired={ onExpired } />
+        <AssessmentCard onExpired={ () => onExpired() } />
         { selectAssessment?.module?.map((item: any) => (
           <div
             key={ item }

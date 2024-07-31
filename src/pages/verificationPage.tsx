@@ -5,7 +5,7 @@ const VerificationPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userId = localStorage.getItem("talaura-x-u-r")
+    const userId = sessionStorage.getItem("talaura-x-u-r")
     navigate(`/assessment/${userId}/dashboard`)
   }, []);
   return (
