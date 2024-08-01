@@ -30,6 +30,7 @@ import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
 import screenfull from "screenfull";
 import InternetModal from "../../components/Modals/internetModal";
 import moment from "moment";
+import { ReactInternetSpeedMeter } from "react-internet-meter";
 
 const width = 650;
 const height = 650;
@@ -79,6 +80,7 @@ const VideoTest = () => {
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const [networkChecking, setNetworkChecking] = useState(false);
   const [assessmentModule, setAssessmentModule] = useState<any>({})
+  const [isInternet5Mb, setIsInternet5Mb] = useState(true)
 
   const state = useNetworkState();
   let internetTimer: any = null
@@ -163,6 +165,10 @@ const VideoTest = () => {
     }
   }, [state]);
 
+  useEffect(() => {
+    checkInternet(isInternet5Mb)
+  }, [isInternet5Mb]);
+
   const checkInternet = (isInternet: any) => {
     clearTimeout(internetTimer)
     if (isInternet) {
@@ -174,7 +180,6 @@ const VideoTest = () => {
       }, 200000);
     }
   }
-
 
   const fullScreenElev: any = document.getElementById("fullscreenDiv");
   const onExitAction = (type: any) => {
@@ -289,7 +294,7 @@ const VideoTest = () => {
           userId: userId,
         },
       });
-      console.log("socket id", newSocket.id);
+      // console.log("socket id", newSocket.id);
       newSocket.on("connect", () => {
         setIsSocketConnected(true);
         setTimeout(() => {
@@ -306,7 +311,7 @@ const VideoTest = () => {
         mediaRecorder.start(1500);
         mediaRecorder.ondataavailable = async (event) => {
           if (event?.data?.size > 0) {
-            console.log("START AI");
+            // console.log("START AI");
             try {
               const arrayBuffer = await event.data.arrayBuffer();
               const base64String = arrayBufferToBase64(arrayBuffer);
@@ -328,7 +333,7 @@ const VideoTest = () => {
         }
       });
       newSocket.on("question", (data) => {
-        console.log("conversationAns question=>", data);
+        // console.log("conversationAns question=>", data);
         setQuestion({ ...question, ...data });
         setAIChat((prev: any) => {
           return [...prev, { type: "ai", text: data?.title }];
@@ -338,7 +343,7 @@ const VideoTest = () => {
         });
       });
       newSocket.on("answer", (data) => {
-        console.log("conversationAns answer=>", data);
+        // console.log("conversationAns answer=>", data);
         audioElement.current.pause();
         audioElement.current.currentTime = 0;
         setAIChat((prev: any) => {
@@ -352,7 +357,7 @@ const VideoTest = () => {
       newSocket.on("audioData", async (data) => {
         const audioBlob = base64ToBlob(data.audio, "audio/mpeg");
         const audioUrl = URL.createObjectURL(audioBlob);
-        console.log("audioUrl=>", audioUrl);
+        // console.log("audioUrl=>", audioUrl);
         clearTimeout(speakTimeout);
         setIsSpeaking(true);
         audioElement.current.pause();
@@ -410,7 +415,7 @@ const VideoTest = () => {
           })
           .promise();
         uploadIdRef.current = createMultipartUpload.UploadId;
-        console.log("Multipart upload initiated:", createMultipartUpload);
+        // console.log("Multipart upload initiated:", createMultipartUpload);
       } catch (err) {
         console.error("Error initiating multipart upload:", err);
       }
@@ -428,10 +433,10 @@ const VideoTest = () => {
       PartNumber: partNumber,
       UploadId: uploadIdRef.current,
     };
-    console.log("params=>", params, uploadIdRef.current);
+    // console.log("params=>", params, uploadIdRef.current);
     try {
       const uploadPart = await s3.uploadPart(params).promise();
-      console.log("UploadPart response:", uploadPart);
+      // console.log("UploadPart response:", uploadPart);
       if (uploadPart && uploadPart.ETag) {
         multipartMap.Parts.push({
           ETag: uploadPart.ETag,
@@ -469,12 +474,6 @@ const VideoTest = () => {
     if (mediaRecorder) {
       mediaRecorder.stop();
     }
-    console.log({
-      Bucket: bucketName,
-      Key: key,
-      UploadId: uploadIdRef.current,
-      MultipartUpload: multipartMap,
-    });
     try {
       // Complete multipart upload
       const completeMultipartUpload = await s3
@@ -486,7 +485,7 @@ const VideoTest = () => {
         })
         .promise();
       submitTest(completeMultipartUpload?.Location || "");
-      console.log("Multipart upload completed:", completeMultipartUpload);
+      // console.log("Multipart upload completed:", completeMultipartUpload);
     } catch (err) {
       console.error("Error completing multipart upload:", err);
       submitTest("");
@@ -568,154 +567,174 @@ const VideoTest = () => {
       }
     } catch (error) {
       toast.error("Oops! Internal server error", {});
-      console.log("error=>", error);
+      // console.log("error=>", error);
       dispatcher(setLoadingDispatcher(false));
     }
   };
   return (
-    <div className="sm:p-6 md:px-20 md:py-12 p-4">
-      { isToasterDisplayed && (
-        <CustomToaster
-          message={ toastMsg }
-          onClose={ () => {
-            setIsToasterDisplayed(false);
-          } }
-        />
-      ) }
-      <TimerCounterWithProgress
-        timestamp={ assessmentModule?.module?.time || 0 }
-        title={ "Video Round" }
-        onTimeout={ onTimeout }
-        showTimer={ false }
+    <>
+      <ReactInternetSpeedMeter
+        outputType=""
+        pingInterval={ 5000 } // milliseconds
+        thresholdUnit="megabyte" // "byte" , "kilobyte", "megabyte"
+        threshold={ 5 }
+        imageUrl="https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png"
+        downloadSize="500000" //bytes
+        callbackFunctionOnNetworkDown={ (data: any) => {
+          if (isInternet5Mb) {
+            setIsInternet5Mb(false)
+          }
+        } }
+        callbackFunctionOnNetworkTest={ (data: any) => {
+          if (data >= 5 && !isInternet5Mb) {
+            setIsInternet5Mb(true)
+          }
+        } }
       />
-      <div className="flex">
-        <span className="text-[20px] text-black font-sansation font-semibold">
-          TALBot is your interviewer, please listen carefully and respond to the
-          questions asked by TALBot
-        </span>
-      </div>
-      {/* <div className="flex mb-3">
+      <div className="sm:p-6 md:px-20 md:py-12 p-4">
+        { isToasterDisplayed && (
+          <CustomToaster
+            message={ toastMsg }
+            onClose={ () => {
+              setIsToasterDisplayed(false);
+            } }
+          />
+        ) }
+        <TimerCounterWithProgress
+          timestamp={ assessmentModule?.module?.time || 0 }
+          title={ "Video Round" }
+          onTimeout={ onTimeout }
+          showTimer={ false }
+        />
+        <div className="flex">
+          <span className="text-[20px] text-black font-sansation font-semibold">
+            TALBot is your interviewer, please listen carefully and respond to the
+            questions asked by TALBot
+          </span>
+        </div>
+        {/* <div className="flex mb-3">
         <span className="text-[32px] font-semibold font-sansation text-[#CC8448]">
           Case Study
         </span>
       </div> */}
-      <div className="flex md:flex-row flex-col md:justify-center mt-16">
-        <div className="flex flex-col w-[80%] h-1/2 md:flex-row justify-between">
-          <div className="relative flex w-[50%] h-[470px] bg-[#474646] justify-center items-center rounded-xl border border-[#E5A971] mr-4">
-            <div className="flex justify-center items-center">
-              <div
-                className={ `h-10 w-10 md:h-40 md:w-40 bg-white text-[#E5A971] rounded-full text-[20px] md:text-[60px] font-semibold font-sansation flex justify-center items-center ${isSpeaking ? "animation-pulse" : ""
-                  }` }
-              >
-                Ai
+        <div className="flex md:flex-row flex-col md:justify-center mt-16">
+          <div className="flex flex-col w-[80%] h-1/2 md:flex-row justify-between">
+            <div className="relative flex w-[50%] h-[470px] bg-[#474646] justify-center items-center rounded-xl border border-[#E5A971] mr-4">
+              <div className="flex justify-center items-center">
+                <div
+                  className={ `h-10 w-10 md:h-40 md:w-40 bg-white text-[#E5A971] rounded-full text-[20px] md:text-[60px] font-semibold font-sansation flex justify-center items-center ${isSpeaking ? "animation-pulse" : ""
+                    }` }
+                >
+                  Ai
+                </div>
+              </div>
+              <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation">
+                Ai Bot
+              </div>
+              <div className="absolute right-2 bottom-4 text-white  px-4 py-1  ">
+                <img src={ MicIcon } className="h-8 w-10" alt="mic" />
               </div>
             </div>
-            <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation">
-              Ai Bot
-            </div>
-            <div className="absolute right-2 bottom-4 text-white  px-4 py-1  ">
-              <img src={ MicIcon } className="h-8 w-10" alt="mic" />
+            <div className="flex relative h-1/2 w-[50%] rounded-xl overflow-hidden">
+              <div className="flex rounded-xl w-full overflow-hidden h-[470px] bg-gray-200">
+                { isSocketConnected && (
+                  <Webcam
+                    ref={ webcamRef }
+                    screenshotFormat="image/jpeg"
+                    screenshotQuality={ 1 }
+                    // audio={userMute}
+                    videoConstraints={ videoConstraints }
+                    onUserMedia={ () => {
+                      setCameraStats(true);
+                    } }
+                    onUserMediaError={ () => {
+                      setCameraStats(false);
+                    } }
+                    className="overflow-hidden rounded-xl bg-gray-200 object-cover w-full"
+                  />
+                ) }
+                <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation capitalize">
+                  { (myAssessments && myAssessments?.[0]?.name) || "Candidate" }
+                </div>
+                <div className="absolute right-6 bottom-4 text-white  px-4 py-1  ">
+                  <img
+                    onClick={ () => {
+                      setUserMute(!userMute);
+                    } }
+                    src={ MicIcon }
+                    className="h-8 w-10"
+                    alt="mic"
+                  />
+                </div>
+              </div>
             </div>
           </div>
-          <div className="flex relative h-1/2 w-[50%] rounded-xl overflow-hidden">
-            <div className="flex rounded-xl w-full overflow-hidden h-[470px] bg-gray-200">
-              { isSocketConnected && (
-                <Webcam
-                  ref={ webcamRef }
-                  screenshotFormat="image/jpeg"
-                  screenshotQuality={ 1 }
-                  // audio={userMute}
-                  videoConstraints={ videoConstraints }
-                  onUserMedia={ () => {
-                    setCameraStats(true);
-                  } }
-                  onUserMediaError={ () => {
-                    setCameraStats(false);
-                  } }
-                  className="overflow-hidden rounded-xl bg-gray-200 object-cover w-full"
-                />
-              ) }
-              <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation capitalize">
-                { (myAssessments && myAssessments?.[0]?.name) || "Candidate" }
+          <div className="flex flex-col w-[20%] bg-white shadow rounded-lg p-4 ml-4">
+            <div className="flex w-full flex-col h-[440px]">
+              <div className="flex gap-2 px-2 pb-2">
+                <img src={ VoiceIcon } alt="icn" />
+                <span className="text-xs text-gray-300 mt-2">CC/Subtitle </span>
               </div>
-              <div className="absolute right-6 bottom-4 text-white  px-4 py-1  ">
-                <img
-                  onClick={ () => {
-                    setUserMute(!userMute);
-                  } }
-                  src={ MicIcon }
-                  className="h-8 w-10"
-                  alt="mic"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col w-[20%] bg-white shadow rounded-lg p-4 ml-4">
-          <div className="flex w-full flex-col h-[440px]">
-            <div className="flex gap-2 px-2 pb-2">
-              <img src={ VoiceIcon } alt="icn" />
-              <span className="text-xs text-gray-300 mt-2">CC/Subtitle </span>
-            </div>
-            <div className="flex flex-col mx-2 bg-white overflow-y-scroll space-y-2">
-              { Array.from(
-                new Map(aiChats?.map((itm: any) => [itm?.text, itm])).values()
-              )?.map((item: any, index: number) => {
-                if (item?.type === "ai") {
-                  return (
-                    <div
-                      key={ item?.text + index }
-                      className="flex flex-col gap-1 w-full max-w-[80%]"
-                    >
-                      <div className="flex flex-col leading-1.5 p-4 border-gray-200 bg-[#F5F2F2] rounded-xl">
-                        <p className="text-sm font-normal text-gray-900">
+              <div className="flex flex-col mx-2 bg-white overflow-y-scroll space-y-2">
+                { Array.from(
+                  new Map(aiChats?.map((itm: any) => [itm?.text, itm])).values()
+                )?.map((item: any, index: number) => {
+                  if (item?.type === "ai") {
+                    return (
+                      <div
+                        key={ item?.text + index }
+                        className="flex flex-col gap-1 w-full max-w-[80%]"
+                      >
+                        <div className="flex flex-col leading-1.5 p-4 border-gray-200 bg-[#F5F2F2] rounded-xl">
+                          <p className="text-sm font-normal text-gray-900">
+                            { item?.text }
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div key={ item?.text + index } className="flex justify-end">
+                        <div className="bg-[#F5F2F2] text-black p-2 rounded-lg max-w-[80%]">
                           { item?.text }
-                        </p>
+                        </div>
                       </div>
-                    </div>
-                  );
-                } else {
-                  return (
-                    <div key={ item?.text + index } className="flex justify-end">
-                      <div className="bg-[#F5F2F2] text-black p-2 rounded-lg max-w-[80%]">
-                        { item?.text }
-                      </div>
-                    </div>
-                  );
-                }
-              }) }
-              <div ref={ chatEndRef } />
+                    );
+                  }
+                }) }
+                <div ref={ chatEndRef } />
+              </div>
             </div>
           </div>
         </div>
+        <div className="flex justify-end py-6 mt-4 font-sansation">
+          <button
+            className="flex justify-center bg-[#40B24B] px-12 py-2 rounded-lg text-white font-semibold font-sansation"
+            onClick={ () => {
+              setSubmitTestModal(true);
+            } }
+          >
+            Submit
+          </button>
+        </div>
+        { submitTestModal ? (
+          <ModuleConfirmationModal
+            onPress={ (v) => {
+              onSubmitTest(v);
+            } }
+            title={ assessmentModule?.module?.name }
+          />
+        ) : null }
+        { isExitFullScreen ? (
+          <ExitFullScreenModal
+            onPress={ (v) => {
+              onExitAction(v);
+            } }
+          />
+        ) : null }
+        { networkChecking && <InternetModal /> }
       </div>
-      <div className="flex justify-end py-6 mt-4 font-sansation">
-        <button
-          className="flex justify-center bg-[#40B24B] px-12 py-2 rounded-lg text-white font-semibold font-sansation"
-          onClick={ () => {
-            setSubmitTestModal(true);
-          } }
-        >
-          Submit
-        </button>
-      </div>
-      { submitTestModal ? (
-        <ModuleConfirmationModal
-          onPress={ (v) => {
-            onSubmitTest(v);
-          } }
-          title={ assessmentModule?.module?.name }
-        />
-      ) : null }
-      { isExitFullScreen ? (
-        <ExitFullScreenModal
-          onPress={ (v) => {
-            onExitAction(v);
-          } }
-        />
-      ) : null }
-      { networkChecking && <InternetModal /> }
-    </div>
+    </>
   );
 };
 
