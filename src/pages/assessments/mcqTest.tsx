@@ -27,6 +27,7 @@ import CustomToaster from "../../components/Modals/CustomToaster";
 import InternetModal from "../../components/Modals/internetModal";
 import FaceDetectionComponent from "../../components/faceDetection";
 import ModuleTimeoutModal from "../../components/Modals/timeoutModal";
+import moment from "moment";
 
 function StartMCQTest () {
   const dispatcher = useAppDispatch();
@@ -73,7 +74,7 @@ function StartMCQTest () {
   React.useEffect(() => {
     const res = sessionStorage.getItem(`${testId}-${userId}`)
     if (res) {
-      const assessmentTestData: any = JSON.parse(atob(res))
+      const assessmentTestData: any = JSON.parse(decodeURIComponent(escape(atob(res))))
       console.log('assessmentTestData=>', assessmentTestData)
       setAssessmentModule(assessmentTestData)
       if (assessmentTestData?.module?.question) {
@@ -83,6 +84,10 @@ function StartMCQTest () {
         setModuleQuestions(questions);
         setQuestionIndex(0);
       }
+    } else {
+      setTimeout(() => {
+        window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+      }, 0);
     }
   }, [])
   // React.useEffect(() => {
@@ -121,9 +126,18 @@ function StartMCQTest () {
   }, []);
   useEffect(() => {
     if (screenfull.isEnabled && !screenfull.isFullscreen) {
-      setIsExitFullScreen(true);
+      checkScreenExit()
     }
-  }, [screenfull.isFullscreen]);
+  }, [screenfull]);
+  const checkScreenExit = () => {
+    const time = sessionStorage.getItem("screen-exit-time")
+    if (time) {
+      const seconds = moment().diff(moment(time), 'seconds')
+      if (seconds > 30) {
+        setIsExitFullScreen(true);
+      }
+    }
+  }
   const handleFullscreenChange = () => {
     if (!screenfull.isFullscreen) {
       setIsExitFullScreen(true);

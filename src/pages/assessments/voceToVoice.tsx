@@ -24,6 +24,7 @@ import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
 import screenfull from "screenfull";
 import InternetModal from "../../components/Modals/internetModal";
 import ModuleTimeoutModal from "../../components/Modals/timeoutModal";
+import moment from "moment";
 
 const VoiceToVoice = () => {
   const webcamRef = useRef<any>(null);
@@ -97,7 +98,7 @@ const VoiceToVoice = () => {
   useEffect(() => {
     const res = sessionStorage.getItem(`${testId}-${userId}`)
     if (res) {
-      const assessmentTestData: any = JSON.parse(atob(res))
+      const assessmentTestData: any = JSON.parse(decodeURIComponent(escape(atob(res))))
       console.log('assessmentTestData=>', assessmentTestData)
       setAssessmentModule(assessmentTestData)
       if (assessmentTestData?.module?.question) {
@@ -106,6 +107,10 @@ const VoiceToVoice = () => {
         });
         setModuleQuestions(questions);
       }
+    } else {
+      setTimeout(() => {
+        window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+      }, 0);
     }
   }, [])
 
@@ -121,9 +126,18 @@ const VoiceToVoice = () => {
   }, []);
   useEffect(() => {
     if (screenfull.isEnabled && !screenfull.isFullscreen) {
-      setIsExitFullScreen(true);
+      checkScreenExit();
     }
   }, [screenfull.isFullscreen]);
+  const checkScreenExit = () => {
+    const time = sessionStorage.getItem("screen-exit-time")
+    if (time) {
+      const seconds = moment().diff(moment(time), 'seconds')
+      if (seconds > 30) {
+        setIsExitFullScreen(true);
+      }
+    }
+  }
   const handleFullscreenChange = () => {
     if (!screenfull.isFullscreen) {
       setIsExitFullScreen(true);

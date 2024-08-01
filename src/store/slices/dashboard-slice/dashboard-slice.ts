@@ -41,7 +41,7 @@ export const dashboardSlice = createSlice({
           const { moduleId, candidateId } = action?.meta?.arg
           state.assessmentModuleData = action?.payload?.data
           sessionStorage.setItem("talaura-test-crs", action?.payload?.data?.userToken)
-          sessionStorage.setItem(`${moduleId}-${candidateId}`, btoa(JSON.stringify(action?.payload?.data)))
+          sessionStorage.setItem(`${moduleId}-${candidateId}`, btoa(unescape(encodeURIComponent(JSON.stringify(action?.payload?.data)))))
         }
         state.loading = false;
       })

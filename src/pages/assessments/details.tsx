@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import CompletedIcon from "../../assets/svg/completedIcon.svg"
 import { ReactInternetSpeedMeter } from "react-internet-meter";
 import InternetSpeedModal from "../../components/Modals/internetSpeedModal";
+import moment from "moment";
 
 function AssessmentDetails () {
   const navigate = useNavigate();
@@ -69,7 +70,7 @@ function AssessmentDetails () {
           } else if (fullScreenElev?.msRequestFullscreen) { /* IE11 */
             fullScreenElev?.msRequestFullscreen();
           }
-
+          sessionStorage.setItem("screen-exit-time", moment().toISOString())
           const type = String(selectedTest?.type).toLocaleLowerCase()
           if (type === "Quiz"?.toLocaleLowerCase()) {
             navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}`);
