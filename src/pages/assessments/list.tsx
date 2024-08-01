@@ -39,6 +39,9 @@ function MyAssessments () {
     }
   };
   React.useEffect(() => {
+    sessionStorage.clear()
+  }, [])
+  React.useEffect(() => {
     if (userId) {
       dispatcher(setAssessmentDispatcher({ userId }));
     }

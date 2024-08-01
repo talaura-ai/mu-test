@@ -32,6 +32,10 @@ function AssessmentDetails () {
     }
   }, [location]);
 
+  useEffect(() => {
+    sessionStorage.clear()
+  }, [])
+
   // //Disable Right click
   if (document.addEventListener) {
     document.addEventListener(
