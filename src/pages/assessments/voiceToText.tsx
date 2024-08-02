@@ -10,6 +10,7 @@ import { useNetworkState } from 'react-use';
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 import { Editor } from "react-draft-wysiwyg";
 import draftToHtml from "draftjs-to-html";
+import { htmlToText } from 'html-to-text';
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
@@ -204,12 +205,29 @@ const VoiceToText = () => {
     setDisablePrevBtn(false);
   };
 
+  const getAnswered = () => {
+    return moduleQuestions?.map((v: any) => {
+      if (v?.answer) {
+        let text = htmlToText(v?.answer, {
+          wordwrap: 130,
+        })
+        text = text?.replace(/\n/g, ' ')?.trim();
+        text = text?.replace(/\s+/g, ' ')?.trim();
+        return {
+          ...v, answer: text
+        }
+      } else {
+        return v
+      }
+    })
+  }
+
   const submitTest = async (type: string) => {
     try {
       const res = await dispatcher(
         getModuleSubmissionDispatcher({
           moduleId: testId,
-          question: moduleQuestions,
+          question: getAnswered(),
         })
       );
       if (res?.payload.data?.status) {
