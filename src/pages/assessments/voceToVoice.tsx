@@ -55,7 +55,8 @@ const VoiceToVoice = () => {
   const [networkChecking, setNetworkChecking] = useState(false);
   const [assessmentModule, setAssessmentModule] = useState<any>({})
   const [isTimeout, setIsTimeout] = useState(false);
-
+  const [moduleTime, setModuleTime] = useState(0);
+  
   let streamRef: any = useRef(null);
   useUserActivityDetection();
   let audioElement = useRef(new Audio());
@@ -97,6 +98,7 @@ const VoiceToVoice = () => {
 
   useEffect(() => {
     const res = sessionStorage.getItem(`${testId}-${userId}`)
+    const time = sessionStorage.getItem(`txp-${testId}-${userId}`)
     if (res) {
       const assessmentTestData: any = JSON.parse(decodeURIComponent(escape(atob(res))))
       console.log('assessmentTestData=>', assessmentTestData)
@@ -111,6 +113,9 @@ const VoiceToVoice = () => {
       setTimeout(() => {
         window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
       }, 0);
+    }
+    if (time) {
+      setModuleTime(Number(time))
     }
   }, [])
 
@@ -373,7 +378,7 @@ const VoiceToVoice = () => {
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4">
       <TimerCounterWithProgress
-        timestamp={ assessmentModule?.module?.time || 0 }
+        timestamp={ moduleTime || 0 }
         title={ "Voice Round" }
         onTimeout={ () => onTimeout() }
       />

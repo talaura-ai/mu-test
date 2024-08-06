@@ -1,6 +1,7 @@
 import React from "react";
 import TimeLeftIcon from "../assets/svg/timeLeftIcon.svg";
 import { useTimer } from "react-timer-hook";
+import { useParams } from "react-router-dom";
 
 export default function TimerCounterWithProgress ({
   timestamp,
@@ -8,6 +9,7 @@ export default function TimerCounterWithProgress ({
   onTimeout,
   showTimer = true,
 }: any) {
+  const { testId, userId } = useParams();
   const time = new Date();
   time.setSeconds(time.getSeconds() + 60 * timestamp);
   const { seconds, minutes, hours, restart } = useTimer({
@@ -24,6 +26,12 @@ export default function TimerCounterWithProgress ({
       restart(time);
     }
   }, [timestamp]);
+
+  React.useEffect(() => {
+    if (timestamp > 0) {
+      sessionStorage.setItem(`txp-${testId}-${userId}`, String(`${minutes + (seconds / 60)}`))
+    }
+  }, [seconds, minutes])
 
   return (
     <>

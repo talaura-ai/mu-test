@@ -82,6 +82,7 @@ const VideoTest = () => {
   const [networkChecking, setNetworkChecking] = useState(false);
   const [assessmentModule, setAssessmentModule] = useState<any>({})
   const [isInternet5Mb, setIsInternet5Mb] = useState(true)
+  const [moduleTime, setModuleTime] = useState(0);
 
   const state = useNetworkState();
   let internetTimer: any = null
@@ -207,6 +208,7 @@ const VideoTest = () => {
 
   useEffect(() => {
     const res = sessionStorage.getItem(`${testId}-${userId}`)
+    const time = sessionStorage.getItem(`txp-${testId}-${userId}`)
     if (res) {
       const assessmentTestData: any = JSON.parse(decodeURIComponent(escape(atob(res))))
       console.log('assessmentTestData=>', assessmentTestData)
@@ -221,6 +223,9 @@ const VideoTest = () => {
       setTimeout(() => {
         window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
       }, 0);
+    }
+    if (time) {
+      setModuleTime(Number(time))
     }
   }, [])
 
@@ -604,7 +609,7 @@ const VideoTest = () => {
           />
         ) }
         <TimerCounterWithProgress
-          timestamp={ assessmentModule?.module?.time || 0 }
+          timestamp={ moduleTime || 0 }
           title={ "Video Round" }
           onTimeout={ onTimeout }
           showTimer={ false }

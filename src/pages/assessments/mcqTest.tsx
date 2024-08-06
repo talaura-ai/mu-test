@@ -42,6 +42,7 @@ function StartMCQTest () {
   const [isExitFullScreen, setIsExitFullScreen] = React.useState(false);
   const { assessmentId, testId, userId } = useParams();
   const [cameraReady, setCameraReady] = useState(false);
+  const [moduleTime, setModuleTime] = useState(0);
   const [togglePopup, setTogglePopup] = useState(false);
   const [assessmentModule, setAssessmentModule] = useState<any>({})
   const [networkChecking, setNetworkChecking] = React.useState(false);
@@ -73,6 +74,7 @@ function StartMCQTest () {
   }
   React.useEffect(() => {
     const res = sessionStorage.getItem(`${testId}-${userId}`)
+    const time = sessionStorage.getItem(`txp-${testId}-${userId}`)
     if (res) {
       const assessmentTestData: any = JSON.parse(decodeURIComponent(escape(atob(res))))
       console.log('assessmentTestData=>', assessmentTestData)
@@ -88,6 +90,9 @@ function StartMCQTest () {
       setTimeout(() => {
         window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
       }, 0);
+    } 
+    if (time) {
+      setModuleTime(Number(time))
     }
   }, [])
   // React.useEffect(() => {
@@ -295,7 +300,7 @@ function StartMCQTest () {
           />
         ) }
         <TimerCounterWithProgress
-          timestamp={ assessmentModule?.module?.time || 0 }
+          timestamp={ moduleTime || 0 }
           title={ assessmentModule?.module?.name }
           onTimeout={ () => onTimeout() }
         />
