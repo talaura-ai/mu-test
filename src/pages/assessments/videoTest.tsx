@@ -31,6 +31,7 @@ import screenfull from "screenfull";
 import InternetModal from "../../components/Modals/internetModal";
 import moment from "moment";
 import { ReactInternetSpeedMeter } from "react-internet-meter";
+import InternetSpeedModal from "../../components/Modals/internetSpeedModal";
 
 const width = 650;
 const height = 650;
@@ -165,16 +166,13 @@ const VideoTest = () => {
     }
   }, [state]);
 
-  useEffect(() => {
-    checkInternet(isInternet5Mb)
-  }, [isInternet5Mb]);
-
   const checkInternet = (isInternet: any) => {
     clearTimeout(internetTimer)
     if (isInternet) {
       setNetworkChecking(false)
     } else {
       setNetworkChecking(true)
+      setIsInternet5Mb(true)
       internetTimer = setTimeout(() => {
         window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
       }, 200000);
@@ -571,13 +569,18 @@ const VideoTest = () => {
       dispatcher(setLoadingDispatcher(false));
     }
   };
+
+  const onClose = () => {
+    setIsInternet5Mb(true)
+  }
+
   return (
     <>
       <ReactInternetSpeedMeter
         outputType=""
         pingInterval={ 5000 } // milliseconds
         thresholdUnit="megabyte" // "byte" , "kilobyte", "megabyte"
-        threshold={ 5 }
+        threshold={ 4 }
         imageUrl="https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png"
         downloadSize="500000" //bytes
         callbackFunctionOnNetworkDown={ (data: any) => {
@@ -586,7 +589,7 @@ const VideoTest = () => {
           }
         } }
         callbackFunctionOnNetworkTest={ (data: any) => {
-          if (data >= 5 && !isInternet5Mb) {
+          if (data >= 4 && !isInternet5Mb) {
             setIsInternet5Mb(true)
           }
         } }
@@ -733,6 +736,7 @@ const VideoTest = () => {
           />
         ) : null }
         { networkChecking && <InternetModal /> }
+        { !isInternet5Mb && <InternetSpeedModal onClose={ () => { onClose() } } /> }
       </div>
     </>
   );
