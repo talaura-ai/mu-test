@@ -38,7 +38,7 @@ const FaceDetectionComponent = (props: any) => {
   useEffect(() => {
     if (!detected && !isToasterDisplayed && cameraStats && cameraReady) {
       displayToasterFun("Face not detected");
-      updateUserActivity();
+      updateUserActivity("faceNotDetected");
     }
     if (
       facesDetected > 1 &&
@@ -47,7 +47,7 @@ const FaceDetectionComponent = (props: any) => {
       cameraReady
     ) {
       displayToasterFun("Multiple face detected");
-      updateUserActivity();
+      updateUserActivity("MultipleFaceDetected");
     }
   }, [detected, facesDetected, cameraStats, cameraReady]);
 
@@ -59,10 +59,11 @@ const FaceDetectionComponent = (props: any) => {
     props?.onRefChange?.(true, msg)
   };
 
-  const updateUserActivity = () => {
+  const updateUserActivity = (type:string) => {
     dispatcher(
       getUserActivityDispatcher({
         candidateId: userId,
+        type: type
       })
     );
   };

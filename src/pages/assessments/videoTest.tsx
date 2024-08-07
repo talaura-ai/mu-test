@@ -117,7 +117,7 @@ const VideoTest = () => {
     if (!detected && !isToasterDisplayed && cameraStats && cameraReady) {
       setToastMsg("Face not detected");
       displayToasterFun();
-      updateUserActivity();
+      updateUserActivity("faceNotDetected");
     }
     if (
       facesDetected > 1 &&
@@ -127,7 +127,7 @@ const VideoTest = () => {
     ) {
       setToastMsg("Multiple face detected");
       displayToasterFun();
-      updateUserActivity();
+      updateUserActivity("MultipleFaceDetected");
     }
   }, [detected, facesDetected, cameraStats, cameraReady]);
   useEffect(() => {
@@ -153,6 +153,7 @@ const VideoTest = () => {
       const seconds = moment().diff(moment(time), 'seconds')
       if (seconds > 30) {
         setIsExitFullScreen(true);
+        updateUserActivity("exitFullScreen")
       }
     }
   }
@@ -160,6 +161,7 @@ const VideoTest = () => {
   const handleFullscreenChange = () => {
     if (!screenfull.isFullscreen) {
       setIsExitFullScreen(true);
+      updateUserActivity("exitFullScreen")
     }
   };
 
@@ -256,7 +258,7 @@ const VideoTest = () => {
 
   function handleVisibilityChange () {
     if (document?.hidden) {
-      updateUserActivity()
+      updateUserActivity("tabChangeDetected")
       setTabSwitchDetected(true)
     }
   }
@@ -267,10 +269,11 @@ const VideoTest = () => {
     };
   }, []);
 
-  const updateUserActivity = () => {
+  const updateUserActivity = (type: string) => {
     dispatcher(
       getUserActivityDispatcher({
         candidateId: userId,
+        type: type
       })
     );
   };

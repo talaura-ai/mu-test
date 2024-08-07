@@ -73,7 +73,7 @@ const VoiceToVoice = () => {
 
   function handleVisibilityChange () {
     if (document?.hidden) {
-      updateUserActivity()
+      updateUserActivity("tabChangeDetected")
       setTabSwitchDetected(true)
     }
   }
@@ -84,10 +84,11 @@ const VoiceToVoice = () => {
     };
   }, []);
 
-  const updateUserActivity = () => {
+  const updateUserActivity = (type:string) => {
     dispatcher(
       getUserActivityDispatcher({
         candidateId: userId,
+        type: type
       })
     );
   };
@@ -164,12 +165,14 @@ const VoiceToVoice = () => {
       const seconds = moment().diff(moment(time), 'seconds')
       if (seconds > 30) {
         setIsExitFullScreen(true);
+        updateUserActivity("exitFullScreen")
       }
     }
   }
   const handleFullscreenChange = () => {
     if (!screenfull.isFullscreen) {
       setIsExitFullScreen(true);
+      updateUserActivity("exitFullScreen")
     }
   };
   const fullScreenElev: any = document.getElementById("fullscreenDiv");

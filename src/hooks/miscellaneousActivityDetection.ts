@@ -7,9 +7,10 @@ function useUserActivityDetection () {
   const dispatcher = useAppDispatch();
   const { userId } = useParams();
 
-  const updateUserActivity = () => {
+  const updateUserActivity = (type: string) => {
     dispatcher(getUserActivityDispatcher({
       candidateId: userId,
+      type: type
     }));
   }
 
@@ -62,7 +63,7 @@ function useUserActivityDetection () {
       console.log('document.webkitFullscreenElement', document.webkitFullscreenElement)
       console.log('document.msFullscreenElement', document.msFullscreenElement)
       if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-        updateUserActivity()
+        updateUserActivity("exitFullScreen")
       }
     };
 
