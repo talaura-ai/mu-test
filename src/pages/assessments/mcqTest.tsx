@@ -95,6 +95,16 @@ function StartMCQTest () {
     };
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (e: any) => {
+      e?.preventDefault();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   React.useEffect(() => {
     const res = sessionStorage.getItem(`${testId}-${userId}`)
     const time = sessionStorage.getItem(`txp-${testId}-${userId}`)

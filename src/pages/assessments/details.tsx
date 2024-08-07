@@ -96,33 +96,10 @@ function AssessmentDetails () {
           assessmentId: assessmentId,
         })
       );
-      // navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}`);
-      console.log('res=>', res)
       if (res?.payload?.data?.status) {
         const { module } = res?.payload?.data
         if (!module?.isLocked && module?.question?.length > 0 && ['Not Started']?.includes(module?.status)) {
-          // Full screen
-          if (fullScreenElev?.requestFullscreen) {
-            fullScreenElev?.requestFullscreen();
-          } else if (fullScreenElev?.webkitRequestFullscreen) { /* Safari */
-            fullScreenElev?.webkitRequestFullscreen();
-          } else if (fullScreenElev?.msRequestFullscreen) { /* IE11 */
-            fullScreenElev?.msRequestFullscreen();
-          }
-          sessionStorage.setItem("screen-exit-time", moment().toISOString())
-          const type = String(selectedTest?.type).toLocaleLowerCase()
-          if (type === "Quiz"?.toLocaleLowerCase()) {
-            navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}`);
-          } else if (type === "Sandbox"?.toLocaleLowerCase()) {
-            navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/coding`);
-          } else if (type === "Voice To Voice"?.toLocaleLowerCase()) {
-            navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/voice-to-voice`);
-          } else if (type === "Voice To Text"?.toLocaleLowerCase()) {
-            navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/voice-to-text`);
-          } else if (type === "AI Video Interview"?.toLocaleLowerCase()) {
-            navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/video-interview`);
-          }
-
+          startTest()
         }
       } else {
         if (res?.payload?.error) {
@@ -131,6 +108,29 @@ function AssessmentDetails () {
       }
     } catch (error) {
       console.log('res=> error', error)
+    }
+  }
+  const startTest = () => {
+    // Full screen
+    if (fullScreenElev?.requestFullscreen) {
+      fullScreenElev?.requestFullscreen();
+    } else if (fullScreenElev?.webkitRequestFullscreen) { /* Safari */
+      fullScreenElev?.webkitRequestFullscreen();
+    } else if (fullScreenElev?.msRequestFullscreen) { /* IE11 */
+      fullScreenElev?.msRequestFullscreen();
+    }
+    sessionStorage.setItem("screen-exit-time", moment().toISOString())
+    const type = String(selectedTest?.type).toLocaleLowerCase()
+    if (type === "Quiz"?.toLocaleLowerCase()) {
+      navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}`);
+    } else if (type === "Sandbox"?.toLocaleLowerCase()) {
+      navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/coding`);
+    } else if (type === "Voice To Voice"?.toLocaleLowerCase()) {
+      navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/voice-to-voice`);
+    } else if (type === "Voice To Text"?.toLocaleLowerCase()) {
+      navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/voice-to-text`);
+    } else if (type === "AI Video Interview"?.toLocaleLowerCase()) {
+      navigate(`/assessment/${userId}/${assessmentId}/${selectedTest?._id}/video-interview`);
     }
   }
   const checkInternetSpeed = () => {
