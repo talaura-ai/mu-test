@@ -35,25 +35,25 @@ function useUserActivityDetection () {
     };
   }, []);
 
-  // Alert on Tab Changed within the Same browser Window
-  function handleVisibilityChange () {
-    if (document?.hidden) {
-      console.log("11111:::::::Tab Change Detected", "Action has been Recorded", "error");
-      // toast.error("Alert: Tab Change Detected", {});
-      updateUserActivity()
-      // the page is hidden
-    } else {
-      console.log("ACTIVE")
-      // the page is visible
-    }
-  }
+  // // Alert on Tab Changed within the Same browser Window
+  // function handleVisibilityChange () {
+  //   if (document?.hidden) {
+  //     console.log("11111:::::::Tab Change Detected", "Action has been Recorded", "error");
+  //     // toast.error("Alert: Tab Change Detected", {});
+  //     updateUserActivity()
+  //     // the page is hidden
+  //   } else {
+  //     console.log("ACTIVE")
+  //     // the page is visible
+  //   }
+  // }
 
-  useEffect(() => {
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, []);
+  // useEffect(() => {
+  //   document.addEventListener('visibilitychange', handleVisibilityChange);
+  //   return () => {
+  //     document.removeEventListener('visibilitychange', handleVisibilityChange);
+  //   };
+  // }, []);
 
   useEffect(() => {
     const handleFullscreenChange = () => {

@@ -25,6 +25,7 @@ import screenfull from "screenfull";
 import InternetModal from "../../components/Modals/internetModal";
 import ModuleTimeoutModal from "../../components/Modals/timeoutModal";
 import moment from "moment";
+import TabChangeDetectionModal from "../../components/Modals/tabChangeDetected";
 
 const VoiceToVoice = () => {
   const webcamRef = useRef<any>(null);
@@ -56,6 +57,7 @@ const VoiceToVoice = () => {
   const [assessmentModule, setAssessmentModule] = useState<any>({})
   const [isTimeout, setIsTimeout] = useState(false);
   const [moduleTime, setModuleTime] = useState(0);
+  const [tabSwitchDetected, setTabSwitchDetected] = useState(false);
   
   let streamRef: any = useRef(null);
   useUserActivityDetection();
@@ -68,6 +70,28 @@ const VoiceToVoice = () => {
   useEffect(() => {
     scrollToBottom();
   }, [aiChats]);
+
+  function handleVisibilityChange () {
+    if (document?.hidden) {
+      updateUserActivity()
+      setTabSwitchDetected(true)
+    }
+  }
+  useEffect(() => {
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  const updateUserActivity = () => {
+    dispatcher(
+      getUserActivityDispatcher({
+        candidateId: userId,
+      })
+    );
+  };
+
 
   useEffect(() => {
     if (state) {
@@ -495,6 +519,7 @@ const VoiceToVoice = () => {
       ) : null }
       { networkChecking && <InternetModal /> }
       { isTimeout && <ModuleTimeoutModal onClose={ () => { onCloseTimeout() } } /> }
+      { tabSwitchDetected && <TabChangeDetectionModal onPress={ () => { setTabSwitchDetected(false) } } /> }
     </div>
   );
 };

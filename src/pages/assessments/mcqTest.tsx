@@ -28,6 +28,7 @@ import InternetModal from "../../components/Modals/internetModal";
 import FaceDetectionComponent from "../../components/faceDetection";
 import ModuleTimeoutModal from "../../components/Modals/timeoutModal";
 import moment from "moment";
+import TabChangeDetectionModal from "../../components/Modals/tabChangeDetected";
 
 function StartMCQTest () {
   const dispatcher = useAppDispatch();
@@ -47,6 +48,7 @@ function StartMCQTest () {
   const [assessmentModule, setAssessmentModule] = useState<any>({})
   const [networkChecking, setNetworkChecking] = React.useState(false);
   const [isTimeout, setIsTimeout] = React.useState(false);
+  const [tabSwitchDetected, setTabSwitchDetected] = React.useState(false);
   const prevFaceDataRef: any = useRef();
   const toggleRef: any = useRef();
 
@@ -72,6 +74,26 @@ function StartMCQTest () {
       }, 200000);
     }
   }
+
+  const updateUserActivity = () => {
+    dispatcher(getUserActivityDispatcher({
+      candidateId: userId,
+    }));
+  }
+
+  function handleVisibilityChange () {
+    if (document?.hidden) {
+      updateUserActivity()
+      setTabSwitchDetected(true)
+    }
+  }
+  useEffect(() => {
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
   React.useEffect(() => {
     const res = sessionStorage.getItem(`${testId}-${userId}`)
     const time = sessionStorage.getItem(`txp-${testId}-${userId}`)
@@ -455,6 +477,7 @@ function StartMCQTest () {
       ) : null }
       { networkChecking && <InternetModal /> }
       { isTimeout && <ModuleTimeoutModal onClose={ () => { onCloseTimeout() } } /> }
+      { tabSwitchDetected && <TabChangeDetectionModal onPress={ () => { setTabSwitchDetected(false) } } /> }
     </>
   );
 }

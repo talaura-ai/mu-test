@@ -32,6 +32,7 @@ import InternetModal from "../../components/Modals/internetModal";
 import moment from "moment";
 import { ReactInternetSpeedMeter } from "react-internet-meter";
 import InternetSpeedModal from "../../components/Modals/internetSpeedModal";
+import TabChangeDetectionModal from "../../components/Modals/tabChangeDetected";
 
 const width = 650;
 const height = 650;
@@ -83,6 +84,7 @@ const VideoTest = () => {
   const [assessmentModule, setAssessmentModule] = useState<any>({})
   const [isInternet5Mb, setIsInternet5Mb] = useState(true)
   const [moduleTime, setModuleTime] = useState(0);
+  const [tabSwitchDetected, setTabSwitchDetected] = useState(false);
 
   const state = useNetworkState();
   let internetTimer: any = null
@@ -251,6 +253,19 @@ const VideoTest = () => {
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  function handleVisibilityChange () {
+    if (document?.hidden) {
+      updateUserActivity()
+      setTabSwitchDetected(true)
+    }
+  }
+  useEffect(() => {
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
   const updateUserActivity = () => {
     dispatcher(
@@ -742,6 +757,7 @@ const VideoTest = () => {
         ) : null }
         { networkChecking && <InternetModal /> }
         { !isInternet5Mb && <InternetSpeedModal onClose={ () => { onClose() } } /> }
+        { tabSwitchDetected && <TabChangeDetectionModal onPress={ () => { setTabSwitchDetected(false) } } /> }
       </div>
     </>
   );

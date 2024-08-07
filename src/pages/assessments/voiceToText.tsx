@@ -16,6 +16,7 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import {
   getModuleSubmissionDispatcher,
+  getUserActivityDispatcher,
   setAssessmentModuleDispatcher,
 } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import { toast } from "react-toastify";
@@ -27,6 +28,7 @@ import screenfull from "screenfull";
 import InternetModal from "../../components/Modals/internetModal";
 import ModuleTimeoutModal from "../../components/Modals/timeoutModal";
 import moment from "moment";
+import TabChangeDetectionModal from "../../components/Modals/tabChangeDetected";
 
 const VoiceToText = () => {
   const dispatcher = useAppDispatch();
@@ -45,6 +47,7 @@ const VoiceToText = () => {
   const [assessmentModule, setAssessmentModule] = React.useState<any>({})
   const [isTimeout, setIsTimeout] = React.useState(false);
   const [moduleTime, setModuleTime] = React.useState(0);
+  const [tabSwitchDetected, setTabSwitchDetected] = React.useState(false);
 
   const state = useNetworkState();
   useUserActivityDetection();
@@ -65,6 +68,28 @@ const VoiceToText = () => {
   //     }
   //   }
   // }, [assessmentModule]);
+
+  function handleVisibilityChange () {
+    if (document?.hidden) {
+      updateUserActivity()
+      setTabSwitchDetected(true)
+    }
+  }
+  useEffect(() => {
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  const updateUserActivity = () => {
+    dispatcher(
+      getUserActivityDispatcher({
+        candidateId: userId,
+      })
+    );
+  };
+
 
   useEffect(() => {
     const res = sessionStorage.getItem(`${testId}-${userId}`)
@@ -381,6 +406,7 @@ const VoiceToText = () => {
       ) : null }
       { networkChecking && <InternetModal /> }
       { isTimeout && <ModuleTimeoutModal onClose={ () => { onCloseTimeout() } } /> }
+      { tabSwitchDetected && <TabChangeDetectionModal onPress={ () => { setTabSwitchDetected(false) } } /> }
     </div>
   );
 };
