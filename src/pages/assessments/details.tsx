@@ -12,6 +12,8 @@ import CompletedIcon from "../../assets/svg/completedIcon.svg"
 import { ReactInternetSpeedMeter } from "react-internet-meter";
 import InternetSpeedModal from "../../components/Modals/internetSpeedModal";
 import moment from "moment";
+import TestDeviceConfigModal from "../../components/ConfigTestModal";
+import { useNetworkState } from 'react-use';
 
 function AssessmentDetails () {
   const navigate = useNavigate();
@@ -22,9 +24,46 @@ function AssessmentDetails () {
   const myAssessments = useAppSelector(getAssessmentsSelector)
   const [selectAssessment, setSelectAssessment] = React.useState<any>({});
   const [assessmentExpired, setAssessmentExpired] = React.useState<boolean>(false);
+
   const [checkSpeed, setCheckSpeed] = React.useState(0);
-  const [speedLaoding, setSpeedLaoding] = React.useState(false);
+  const [speedLaoding, setSpeedLaoding] = React.useState(true);
+  const [testConfigCheckModal, setTestConfigCheckModal] = React.useState(false);
+  const [speedTestLaoding, setSpeedTestLaoding] = React.useState(false);
+  const [cameraChecking, setCameraChecking] = React.useState(0);
+  const [audioChecking, setAudioChecking] = React.useState(0);
+  const [networkChecking, setNetworkChecking] = React.useState(0);
+  const state = useNetworkState();
+
   const location = useLocation();
+  useEffect(() => {
+    checkMicrophonePermission();
+    checkCameraAccess();
+  }, []);
+
+  useEffect(() => {
+    if (state) {
+      setNetworkChecking(state?.online ? 1 : 2)
+    }
+  }, [state]);
+
+  const checkMicrophonePermission = async () => {
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      setAudioChecking(1)
+    } catch (err) {
+      setAudioChecking(2);
+    }
+  };
+
+  const checkCameraAccess = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      stream.getTracks().forEach(track => track.stop());
+      setCameraChecking(1);
+    } catch (err: any) {
+      setCameraChecking(2);
+    }
+  };
 
   useEffect(() => {
     if (userId) {
@@ -47,7 +86,7 @@ function AssessmentDetails () {
     setStartTestModal(false);
     getTestData(selectedTest?._id)
   };
-
+  const fullScreenElev: any = document.getElementById('fullscreenDiv');
   const getTestData = async (testId: string) => {
     try {
       const res = await dispatcher(
@@ -94,28 +133,22 @@ function AssessmentDetails () {
       console.log('res=> error', error)
     }
   }
-
   const checkInternetSpeed = () => {
-    if (Math.ceil(checkSpeed) >= 5) {
+    if (cameraChecking === 1 && audioChecking === 1 && networkChecking === 1 && Math.ceil(checkSpeed) >= 5) {
       onNextClicked()
     } else {
-      setStartTestModal(false);
-      setSpeedLaoding(true)
+      if (cameraChecking !== 1 || audioChecking !== 1 || networkChecking !== 1) {
+        setTestConfigCheckModal(true)
+        setStartTestModal(false);
+      } else {
+        if (Math.ceil(checkSpeed) < 5) {
+          setStartTestModal(false);
+          setSpeedTestLaoding(true)
+        }
+      }
     }
   }
-  /* View in fullscreen */
-  const fullScreenElev: any = document.getElementById('fullscreenDiv');
 
-  function openFullscreen () {
-    // if (fullScreenElev?.requestFullscreen) {
-    //   fullScreenElev?.requestFullscreen();
-    // } else if (fullScreenElev?.webkitRequestFullscreen) { /* Safari */
-    //   fullScreenElev?.webkitRequestFullscreen();
-    // } else if (fullScreenElev?.msRequestFullscreen) { /* IE11 */
-    //   fullScreenElev?.msRequestFullscreen();
-    // }
-    onNextClicked()
-  }
   const detectBrowser = () => {
     const userAgent = navigator.userAgent;
     if (/chrome|crios|crmo/i.test(userAgent) && !/edge|edg|opr/i.test(userAgent)) {
@@ -165,7 +198,7 @@ function AssessmentDetails () {
     setAssessmentExpired(true)
   }
   const onClose = () => {
-    setSpeedLaoding(false)
+    setSpeedTestLaoding(false)
   }
   return (
     <>
@@ -181,6 +214,7 @@ function AssessmentDetails () {
         }
         callbackFunctionOnNetworkTest={ (data: any) => {
           setCheckSpeed(data)
+          setSpeedLaoding(false)
         } }
       />
       <div className="sm:p-8 md:px-20 md:py-12 p-4">
@@ -262,24 +296,6 @@ function AssessmentDetails () {
                 </button> : null }
               </div>
             </div>
-            {/* <div className="flex items-center justify-center py-6 md:w-[15%] sm:w-full">
-              { item?.status === "Completed" ? <button
-                type="button"
-                className="text-white bg-[#CC8448]/80 font-sansation tracking-wide font-medium rounded-lg text-md px-6 py-2.5 text-center inline-flex items-center cursor-not-allowed"
-              >
-                Completed
-              </button> : <button
-                type="button"
-                disabled={ item?.isLocked }
-                onClick={ () => {
-                  setStartTestModal(true);
-                  setSelectedTest(item);
-                } }
-                className={ `text-white bg-[#CC8448] hover:bg-[#CC8448]/80 ${item?.isLocked ? "bg-[#CC8448]/80 cursor-not-allowed" : ""} font-sansation focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center` }
-              >
-                Start
-              </button> }
-            </div> */}
           </div>
         )) }
       </div>
@@ -292,7 +308,8 @@ function AssessmentDetails () {
           selectedTest={ selectedTest }
         />
       ) }
-      { speedLaoding && <InternetSpeedModal onClose={ () => { onClose() } } /> }
+      { speedTestLaoding && <InternetSpeedModal onClose={ () => { onClose() } } /> }
+      { testConfigCheckModal && <TestDeviceConfigModal cameraChecking={ cameraChecking } audioChecking={ audioChecking } networkChecking={ networkChecking } checkSpeed={ checkSpeed } speedLaoding={ speedLaoding } onClose={ () => { setTestConfigCheckModal(false) } } /> }
     </>
   );
 }
