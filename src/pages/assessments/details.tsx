@@ -34,6 +34,14 @@ function AssessmentDetails () {
   const [networkChecking, setNetworkChecking] = React.useState(0);
   const state = useNetworkState();
 
+  const types: any = {
+    "quiz": "Quiz",
+    "voice to voice": "Voice To Voice",
+    "voice to text": "Text To Text",
+    "ai video interview": "AI Video Interview",
+    "sandbox": "Sandbox"
+  }
+
   const location = useLocation();
   useEffect(() => {
     checkMicrophonePermission();
@@ -236,7 +244,7 @@ function AssessmentDetails () {
             </div>
             <div className="flex flex-col justify-center py-4 md:w-[45%] sm:w-full pr-6 pl-10">
               <span className="text-[22px] font-semibold text-[#F2BC84] font-sansation">
-                { item?.name }
+                { types[String(item?.type).toLowerCase()] }
               </span>
             </div>
             {/* <div className="flex flex-col md:w-[20%] sm:w-full px-4 justify-center ">
