@@ -14,6 +14,8 @@ import InternetSpeedModal from "../../components/Modals/internetSpeedModal";
 import moment from "moment";
 import TestDeviceConfigModal from "../../components/ConfigTestModal";
 import { useNetworkState } from 'react-use';
+import screenfull from 'screenfull';
+import ErrorModal from "../../components/Modals/errorModal";
 
 function AssessmentDetails () {
   const navigate = useNavigate();
@@ -29,6 +31,7 @@ function AssessmentDetails () {
   const [speedLaoding, setSpeedLaoding] = React.useState(true);
   const [testConfigCheckModal, setTestConfigCheckModal] = React.useState(false);
   const [speedTestLaoding, setSpeedTestLaoding] = React.useState(false);
+  const [errorModalObj, setErrorModalObj] = React.useState({ visible: false, text: "" });
   const [cameraChecking, setCameraChecking] = React.useState(0);
   const [audioChecking, setAudioChecking] = React.useState(0);
   const [networkChecking, setNetworkChecking] = React.useState(0);
@@ -93,8 +96,12 @@ function AssessmentDetails () {
   const onNextClicked = () => {
     setStartTestModal(false);
     getTestData(selectedTest?._id)
+    const element: any = document.getElementById('fullscreenDiv');
+    if (element) {
+      screenfull.request(element);
+    }
   };
-  const fullScreenElev: any = document.getElementById('fullscreenDiv');
+
   const getTestData = async (testId: string) => {
     try {
       const res = await dispatcher(
@@ -111,7 +118,8 @@ function AssessmentDetails () {
         }
       } else {
         if (res?.payload?.error) {
-          toast.error(res?.payload?.error?.message, {});
+          // toast.error(res?.payload?.error?.message, {});
+          setErrorModalObj({ visible: true, text: res?.payload?.error?.message })
         }
       }
     } catch (error) {
@@ -119,14 +127,6 @@ function AssessmentDetails () {
     }
   }
   const startTest = () => {
-    // Full screen
-    if (fullScreenElev?.requestFullscreen) {
-      fullScreenElev?.requestFullscreen();
-    } else if (fullScreenElev?.webkitRequestFullscreen) { /* Safari */
-      fullScreenElev?.webkitRequestFullscreen();
-    } else if (fullScreenElev?.msRequestFullscreen) { /* IE11 */
-      fullScreenElev?.msRequestFullscreen();
-    }
     sessionStorage.setItem("screen-exit-time", moment().toISOString())
     const type = String(selectedTest?.type).toLocaleLowerCase()
     if (type === "Quiz"?.toLocaleLowerCase()) {
@@ -207,6 +207,13 @@ function AssessmentDetails () {
   }
   const onClose = () => {
     setSpeedTestLaoding(false)
+  }
+  const onErrorClose = () => {
+    setErrorModalObj({ visible: false, text: "" })
+    const element: any = document.getElementById('fullscreenDiv');
+    if (element) {
+      screenfull.toggle(element);
+    }
   }
   return (
     <>
@@ -318,6 +325,7 @@ function AssessmentDetails () {
       ) }
       { speedTestLaoding && <InternetSpeedModal onClose={ () => { onClose() } } /> }
       { testConfigCheckModal && <TestDeviceConfigModal cameraChecking={ cameraChecking } audioChecking={ audioChecking } networkChecking={ networkChecking } checkSpeed={ checkSpeed } speedLaoding={ speedLaoding } onClose={ () => { setTestConfigCheckModal(false) } } /> }
+      { errorModalObj?.visible ? <ErrorModal onClose={ () => { onErrorClose() } } text={ errorModalObj?.text } /> : null }
     </>
   );
 }
