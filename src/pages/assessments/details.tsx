@@ -36,8 +36,8 @@ function AssessmentDetails () {
 
   const types: any = {
     "quiz": "Quiz",
-    "voice to voice": "Voice To Voice",
-    "voice to text": "Text To Text",
+    "voice to voice": "Voice to Voice",
+    "voice to text": "Text to Text",
     "ai video interview": "AI Video Interview",
     "sandbox": "Sandbox"
   }
