@@ -167,12 +167,12 @@ function StartMCQTest () {
     if (screenfull.isEnabled && !screenfull.isFullscreen) {
       checkScreenExit()
     }
-  }, [screenfull]);
+  }, [screenfull, screenfull.isFullscreen, screenfull.isEnabled]);
   const checkScreenExit = () => {
     const time = sessionStorage.getItem("screen-exit-time")
     if (time) {
       const seconds = moment().diff(moment(time), 'seconds')
-      if (seconds > 30) {
+      if (seconds > 5) {
         setIsExitFullScreen(true);
         updateUserActivity("exitFullScreen")
       }
