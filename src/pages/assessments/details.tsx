@@ -27,7 +27,6 @@ function AssessmentDetails () {
   const myAssessments = useAppSelector(getAssessmentsSelector)
   const [selectAssessment, setSelectAssessment] = React.useState<any>({});
   const [assessmentExpired, setAssessmentExpired] = React.useState<boolean>(false);
-
   const [checkSpeed, setCheckSpeed] = React.useState(0);
   const [speedLaoding, setSpeedLaoding] = React.useState(true);
   const [testConfigCheckModal, setTestConfigCheckModal] = React.useState(false);
@@ -36,6 +35,8 @@ function AssessmentDetails () {
   const [cameraChecking, setCameraChecking] = React.useState(0);
   const [audioChecking, setAudioChecking] = React.useState(0);
   const [networkChecking, setNetworkChecking] = React.useState(0);
+  const [assessmentEndsOn, setAssessmentEndsOn] = React.useState<any>(null);
+
   const state = useNetworkState();
 
   const types: any = {
@@ -192,8 +193,10 @@ function AssessmentDetails () {
       let assessmentData = [...data?.[0]?.module]
       const newData = assessmentData?.sort((a: any, b: any) => Number(a?.position || 0) - Number(b?.position || 0));
       setSelectAssessment({ module: newData })
+      setAssessmentEndsOn(data?.[0]?.endsOn || null)
     } else {
       setSelectAssessment({})
+      setAssessmentEndsOn(null)
     }
   }, [myAssessments, assessmentId])
 
@@ -212,8 +215,20 @@ function AssessmentDetails () {
   const onErrorClose = () => {
     setErrorModalObj({ visible: false, text: "" })
     const element: any = document.getElementById('fullscreenDiv');
-    if (element) {
+    if (element && screenfull?.isFullscreen) {
       screenfull.toggle(element);
+    }
+  }
+  const onStartTest=(item:any)=>{
+    if(assessmentEndsOn){
+      if(moment(assessmentEndsOn).diff(moment(),"seconds") <=0){
+        setErrorModalObj({ visible: true, text: "Assessment time expired!" })
+      } else {
+        setStartTestModal(true);
+        setSelectedTest(item);
+      }
+    } else {
+      setErrorModalObj({ visible: true, text: "Assessment time expired!" })
     }
   }
   return (
@@ -303,8 +318,7 @@ function AssessmentDetails () {
                   type="button"
                   disabled={ item?.isLocked || assessmentExpired }
                   onClick={ () => {
-                    setStartTestModal(true);
-                    setSelectedTest(item);
+                    onStartTest(item)
                   } }
                   className={ `text-white bg-[#CC8448] hover:bg-[#CC8448]/80 ${item?.isLocked || assessmentExpired ? "bg-[#CC8448]/80 cursor-not-allowed" : ""} font-sansation focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md px-12 py-2.5 text-center inline-flex items-center` }
                 >
