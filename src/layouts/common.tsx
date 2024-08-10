@@ -2,11 +2,10 @@ import { Outlet } from "react-router-dom";
 import DashboardIcon from "../assets/svg/DashboardLayoutIcon.svg"
 import { useLocation, useParams } from "react-router-dom";
 import React from "react";
-import TimerLoading from "../assets/Deadline.png"
-import MiddleLogo from "../assets/middleLogo.png"
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { getAssessmentsSelector, getLoadingSelector } from "../store/slices/dashboard-slice/dashboard-selectors";
 import { setAssessmentDispatcher } from "../store/slices/dashboard-slice/dashboard-dispatchers";
+import { ReactSVG } from "react-svg";
 
 const CommonLayout = () => {
 	let location = useLocation();
@@ -50,9 +49,6 @@ const CommonLayout = () => {
 								</span>
 							</a>
 						</div>
-						{/* <div className="flex items-center">
-							<img src={ MiddleLogo } className="bg-blend-multiply h-[35px]" />
-						</div> */}
 						<div className="flex items-center">
 							<div className="flex items-center md:mr-8">
 								<div className="flex items-center">
@@ -77,7 +73,7 @@ const CommonLayout = () => {
 					<ul className="space-y-2 font-medium mt-[95px]">
 						<li className="bg-[#FFEFDF] flex justify-center">
 							<a href="#" className="flex items-center py-3 text-[#e4a76f] rounded-lg group">
-								<img src={ DashboardIcon }></img>
+								<ReactSVG src={ DashboardIcon }></ReactSVG>
 							</a>
 						</li>
 					</ul>
@@ -93,7 +89,6 @@ const CommonLayout = () => {
 						<div className="relative mx-auto w-[150px] h-[150px]">
 							<div className="border-0 rounded-3xl shadow-md relative flex flex-col w-full h-full bg-white outline-none focus:outline-none">
 								<div className="flex items-center justify-center w-full h-full">
-									{/* <img src={ TimerLoading } /> */ }
 									<div className="loader">
 										<span className="hour"></span>
 										<span className="min"></span>

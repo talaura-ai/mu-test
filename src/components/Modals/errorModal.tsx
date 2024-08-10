@@ -14,7 +14,6 @@ export default function ErrorModal (props: ErrorModalProps) {
           <div className="border-0 rounded-xl overflow-hidden shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
             <div className="relative flex-auto justify-center flex-col items-center">
               <div className="flex flex-col justify-center items-center py-4 bg-[#FFF6ED]">
-                {/* <img src={ InternetIcon } /> */ }
                 <MdError color="#F00" size={ 84 } />
               </div>
               <p className="text-black leading-relaxed px-6 py-8 font-sansation font-medium text-[16px] text-center">

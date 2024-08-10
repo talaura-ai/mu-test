@@ -42,6 +42,7 @@
     "react-scripts": "5.0.1",
     "react-select": "^5.8.0",
     "react-split": "^2.0.14",
+    "react-svg": "^16.1.34",
     "react-timer-hook": "^3.0.7",
     "react-toastify": "^10.0.5",
     "react-use": "^17.5.0",

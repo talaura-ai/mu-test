@@ -16,6 +16,7 @@ import TestDeviceConfigModal from "../../components/ConfigTestModal";
 import { useNetworkState } from 'react-use';
 import screenfull from 'screenfull';
 import ErrorModal from "../../components/Modals/errorModal";
+import { ReactSVG } from "react-svg";
 
 function AssessmentDetails () {
   const navigate = useNavigate();
@@ -243,10 +244,10 @@ function AssessmentDetails () {
               <div className="w-[10px] md:h-[64px] sm:h-[130px] bg-gradient-to-r from-[#E5A971] to-[rgb(243,188,132)] rounded-r-xl"></div>
             </div>
             <div className="absolute -top-6 -left-4">
-              { item?.status === "Completed" ? <img src={ CompletedIcon } /> : (!item?.isLocked ? (
-                <img src={ UnlockNextIcon } />
+              { item?.status === "Completed" ? <ReactSVG src={ CompletedIcon } /> : (!item?.isLocked ? (
+                <ReactSVG src={ UnlockNextIcon } />
               ) : (
-                <img src={ LockNextIcon } />
+                <ReactSVG src={ LockNextIcon } />
               )) }
             </div>
             <div className="flex flex-col justify-center py-4 md:w-[45%] sm:w-full pr-6 pl-10">

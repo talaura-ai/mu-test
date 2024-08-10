@@ -1,3 +1,4 @@
+import { ReactSVG } from "react-svg";
 import SubmitIcon from "../../assets/svg/submitIcon.svg"
 
 interface ModuleConfirmationModalProps {
@@ -14,7 +15,7 @@ export default function ModuleConfirmationModal (props: ModuleConfirmationModalP
           <div className="border-0 rounded-xl overflow-hidden shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
             <div className="relative flex-auto justify-center flex-col items-center">
               <div className="flex flex-col justify-center items-center py-8 bg-[#FFF6ED]">
-                <img src={ SubmitIcon } />
+                <ReactSVG src={ SubmitIcon } />
                 { props?.title ? <p className="text-[#CC8448] text-[22px] font-sansation font-semibold mt-4">{ props?.title }</p> : null }
               </div>
               <p className="text-black leading-relaxed py-4 px-6 font-sansation font-bold text-[18px] text-center">

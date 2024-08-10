@@ -1,5 +1,5 @@
 import TimeoutIcon from "../../assets/svg/Time.svg"
-
+import { ReactSVG } from "react-svg";
 interface TimeoutModalProps {
   onClose: () => void
 }
@@ -13,7 +13,7 @@ export default function ModuleTimeoutModal (props: TimeoutModalProps) {
           <div className="border-0 rounded-xl overflow-hidden shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
             <div className="relative flex-auto justify-center flex-col items-center">
               <div className="flex flex-col justify-center items-center py-8 bg-[#FFF6ED]">
-                <img src={ TimeoutIcon } />
+                <ReactSVG src={ TimeoutIcon } />
               </div>
               <p className="text-black leading-relaxed pt-6 px-6 font-sansation font-bold text-[18px] text-center">
                 Timeout for this module

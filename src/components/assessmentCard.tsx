@@ -8,6 +8,7 @@ import { getAssessmentsSelector } from "../store/slices/dashboard-slice/dashboar
 import { assessmentTotalTime, getExpiredIn } from "../utils/helper";
 import moment from "moment";
 import CountdownTimer from "./countdownTimer";
+import { ReactSVG } from "react-svg";
 
 function AssessmentCard({ onExpired }: any) {
   const { assessmentId } = useParams();
@@ -39,13 +40,11 @@ function AssessmentCard({ onExpired }: any) {
             </span> */}
           </div>
           <div className="flex flex-col justify-center mb-4">
-            <img
+            <ReactSVG
               src={CalenderIcon}
               className="h-[20px] w-[20px]"
-              height={"20px"}
-              width={"20px"}
             />
-            <span className="text-[16px] font-medium text-[#5C7CFA] leading-[18px] font-sansation">
+            <span className="text-[16px] font-medium text-[#5C7CFA] leading-[18px] font-sansation mt-1.5">
               Started On
             </span>
             <span className="text-[16px] font-semibold text-black leading-[16px] font-sansation">
@@ -53,8 +52,8 @@ function AssessmentCard({ onExpired }: any) {
             </span>
           </div>
           <div className="flex flex-col justify-center mb-4">
-            <img src={DurationIcon} className="h-[20px] w-[20px]" />
-            <span className="text-[16px] font-medium text-[#E9BF3E] leading-[18px] font-sansation">
+            <ReactSVG src={DurationIcon} className="h-[20px] w-[20px]" />
+            <span className="text-[16px] font-medium text-[#E9BF3E] leading-[18px] font-sansation mt-2">
               Duration
             </span>
             <span className="text-[16px] font-semibold text-black leading-[16px] font-sansation">
@@ -62,8 +61,8 @@ function AssessmentCard({ onExpired }: any) {
             </span>
           </div>
           <div className="flex flex-col justify-center mb-4">
-            <img src={ExpireIcon} className="h-[20px] w-[20px]" />
-            <span className="text-[16px] font-medium text-[#7951E6] leading-[18px] font-sansation">
+            <ReactSVG src={ExpireIcon} className="h-[20px] w-[20px]" />
+            <span className="text-[16px] font-medium text-[#7951E6] leading-[18px] font-sansation mt-2">
               Expires In
             </span>
             <span className="text-[16px] font-semibold text-black leading-[16px] font-sansation">

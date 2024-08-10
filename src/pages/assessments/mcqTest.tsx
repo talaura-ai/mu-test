@@ -29,6 +29,7 @@ import FaceDetectionComponent from "../../components/faceDetection";
 import ModuleTimeoutModal from "../../components/Modals/timeoutModal";
 import moment from "moment";
 import TabChangeDetectionModal from "../../components/Modals/tabChangeDetected";
+import { ReactSVG } from "react-svg";
 
 function StartMCQTest () {
   const dispatcher = useAppDispatch();
@@ -343,10 +344,9 @@ function StartMCQTest () {
           <div className="basis-[30%] w-full md:mr-12">
             <div className="w-full bg-white border border-gray-200 rounded-lg shadow overflow-hidden">
               <div className="flex flex-row items-center mx-6 py-5 border-solid border-b-[3px] border-[#E6E6E6]">
-                <img
-                  className="w-16 h-16 rounded-full shadow-lg"
+                <ReactSVG
+                  className="w-16 h-16 rounded-full shadow-lg mb-3"
                   src={ UserIcon }
-                  alt="user"
                 />
                 <h5 className="text-[24px] font-medium text-black ml-5 capitalize">
                   { myAssessments && myAssessments?.[0]?.name }
@@ -412,9 +412,9 @@ function StartMCQTest () {
                   </div>
                   <div onClick={ () => onReview() } className=" absolute -top-1 right-2">
                     { moduleQuestions?.[questionIndex]?.review ? (
-                      <img src={ ReviewedIcon } />
+                      <ReactSVG src={ ReviewedIcon } />
                     ) : (
-                      <img src={ ReviewIcon } />
+                      <ReactSVG src={ ReviewIcon } />
                     ) }
                   </div>
                 </div>

@@ -1,3 +1,4 @@
+import { ReactSVG } from "react-svg";
 import TimeLeftIcon from "../../assets/svg/timeLeftIcon.svg";
 
 interface InternetSpeedModalProps {
@@ -13,7 +14,7 @@ export default function ModuleExpiredModal (props: InternetSpeedModalProps) {
           <div className="border-0 rounded-xl overflow-hidden shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
             <div className="relative flex-auto justify-center flex-col items-center">
               <div className="flex flex-col justify-center items-center py-8 bg-[#FFF6ED]">
-                <img src={ TimeLeftIcon } className="w-16" />
+                <ReactSVG src={ TimeLeftIcon } className="w-16" />
               </div>
               <p className="text-black leading-relaxed pt-8 px-6 py-2 pb-8 font-sansation font-medium text-[16px] text-center">
                 Your assessment has expired.

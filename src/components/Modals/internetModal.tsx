@@ -1,3 +1,4 @@
+import { ReactSVG } from "react-svg";
 import InternetIcon from "../../assets/svg/Internet.svg"
 
 interface InternetModalProps { }
@@ -11,7 +12,7 @@ export default function InternetModal (props: InternetModalProps) {
           <div className="border-0 rounded-xl overflow-hidden shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
             <div className="relative flex-auto justify-center flex-col items-center">
               <div className="flex flex-col justify-center items-center py-8 bg-[#FFF6ED]">
-                <img src={ InternetIcon } />
+                <ReactSVG src={ InternetIcon } />
               </div>
               <p className="text-black leading-relaxed pt-6 px-6 font-sansation font-bold text-[18px] text-center">
                 You are offline

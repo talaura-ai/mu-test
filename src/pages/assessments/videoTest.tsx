@@ -33,6 +33,7 @@ import moment from "moment";
 import { ReactInternetSpeedMeter } from "react-internet-meter";
 import InternetSpeedModal from "../../components/Modals/internetSpeedModal";
 import TabChangeDetectionModal from "../../components/Modals/tabChangeDetected";
+import { ReactSVG } from "react-svg";
 
 const width = 650;
 const height = 650;
@@ -658,7 +659,7 @@ const VideoTest = () => {
                 Ai Bot
               </div>
               <div className="absolute right-2 bottom-4 text-white  px-4 py-1  ">
-                <img src={ MicIcon } className="h-8 w-10" alt="mic" />
+                <ReactSVG src={ MicIcon } className="h-8 w-10" />
               </div>
             </div>
             <div className="flex relative h-1/2 w-[50%] rounded-xl overflow-hidden">
@@ -683,13 +684,12 @@ const VideoTest = () => {
                   { (myAssessments && myAssessments?.[0]?.name) || "Candidate" }
                 </div>
                 <div className="absolute right-6 bottom-4 text-white  px-4 py-1  ">
-                  <img
+                  <ReactSVG
                     onClick={ () => {
                       setUserMute(!userMute);
                     } }
                     src={ MicIcon }
                     className="h-8 w-10"
-                    alt="mic"
                   />
                 </div>
               </div>
@@ -698,7 +698,7 @@ const VideoTest = () => {
           <div className="flex flex-col w-[20%] bg-white shadow rounded-lg p-4 ml-4">
             <div className="flex w-full flex-col h-[440px]">
               <div className="flex gap-2 px-2 pb-2">
-                <img src={ VoiceIcon } alt="icn" />
+                <img src={ VoiceIcon } />
                 <span className="text-xs text-gray-300 mt-2">CC/Subtitle </span>
               </div>
               <div className="flex flex-col mx-2 bg-white overflow-y-scroll space-y-2">

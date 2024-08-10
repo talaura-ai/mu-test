@@ -1,3 +1,4 @@
+import { ReactSVG } from "react-svg";
 import TabChangeIcon from "../../assets/svg/RestoreWindow.svg"
 
 interface TabChangeDetectionModalProps {
@@ -13,7 +14,7 @@ export default function TabChangeDetectionModal (props: TabChangeDetectionModalP
           <div className="border-0 rounded-xl overflow-hidden shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
             <div className="relative flex-auto justify-center flex-col items-center">
               <div className="flex flex-col justify-center items-center py-10 bg-[#FFF6ED]">
-                <img src={ TabChangeIcon } />
+                <ReactSVG src={ TabChangeIcon } />
               </div>
               <p className="text-black leading-relaxed pt-6 px-6 font-sansation font-bold text-[18px] text-center">
                 A tab switch has been detected.

@@ -1,4 +1,4 @@
-import InternetIcon from "../../assets/svg/Internet.svg"
+import { ReactSVG } from "react-svg";
 import WifiIcon from "../../assets/svg/wifiIcon.svg"
 
 interface InternetSpeedModalProps {
@@ -14,7 +14,7 @@ export default function InternetSpeedModal (props: InternetSpeedModalProps) {
           <div className="border-0 rounded-xl overflow-hidden shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
             <div className="relative flex-auto justify-center flex-col items-center">
               <div className="flex flex-col justify-center items-center py-8 bg-[#FFF6ED]">
-                <img src={ WifiIcon } className="w-16" />
+                <ReactSVG src={ WifiIcon } className="w-16" />
               </div>
               {/* <p className="text-black leading-relaxed pt-6 px-6 font-sansation font-bold text-[18px] text-center">
                 Internet Speed

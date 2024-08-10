@@ -2,6 +2,7 @@ import React from "react";
 import TimeLeftIcon from "../assets/svg/timeLeftIcon.svg";
 import { useTimer } from "react-timer-hook";
 import { useParams } from "react-router-dom";
+import { ReactSVG } from "react-svg";
 
 export default function TimerCounterWithProgress ({
   timestamp,
@@ -47,7 +48,7 @@ export default function TimerCounterWithProgress ({
               <p className="text-[18px] text-[#FB2121] font-semibold">
                 Auto submit in
               </p>
-              <img src={ TimeLeftIcon } className="px-2" alt="left icon" />
+              <ReactSVG src={ TimeLeftIcon } className="px-2" />
               <p className="text-[18px] text-[#FB2121] font-semibold min-w-24">
                 { minutes < 10 ? `0${minutes}` : minutes }:{ seconds < 10 ? `0${seconds}` : seconds } min
               </p>

@@ -26,6 +26,7 @@ import InternetModal from "../../components/Modals/internetModal";
 import ModuleTimeoutModal from "../../components/Modals/timeoutModal";
 import moment from "moment";
 import TabChangeDetectionModal from "../../components/Modals/tabChangeDetected";
+import { ReactSVG } from "react-svg";
 
 const VoiceToVoice = () => {
   const webcamRef = useRef<any>(null);
@@ -435,7 +436,7 @@ const VoiceToVoice = () => {
               Ai Bot
             </div>
             <div className="absolute right-2 bottom-4 text-white  px-4 py-1  ">
-              <img src={ MicIcon } className="h-8 w-10" alt="mic" />
+              <ReactSVG src={ MicIcon } className="h-8 w-10" />
             </div>
           </div>
           <div className="relative flex w-[50%] h-[470px] bg-[#E5A971] justify-center items-center rounded-xl border border-[#E5A971] mr-4">
@@ -453,14 +454,14 @@ const VoiceToVoice = () => {
               { (myAssessments && myAssessments?.[0]?.name) || "Candidate" }
             </div>
             <div className="absolute right-2 bottom-4 text-white  px-4 py-1  ">
-              <img src={ MicIcon } className="h-8 w-10" alt="mic" />
+              <ReactSVG src={ MicIcon } className="h-8 w-10" />
             </div>
           </div>
         </div>
         <div className="flex flex-col w-[20%] bg-white shadow rounded-lg p-4">
           <div className="flex w-full flex-col h-[440px]">
             <div className="flex gap-2 px-2 pb-2">
-              <img src={ VoiceIcon } alt="icn" />
+              <img src={ VoiceIcon } />
               <span className="text-xs text-gray-300 mt-2">CC/Subtitle </span>
             </div>
             <div className="flex flex-col mx-2 bg-white overflow-y-scroll space-y-2">

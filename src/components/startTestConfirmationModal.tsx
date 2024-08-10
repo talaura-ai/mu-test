@@ -1,3 +1,4 @@
+import { ReactSVG } from "react-svg";
 import GrayCloseIcon from "../assets/svg/closeIconGray.svg"
 import QuizInstructions from "./Instructions/quiz";
 import CodingInstructions from "./Instructions/sandbox";
@@ -22,7 +23,7 @@ export default function StartTestConfirmationModal (props: any) {
                 className="absolute border-0 text-3xl leading-none font-semibold outline-none top-0 right-6 bottom-0"
                 onClick={ () => { props?.onClose() } }
               >
-                <img src={ GrayCloseIcon } />
+                <ReactSVG src={ GrayCloseIcon } />
               </button>
             </div>
             <div className="min-h-[450px] max-h-[550px] overflow-y-scroll overflow-x-hidden">
