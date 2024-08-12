@@ -127,9 +127,6 @@ const VoiceToText = () => {
     if (state) {
       checkInternet(state?.online)
     }
-    return () => {
-      clearStoredSession()
-    }
   }, [state]);
 
   const clearStoredSession = () => {

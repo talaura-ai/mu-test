@@ -101,9 +101,6 @@ const VoiceToVoice = () => {
     if (state) {
       checkInternet(state?.online)
     }
-    return () => {
-      clearStoredSession()
-    }
   }, [state]);
 
   const clearStoredSession = () => {

@@ -62,9 +62,6 @@ function StartMCQTest () {
     if (state) {
       checkInternet(state?.online)
     }
-    return () => {
-      clearStoredSession()
-    }
   }, [state]);
 
   const checkInternet = (isInternet: any) => {
