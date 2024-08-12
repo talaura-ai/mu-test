@@ -17,10 +17,10 @@ export default function TabChangeDetectionModal (props: TabChangeDetectionModalP
                 <ReactSVG src={ TabChangeIcon } />
               </div>
               <p className="text-black leading-relaxed pt-6 px-6 font-sansation font-bold text-[18px] text-center">
-                A tab switch has been detected.
+                Suspicious activity detected
               </p>
               <p className="text-black leading-relaxed px-6 pt-2 pb-4 font-sansation font-medium text-[16px] text-center">
-                If a tab switch is detected, your exam will be automatically submitted.
+                You have moved away from the test window. Kindly refrain from switching tabs.
               </p>
             </div>
             <div className="flex items-center justify-center px-6 pb-6 gap-4 mt-4">
