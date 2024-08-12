@@ -188,7 +188,7 @@ const VoiceToText = () => {
     const time = sessionStorage.getItem("screen-exit-time")
     if (time) {
       const seconds = moment().diff(moment(time), 'seconds')
-      if (seconds > 5) {
+      if (seconds > 2) {
         setIsExitFullScreen(true);
         updateUserActivity("exitFullScreen")
       }
