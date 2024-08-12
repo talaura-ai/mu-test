@@ -34,6 +34,8 @@ import { ReactInternetSpeedMeter } from "react-internet-meter";
 import InternetSpeedModal from "../../components/Modals/internetSpeedModal";
 import TabChangeDetectionModal from "../../components/Modals/tabChangeDetected";
 import { ReactSVG } from "react-svg";
+import QuickStartModal from "../../components/Modals/quickStartModal";
+import { detectBrowser } from "../../utils";
 
 const width = 650;
 const height = 650;
@@ -86,6 +88,7 @@ const VideoTest = () => {
   const [isInternet5Mb, setIsInternet5Mb] = useState(true)
   const [moduleTime, setModuleTime] = useState(0);
   const [tabSwitchDetected, setTabSwitchDetected] = useState(false);
+  const [quickStartInSafari, setQuickStartInSafari] = useState(true);
 
   const state = useNetworkState();
   let internetTimer: any = null
@@ -170,7 +173,16 @@ const VideoTest = () => {
     if (state) {
       checkInternet(state?.online)
     }
+    return () => {
+      clearStoredSession()
+    }
   }, [state]);
+
+  const clearStoredSession = () => {
+    sessionStorage.setItem(`${testId}-${userId}`, "")
+    sessionStorage.setItem(`txp-${testId}-${userId}`, "0")
+    sessionStorage.setItem("screen-exit-time", "")
+  }
 
   const checkInternet = (isInternet: any) => {
     clearTimeout(internetTimer)
@@ -180,7 +192,7 @@ const VideoTest = () => {
       setNetworkChecking(true)
       setIsInternet5Mb(true)
       internetTimer = setTimeout(() => {
-        window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+        goBack()
       }, 200000);
     }
   }
@@ -226,7 +238,7 @@ const VideoTest = () => {
       }
     } else {
       setTimeout(() => {
-        window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+        goBack()
       }, 0);
     }
     if (time) {
@@ -280,12 +292,13 @@ const VideoTest = () => {
   };
 
   useEffect(() => {
+    setQuickStartInSafari(detectBrowser() === "Safari")
     navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then((stream) => {
         streamRef.current = stream;
         setMediaRecorder(
-          new MediaRecorder(stream, { mimeType: "audio/webm; codecs=opus" })
+          new MediaRecorder(stream, { mimeType: detectBrowser() === "Safari" ? "audio/mp4" : "audio/webm; codecs=opus" })
         );
       })
       .catch((error) => {
@@ -302,7 +315,7 @@ const VideoTest = () => {
         audio: true,
       });
       const recorder = new MediaRecorder(stream, {
-        mimeType: "video/webm; codecs=vp8",
+        mimeType: detectBrowser() === "Safari" ? "video/mp4" : "video/webm; codecs=vp8",
       });
       setLiveVideoMediaRecorder(recorder);
     };
@@ -310,7 +323,7 @@ const VideoTest = () => {
   }, []);
 
   useEffect(() => {
-    if (mediaRecorder && userId && moduleQuestions && myAssessments) {
+    if (mediaRecorder && userId && moduleQuestions && myAssessments && !quickStartInSafari) {
       const newSocket = io("wss://talorexvoice.com", {
         query: {
           userId: userId,
@@ -416,7 +429,7 @@ const VideoTest = () => {
         }
       };
     }
-  }, [mediaRecorder, userId, moduleQuestions, myAssessments]);
+  }, [mediaRecorder, userId, moduleQuestions, myAssessments, quickStartInSafari]);
 
   useEffect(() => {
     const mediaListner = async () => {
@@ -582,7 +595,7 @@ const VideoTest = () => {
         );
         // navigate(-1);
         // screenfull.exit()
-        window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+        goBack()
       } else {
         toast.error("Oops! Submission is failed", {});
         dispatcher(setLoadingDispatcher(false));
@@ -596,6 +609,11 @@ const VideoTest = () => {
 
   const onClose = () => {
     setIsInternet5Mb(true)
+  }
+
+  const goBack = () => {
+    clearStoredSession()
+    window.location.replace(`/assessment/${userId}/${assessmentId}/modules`)
   }
 
   return (
@@ -761,6 +779,7 @@ const VideoTest = () => {
         { networkChecking && <InternetModal /> }
         { !isInternet5Mb && <InternetSpeedModal onClose={ () => { onClose() } } /> }
         { tabSwitchDetected && <TabChangeDetectionModal onPress={ () => { setTabSwitchDetected(false) } } /> }
+        { quickStartInSafari && <QuickStartModal onClose={ () => { setQuickStartInSafari(false) } } /> }
       </div>
     </>
   );

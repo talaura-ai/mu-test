@@ -27,6 +27,8 @@ import ModuleTimeoutModal from "../../components/Modals/timeoutModal";
 import moment from "moment";
 import TabChangeDetectionModal from "../../components/Modals/tabChangeDetected";
 import { ReactSVG } from "react-svg";
+import { detectBrowser } from "../../utils";
+import QuickStartModal from "../../components/Modals/quickStartModal";
 
 const VoiceToVoice = () => {
   const webcamRef = useRef<any>(null);
@@ -59,7 +61,7 @@ const VoiceToVoice = () => {
   const [isTimeout, setIsTimeout] = useState(false);
   const [moduleTime, setModuleTime] = useState(0);
   const [tabSwitchDetected, setTabSwitchDetected] = useState(false);
-  
+  const [quickStartInSafari, setQuickStartInSafari] = useState(true);
   let streamRef: any = useRef(null);
   useUserActivityDetection();
   let audioElement = useRef(new Audio());
@@ -85,7 +87,7 @@ const VoiceToVoice = () => {
     };
   }, []);
 
-  const updateUserActivity = (type:string) => {
+  const updateUserActivity = (type: string) => {
     dispatcher(
       getUserActivityDispatcher({
         candidateId: userId,
@@ -99,7 +101,16 @@ const VoiceToVoice = () => {
     if (state) {
       checkInternet(state?.online)
     }
+    return () => {
+      clearStoredSession()
+    }
   }, [state]);
+
+  const clearStoredSession = () => {
+    sessionStorage.setItem(`${testId}-${userId}`, "")
+    sessionStorage.setItem(`txp-${testId}-${userId}`, "0")
+    sessionStorage.setItem("screen-exit-time", "")
+  }
 
   const checkInternet = (isInternet: any) => {
     clearTimeout(internetTimer)
@@ -108,7 +119,7 @@ const VoiceToVoice = () => {
     } else {
       setNetworkChecking(true)
       internetTimer = setTimeout(() => {
-        window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+        goBack()
       }, 200000);
     }
   }
@@ -137,7 +148,7 @@ const VoiceToVoice = () => {
       }
     } else {
       setTimeout(() => {
-        window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+        goBack()
       }, 0);
     }
     if (time) {
@@ -204,12 +215,13 @@ const VoiceToVoice = () => {
   };
 
   useEffect(() => {
+    setQuickStartInSafari(detectBrowser() === "Safari")
     navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then((stream) => {
         streamRef.current = stream;
         setMediaRecorder(
-          new MediaRecorder(stream, { mimeType: "audio/webm; codecs=opus" })
+          new MediaRecorder(stream, { mimeType: detectBrowser() === "Safari" ? "audio/mp4" : "audio/webm; codecs=opus" })
         );
       })
       .catch((error) => {
@@ -219,7 +231,7 @@ const VoiceToVoice = () => {
   }, []);
 
   useEffect(() => {
-    if (mediaRecorder && userId && moduleQuestions && myAssessments) {
+    if (mediaRecorder && userId && moduleQuestions && myAssessments && !quickStartInSafari) {
       const newSocket = io("wss://talorexvoice.com", {
         query: {
           userId: userId,
@@ -310,7 +322,7 @@ const VoiceToVoice = () => {
         newSocket?.disconnect();
       };
     }
-  }, [mediaRecorder, userId, moduleQuestions, myAssessments]);
+  }, [mediaRecorder, userId, moduleQuestions, myAssessments, quickStartInSafari]);
 
   function arrayBufferToBase64 (buffer: ArrayBuffer): string {
     let binary = "";
@@ -389,7 +401,7 @@ const VoiceToVoice = () => {
         if (type === "auto") {
           setIsTimeout(true)
         } else {
-          window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+          goBack()
         }
       } else {
         toast.error("Oops! Submission is failed", {});
@@ -401,8 +413,14 @@ const VoiceToVoice = () => {
   };
   const onCloseTimeout = () => {
     setIsTimeout(false)
-    window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+    goBack()
   }
+
+  const goBack = () => {
+    clearStoredSession()
+    window.location.replace(`/assessment/${userId}/${assessmentId}/modules`)
+  }
+
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4">
       <TimerCounterWithProgress
@@ -524,6 +542,7 @@ const VoiceToVoice = () => {
       { networkChecking && <InternetModal /> }
       { isTimeout && <ModuleTimeoutModal onClose={ () => { onCloseTimeout() } } /> }
       { tabSwitchDetected && <TabChangeDetectionModal onPress={ () => { setTabSwitchDetected(false) } } /> }
+      { quickStartInSafari && <QuickStartModal onClose={ () => { setQuickStartInSafari(false) } } /> }
     </div>
   );
 };

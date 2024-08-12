@@ -62,6 +62,9 @@ function StartMCQTest () {
     if (state) {
       checkInternet(state?.online)
     }
+    return () => {
+      clearStoredSession()
+    }
   }, [state]);
 
   const checkInternet = (isInternet: any) => {
@@ -71,7 +74,7 @@ function StartMCQTest () {
     } else {
       setNetworkChecking(true)
       internetTimer = setTimeout(() => {
-        window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+        goBack()
       }, 200000);
     }
   }
@@ -122,7 +125,7 @@ function StartMCQTest () {
       }
     } else {
       setTimeout(() => {
-        window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+        goBack()
       }, 0);
     }
     if (time) {
@@ -289,7 +292,7 @@ function StartMCQTest () {
         if (type === "auto") {
           setIsTimeout(true)
         } else {
-          window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+          goBack()
         }
       } else {
         toast.error("Oops! Submission is failed", {});
@@ -299,6 +302,12 @@ function StartMCQTest () {
       toast.error("Oops! Internal server error", {});
     }
   };
+
+  const clearStoredSession = () => {
+    sessionStorage.setItem(`${testId}-${userId}`, "")
+    sessionStorage.setItem(`txp-${testId}-${userId}`, "0")
+    sessionStorage.setItem("screen-exit-time", "")
+  }
 
   const onTimeout = () => {
     if (Number(assessmentModule?.module?.time) > 0) {
@@ -321,7 +330,11 @@ function StartMCQTest () {
   }
   const onCloseTimeout = () => {
     setIsTimeout(false)
-    window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+    goBack()
+  }
+  const goBack = () => {
+    clearStoredSession()
+    window.location.replace(`/assessment/${userId}/${assessmentId}/modules`)
   }
   return (
     <>

@@ -115,7 +115,7 @@ const VoiceToText = () => {
       }
     } else {
       setTimeout(() => {
-        window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+        goBack()
       }, 0);
     }
     if (time) {
@@ -127,7 +127,16 @@ const VoiceToText = () => {
     if (state) {
       checkInternet(state?.online)
     }
+    return () => {
+      clearStoredSession()
+    }
   }, [state]);
+
+  const clearStoredSession = () => {
+    sessionStorage.setItem(`${testId}-${userId}`, "")
+    sessionStorage.setItem(`txp-${testId}-${userId}`, "0")
+    sessionStorage.setItem("screen-exit-time", "")
+  }
 
   const checkInternet = (isInternet: any) => {
     clearTimeout(internetTimer)
@@ -136,7 +145,7 @@ const VoiceToText = () => {
     } else {
       setNetworkChecking(true)
       internetTimer = setTimeout(() => {
-        window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+        goBack()
       }, 200000);
     }
   }
@@ -272,7 +281,7 @@ const VoiceToText = () => {
         if (type === "auto") {
           setIsTimeout(true)
         } else {
-          window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+          goBack()
         }
       } else {
         toast.error("Oops! Submission is failed", {});
@@ -307,8 +316,14 @@ const VoiceToText = () => {
   };
   const onCloseTimeout = () => {
     setIsTimeout(false)
-    window.location.href = `/assessment/${userId}/${assessmentId}/modules`;
+    goBack()
   }
+
+  const goBack = () => {
+    clearStoredSession()
+    window.location.replace(`/assessment/${userId}/${assessmentId}/modules`)
+  }
+
   return (
     <div className="sm:p-6 md:px-20 md:py-12 p-4">
       <TimerCounterWithProgress
