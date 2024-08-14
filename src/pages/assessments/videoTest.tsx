@@ -655,7 +655,7 @@ const VideoTest = () => {
         ) }
         { !isInternet5Mb && <CustomSpeedChecker /> }
         <TimerCounterWithProgress
-          timestamp={ moduleTime || 20 }
+          timestamp={ moduleTime || 0 }
           title={ "Video Round" }
           onTimeout={ onTimeout }
           showTimer={ true }
