@@ -36,6 +36,7 @@ import TabChangeDetectionModal from "../../components/Modals/tabChangeDetected";
 import { ReactSVG } from "react-svg";
 import QuickStartModal from "../../components/Modals/quickStartModal";
 import { detectBrowser } from "../../utils";
+import CustomSpeedChecker from "../../components/Modals/CustomSpeedChecker";
 
 const width = 650;
 const height = 650;
@@ -92,6 +93,7 @@ const VideoTest = () => {
 
   const state = useNetworkState();
   let internetTimer: any = null
+  let speedTimer: any = null
 
   useUserActivityDetection();
   // const audioElement = new Audio();
@@ -188,6 +190,7 @@ const VideoTest = () => {
     } else {
       setNetworkChecking(true)
       setIsInternet5Mb(true)
+      clearTimeout(speedTimer)
       internetTimer = setTimeout(() => {
         goBack()
       }, 200000);
@@ -613,6 +616,13 @@ const VideoTest = () => {
     window.location.replace(`/assessment/${userId}/${assessmentId}/modules`)
   }
 
+  const speedCheckerFun = () => {
+    setIsInternet5Mb(false)
+    speedTimer = setTimeout(() => {
+      setIsInternet5Mb(true)
+    }, 30000);
+  }
+
   return (
     <>
       <ReactInternetSpeedMeter
@@ -624,12 +634,13 @@ const VideoTest = () => {
         downloadSize="500000" //bytes
         callbackFunctionOnNetworkDown={ (data: any) => {
           if (isInternet5Mb) {
-            setIsInternet5Mb(false)
+            speedCheckerFun()
           }
         } }
         callbackFunctionOnNetworkTest={ (data: any) => {
           if (data >= 4 && !isInternet5Mb) {
             setIsInternet5Mb(true)
+            clearTimeout(speedTimer)
           }
         } }
       />
@@ -642,11 +653,13 @@ const VideoTest = () => {
             } }
           />
         ) }
+        { !isInternet5Mb && <CustomSpeedChecker /> }
         <TimerCounterWithProgress
-          timestamp={ moduleTime || 0 }
+          timestamp={ moduleTime || 20 }
           title={ "Video Round" }
           onTimeout={ onTimeout }
-          showTimer={ false }
+          showTimer={ true }
+          showProgressFromLT={ true }
         />
         <div className="flex">
           <span className="text-[20px] text-black font-sansation font-semibold">
@@ -774,7 +787,7 @@ const VideoTest = () => {
           />
         ) : null }
         { networkChecking && <InternetModal /> }
-        { !isInternet5Mb && <InternetSpeedModal onClose={ () => { onClose() } } /> }
+        {/* { !isInternet5Mb && <InternetSpeedModal onClose={ () => { onClose() } } /> } */ }
         { tabSwitchDetected && <TabChangeDetectionModal onPress={ () => { setTabSwitchDetected(false) } } /> }
         { quickStartInSafari && <QuickStartModal onClose={ () => { setQuickStartInSafari(false) } } /> }
       </div>

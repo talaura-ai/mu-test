@@ -9,17 +9,17 @@ export default function TimerCounterWithProgress ({
   title,
   onTimeout,
   showTimer = true,
+  showProgressFromLT = false
 }: any) {
   const { testId, userId } = useParams();
   const time = new Date();
   time.setSeconds(time.getSeconds() + 60 * timestamp);
-  const { seconds, minutes, hours, restart } = useTimer({
+  const { seconds, minutes, hours, restart, totalSeconds } = useTimer({
     expiryTimestamp: time,
     onExpire: () => {
       onTimeout();
     },
   });
-
   React.useEffect(() => {
     if (timestamp) {
       const time = new Date();
@@ -33,6 +33,14 @@ export default function TimerCounterWithProgress ({
       sessionStorage.setItem(`txp-${testId}-${userId}`, String(`${minutes + (seconds / 60)}`))
     }
   }, [seconds, minutes])
+
+  const getTimeProgress = () => {
+    if (showProgressFromLT) {
+      let newMin = timestamp*60 - totalSeconds
+      return `${Math.floor(newMin/60) < 10 ? `0${Math.floor(newMin/60)}` : Math.floor(newMin/60)}:${Math.floor(newMin%60) < 10 ? `0${Math.floor(newMin%60)}` : Math.floor(newMin%60)}`
+    }
+    return `${minutes < 10 ? `0${minutes}` : minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
+  }
 
   return (
     <>
@@ -50,7 +58,7 @@ export default function TimerCounterWithProgress ({
               </p>
               <ReactSVG src={ TimeLeftIcon } className="px-2" />
               <p className="text-[18px] text-[#FB2121] font-semibold min-w-24">
-                { minutes < 10 ? `0${minutes}` : minutes }:{ seconds < 10 ? `0${seconds}` : seconds } min
+                { getTimeProgress() } min
               </p>
             </div>
           </div>
@@ -61,7 +69,7 @@ export default function TimerCounterWithProgress ({
           <div
             className="bg-gradient-to-r from-[#E5A971] to-[#F3BC84] h-2.5 rounded-full"
             style={ {
-              width: `${((minutes * 60 + seconds) * 100) / (timestamp * 60)}%`,
+              width: showProgressFromLT ? `${100 - ((minutes * 60 + seconds) * 100) / (timestamp * 60)}%` : `${((minutes * 60 + seconds) * 100) / (timestamp * 60)}%`,
             } }
           ></div>
         </div>
