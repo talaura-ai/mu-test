@@ -38,8 +38,8 @@ import { ReactSVG } from "react-svg";
 import QuickStartModal from "../../components/Modals/quickStartModal";
 import { detectBrowser } from "../../utils";
 import CustomSpeedChecker from "../../components/Modals/CustomSpeedChecker";
-import aIJson from "../../assets/lottie/ai1.json";
-import aILiJson from "../../assets/lottie/ai11.json";
+import aiSpeaking from "../../assets/lottie/aiSpeaking.json";
+import aiListening from "../../assets/lottie/aiListening.json";
 
 const width = 650;
 const height = 650;
@@ -647,7 +647,7 @@ const VideoTest = () => {
 
   const goBack = () => {
     clearStoredSession();
-    window.location.replace(`/assessment/${userId}/${assessmentId}/modules`);
+    // window.location.replace(`/assessment/${userId}/${assessmentId}/modules`);
   };
 
   const speedCheckerFun = () => {
@@ -660,7 +660,7 @@ const VideoTest = () => {
   const defaultOptions = {
     loop: true,
     autoplay: true,
-    animationData: aIJson,
+    animationData: aiSpeaking,
     rendererSettings: {
       preserveAspectRatio: "xMidYMid slice",
     },
@@ -668,7 +668,7 @@ const VideoTest = () => {
   const defaultOptionsLi = {
     loop: true,
     autoplay: true,
-    animationData: aILiJson,
+    animationData: aiListening,
     rendererSettings: {
       preserveAspectRatio: "xMidYMid slice",
     },
