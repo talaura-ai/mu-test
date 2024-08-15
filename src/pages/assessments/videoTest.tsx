@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import Webcam from "react-webcam";
 import AWS from "aws-sdk";
+import Lottie from "react-lottie";
 import { useNetworkState } from "react-use";
 import { CameraOptions, useFaceDetection } from "react-use-face-detection";
 import FaceDetection from "@mediapipe/face_detection";
@@ -37,6 +38,8 @@ import { ReactSVG } from "react-svg";
 import QuickStartModal from "../../components/Modals/quickStartModal";
 import { detectBrowser } from "../../utils";
 import CustomSpeedChecker from "../../components/Modals/CustomSpeedChecker";
+import aIJson from "../../assets/lottie/ai1.json";
+import aILiJson from "../../assets/lottie/ai11.json";
 
 const width = 650;
 const height = 650;
@@ -333,12 +336,18 @@ const VideoTest = () => {
   }, []);
 
   useEffect(() => {
-    if (mediaRecorder && userId && moduleQuestions && myAssessments && !quickStartInSafari) {
+    if (
+      mediaRecorder &&
+      userId &&
+      moduleQuestions &&
+      myAssessments &&
+      !quickStartInSafari
+    ) {
       const newSocket = io("wss://talorexvoice.com/socket.io", {
         query: {
           userId: userId,
         },
-        transports: ['websocket']
+        transports: ["websocket"],
       });
       newSocket.on("connect_error", (error) => {
         console.error("Connection error:=>", error);
@@ -638,7 +647,7 @@ const VideoTest = () => {
 
   const goBack = () => {
     clearStoredSession();
-    window.location.replace(`/assessment/${userId}/${assessmentId}/modules`)
+    window.location.replace(`/assessment/${userId}/${assessmentId}/modules`);
   };
 
   const speedCheckerFun = () => {
@@ -646,6 +655,23 @@ const VideoTest = () => {
     speedTimer = setTimeout(() => {
       setIsInternet5Mb(true);
     }, 30000);
+  };
+
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: aIJson,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
+  const defaultOptionsLi = {
+    loop: true,
+    autoplay: true,
+    animationData: aILiJson,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
   };
 
   return (
@@ -718,20 +744,22 @@ const VideoTest = () => {
             </div> */}
             <div className="flex relative h-1/2 w-full rounded-xl overflow-hidden">
               <div className="flex rounded-xl w-full overflow-hidden h-[500px] bg-gray-200">
-              { isSocketConnected && ( <Webcam
-                  ref={webcamRef}
-                  screenshotFormat="image/jpeg"
-                  screenshotQuality={1}
-                  // audio={userMute}
-                  videoConstraints={videoConstraints}
-                  onUserMedia={() => {
-                    setCameraStats(true);
-                  }}
-                  onUserMediaError={() => {
-                    setCameraStats(false);
-                  }}
-                  className="overflow-hidden rounded-xl bg-gray-200 object-cover w-full"
-                />) }
+                {isSocketConnected && (
+                  <Webcam
+                    ref={webcamRef}
+                    screenshotFormat="image/jpeg"
+                    screenshotQuality={1}
+                    // audio={userMute}
+                    videoConstraints={videoConstraints}
+                    onUserMedia={() => {
+                      setCameraStats(true);
+                    }}
+                    onUserMediaError={() => {
+                      setCameraStats(false);
+                    }}
+                    className="overflow-hidden rounded-xl bg-gray-200 object-cover w-full"
+                  />
+                )}
                 <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation capitalize">
                   {(myAssessments && myAssessments?.[0]?.name) || "Candidate"}
                 </div>
@@ -746,19 +774,44 @@ const VideoTest = () => {
                 </div> */}
                 <div className="absolute bottom-4 right-4 flex w-[200px] h-[200px] bg-[#474646] justify-center items-center rounded-xl border-[2px] border-[#CC8448]">
                   <div className="flex justify-center items-center">
-                    <div
+                    {/* <div
                       className={`h-10 w-10 md:h-[90px] md:w-[90px] bg-white text-[#E5A971] rounded-full text-[20px] md:text-[36px] font-semibold font-sansation flex justify-center items-center ${
                         isSpeaking ? "animation-pulse" : ""
                       }`}
                     >
                       AI
-                    </div>
+                    </div> */}
+                    {isSpeaking ? (
+                      <Lottie
+                        options={defaultOptions}
+                        height={120}
+                        width={120}
+                      />
+                    ) : (
+                      <Lottie
+                        options={defaultOptionsLi}
+                        height={170}
+                        width={170}
+                      />
+                    )}
+                    {isSpeaking? <div
+                      className={`absolute text-[#E5A971] text-[16px] md:text-[24px] font-semibold font-sansation`}
+                    >
+                      AI
+                    </div>: <div
+                      className={`absolute text-[#E5A971] text-[8px] md:text-[12px] font-semibold font-sansation`}
+                    >
+                      Listening
+                    </div>}
                   </div>
                   <div className="absolute left-2 bottom-2 bg-black opacity-75 text-white font-semibold px-3 py-1 text-[10px] rounded-[10px] font-sansation">
                     AI Bot
                   </div>
                   <div className="absolute right-2 bottom-2 text-white">
-                    <ReactSVG src={MicIcon} style={{ width: '20px', height: '20px' }} />
+                    <ReactSVG
+                      src={MicIcon}
+                      style={{ width: "20px", height: "20px" }}
+                    />
                   </div>
                 </div>
               </div>
