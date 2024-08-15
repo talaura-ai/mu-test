@@ -338,6 +338,7 @@ const VideoTest = () => {
         query: {
           userId: userId,
         },
+        transports: ['websocket']
       });
       newSocket.on("connect_error", (error) => {
         console.error("Connection error:=>", error);
