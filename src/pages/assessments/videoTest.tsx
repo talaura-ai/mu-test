@@ -89,7 +89,7 @@ const VideoTest = () => {
   const [isInternet5Mb, setIsInternet5Mb] = useState(true);
   const [moduleTime, setModuleTime] = useState(0);
   const [tabSwitchDetected, setTabSwitchDetected] = useState(false);
-  const [quickStartInSafari, setQuickStartInSafari] = useState(true);
+  const [quickStartInSafari, setQuickStartInSafari] = useState(false);
 
   const state = useNetworkState();
   let internetTimer: any = null;
@@ -333,17 +333,17 @@ const VideoTest = () => {
   }, []);
 
   useEffect(() => {
-    if (
-      mediaRecorder &&
-      userId &&
-      moduleQuestions &&
-      myAssessments &&
-      !quickStartInSafari
-    ) {
-      const newSocket = io("wss://talorexvoice.com", {
+    if (mediaRecorder && userId && moduleQuestions && myAssessments && !quickStartInSafari) {
+      const newSocket = io("wss://talorexvoice.com/socket.io", {
         query: {
           userId: userId,
         },
+      });
+      newSocket.on("connect_error", (error) => {
+        console.error("Connection error:=>", error);
+      });
+      newSocket.on("disconnect", (reason, details) => {
+        console.error("disconnect error:=>", reason, details);
       });
       // console.log("socket id", newSocket.id);
       newSocket.on("connect", () => {
@@ -516,10 +516,12 @@ const VideoTest = () => {
     audioElement?.current?.pause();
     audioElement.current.currentTime = 0;
     audioElement.current.src = "";
-    webcamRef.current?.video?.srcObject
+    webcamRef?.current?.video?.srcObject
       ?.getTracks()
       ?.forEach((track: any) => track?.stop());
-    webcamRef.current.video.srcObject = null;
+    if (webcamRef && webcamRef?.current) {
+      webcamRef.current.video.srcObject = null;
+    }
     setIsSpeaking(false);
     if (streamRef?.current) {
       streamRef.current?.getTracks()?.forEach((track: any) => {
