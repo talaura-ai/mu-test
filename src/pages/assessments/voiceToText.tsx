@@ -12,12 +12,10 @@ import { Editor } from "react-draft-wysiwyg";
 import draftToHtml from "draftjs-to-html";
 import { htmlToText } from 'html-to-text';
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { getAssessmentModuleSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
+import { useAppDispatch } from "../../store/hooks";
 import {
   getModuleSubmissionDispatcher,
   getUserActivityDispatcher,
-  setAssessmentModuleDispatcher,
 } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import { toast } from "react-toastify";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
@@ -33,7 +31,6 @@ import TabChangeDetectionModal from "../../components/Modals/tabChangeDetected";
 const VoiceToText = () => {
   const dispatcher = useAppDispatch();
   const { assessmentId, testId, userId } = useParams();
-  // const assessmentModule = useAppSelector(getAssessmentModuleSelector);
   const [moduleQuestions, setModuleQuestions] = React.useState<any>([]);
   const [currentIndex, setCurrentIndex] = React.useState<any>(0);
   const [editorState, setEditorState] = React.useState(
@@ -52,22 +49,6 @@ const VoiceToText = () => {
   const state = useNetworkState();
   useUserActivityDetection();
   let internetTimer: any = null
-  // React.useEffect(() => {
-  //   if (assessmentModule?.module?.question) {
-  //     const questions = assessmentModule?.module?.question?.map((v: any) => {
-  //       return { ...v, answer: v?.answer ? v?.answer : "" };
-  //     });
-  //     setModuleQuestions(questions);
-  //     if (
-  //       assessmentModule?.module?.question?.length &&
-  //       assessmentModule?.module?.question?.[0]?.answer
-  //     ) {
-  //       setEditorState(
-  //         getEditorData(assessmentModule?.module?.question?.[0]?.answer)
-  //       );
-  //     }
-  //   }
-  // }, [assessmentModule]);
 
   function handleVisibilityChange () {
     if (document?.hidden) {
@@ -90,7 +71,6 @@ const VoiceToText = () => {
       })
     );
   };
-
 
   useEffect(() => {
     const res = sessionStorage.getItem(`${testId}-${userId}`)
@@ -155,16 +135,6 @@ const VoiceToText = () => {
     );
     return EditorState.createWithContent(contentState);
   };
-
-  // React.useEffect(() => {
-  //   dispatcher(
-  //     setAssessmentModuleDispatcher({
-  //       moduleId: testId,
-  //       candidateId: userId,
-  //       assessmentId: assessmentId,
-  //     })
-  //   );
-  // }, [dispatcher, assessmentId, testId, userId]);
 
   useEffect(() => {
     if (screenfull.isEnabled) {
@@ -329,13 +299,6 @@ const VoiceToText = () => {
         onTimeout={ () => onTimeout() }
       />
       <div className="flex items-start justify-start flex-col w-[100%] h-[100%] ">
-        {/* <div className="flex">
-          <span className="text-[20px] text-black font-sansation font-semibold">
-            The AI will pose the question{ " " }
-            <span className="text-[#CC484E]">only once, </span>candidate please
-            share your response in the provided text box.
-          </span>
-        </div> */}
         <div className="flex justify-between flex-col md:flex-row w-full gap-4 p-2 h-[500px] mt-8">
           <div className="flex md:w-2/5 w-full h-full rounded-xl bg-white">
             <div className="w-full flex-col rounded-xl relative">

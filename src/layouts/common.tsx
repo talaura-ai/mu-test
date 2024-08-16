@@ -3,7 +3,7 @@ import DashboardIcon from "../assets/svg/DashboardLayoutIcon.svg"
 import { useLocation, useParams } from "react-router-dom";
 import React from "react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { getAssessmentsSelector, getLoadingSelector } from "../store/slices/dashboard-slice/dashboard-selectors";
+import { getAssessmentsSelector, getLoadingSelector, getQuizLoadingSelector } from "../store/slices/dashboard-slice/dashboard-selectors";
 import { setAssessmentDispatcher } from "../store/slices/dashboard-slice/dashboard-dispatchers";
 import { ReactSVG } from "react-svg";
 
@@ -12,6 +12,7 @@ const CommonLayout = () => {
 	const { userId } = useParams();
 	const [active, setActive] = React.useState(true);
 	const loading = useAppSelector(getLoadingSelector)
+	const quizLoading = useAppSelector(getQuizLoadingSelector)
 	const myAssessments = useAppSelector(getAssessmentsSelector);
 	const dispatcher = useAppDispatch();
 
@@ -100,6 +101,30 @@ const CommonLayout = () => {
 					</div>
 					<div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
 				</> : null }
+
+				{ quizLoading ? <>
+					<div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+						<div className="relative mx-auto w-[500px] h-[220px]">
+							<div className="border-0 rounded-3xl shadow-md relative flex flex-col w-full h-full bg-white outline-none focus:outline-none">
+								<div className="flex items-center justify-center w-full h-full mt-2">
+									<div className="loader">
+										<span className="hour"></span>
+										<span className="min"></span>
+										<span className="circel"></span>
+									</div>
+								</div>
+								<div className="flex flex-col justify-center items-center">
+									<p className="text-black text-[20px] font-sansation font-semibold">Get Ready!</p>
+								</div>
+								<p className="text-black leading-relaxed px-2 font-sansation font-bold text-[18px] text-center pb-6">
+									TalAura AI is generating your test in 20-30secs
+								</p>
+							</div>
+						</div>
+					</div>
+					<div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+				</> : null }
+
 			</div>
 		</>
 	);

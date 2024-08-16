@@ -16,13 +16,11 @@ import { v4 as uuidv4 } from "uuid";
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
-  getAssessmentModuleSelector,
   getAssessmentsSelector,
 } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import {
   getModuleSubmissionDispatcher,
   getUserActivityDispatcher,
-  setAssessmentModuleDispatcher,
   setLoadingDispatcher,
 } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection";
@@ -252,25 +250,6 @@ const VideoTest = () => {
       setModuleTime(Number(time));
     }
   }, []);
-
-  // useEffect(() => {
-  //   if (assessmentModule?.module?.question) {
-  //     const questions = assessmentModule?.module?.question?.map((v: any) => {
-  //       return { ...v, answer: v?.answer ? v?.answer : "" };
-  //     });
-  //     setModuleQuestions(questions);
-  //   }
-  // }, [assessmentModule]);
-
-  // useEffect(() => {
-  //   dispatcher(
-  //     setAssessmentModuleDispatcher({
-  //       moduleId: testId,
-  //       candidateId: userId,
-  //       assessmentId: assessmentId,
-  //     })
-  //   );
-  // }, [dispatcher, assessmentId, testId, userId]);
 
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });

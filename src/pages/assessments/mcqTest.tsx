@@ -7,13 +7,11 @@ import React, { memo, useEffect, useRef, useState } from "react";
 import { useNetworkState } from 'react-use';
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
-  getAssessmentModuleSelector,
   getAssessmentsSelector,
 } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import {
   getModuleSubmissionDispatcher,
   getUserActivityDispatcher,
-  setAssessmentModuleDispatcher,
 } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
 import { toast } from "react-toastify";
@@ -33,7 +31,6 @@ import { ReactSVG } from "react-svg";
 
 function StartMCQTest () {
   const dispatcher = useAppDispatch();
-  // const assessmentModule = useAppSelector(getAssessmentModuleSelector);
   const myAssessments = useAppSelector(getAssessmentsSelector);
   const [moduleQuestions, setModuleQuestions] = React.useState<any>([]);
   const [questionIndex, setQuestionIndex] = React.useState(0);
@@ -129,26 +126,6 @@ function StartMCQTest () {
       setModuleTime(Number(time))
     }
   }, [])
-  // React.useEffect(() => {
-  //   if (assessmentModule?.module?.question) {
-  //     const questions = assessmentModule?.module?.question?.map((v: any) => {
-  //       return { ...v, answer: "" };
-  //     });
-  //     setModuleQuestions(questions);
-  //     setQuestionIndex(0);
-  //   }
-  // }, [assessmentModule]);
-
-  // React.useEffect(() => {
-  //   dispatcher(
-  //     setAssessmentModuleDispatcher({
-  //       moduleId: testId,
-  //       candidateId: userId,
-  //       assessmentId: assessmentId,
-  //     })
-  //   );
-  // }, [dispatcher, assessmentId, testId, userId]);
-
 
   useEffect(() => {
     setTimeout(() => {

@@ -1,9 +1,8 @@
 import VoiceIcon from "../../assets/Group 171.png";
 import MicIcon from "../../assets/svg/micIcon2.svg";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
-import Webcam from "react-webcam";
 import { useNetworkState } from 'react-use';
 import { toast } from "react-toastify";
 import TimerCounterWithProgress from "../../components/timerCounterWithProgress";
@@ -11,13 +10,11 @@ import { v4 as uuidv4 } from "uuid";
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
-  getAssessmentModuleSelector,
   getAssessmentsSelector,
 } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import {
   getModuleSubmissionDispatcher,
   getUserActivityDispatcher,
-  setAssessmentModuleDispatcher,
 } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import useUserActivityDetection from "../../hooks/miscellaneousActivityDetection";
 import ExitFullScreenModal from "../../components/Modals/exitFullScreen";
@@ -31,8 +28,6 @@ import { detectBrowser } from "../../utils";
 import QuickStartModal from "../../components/Modals/quickStartModal";
 
 const VoiceToVoice = () => {
-  const webcamRef = useRef<any>(null);
-  const navigate = useNavigate();
   const { assessmentId, testId, userId } = useParams();
   const chatEndRef: any = useRef(null);
   const myAssessments = useAppSelector(getAssessmentsSelector);
@@ -40,8 +35,6 @@ const VoiceToVoice = () => {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
   );
-  // console.log('myAssessments=>', myAssessments)
-  // const assessmentModule = useAppSelector(getAssessmentModuleSelector);
   const [submitTestModal, setSubmitTestModal] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(0);
@@ -121,21 +114,11 @@ const VoiceToVoice = () => {
     }
   }
 
-  // useEffect(() => {
-  //   if (assessmentModule?.module?.question) {
-  //     const questions = assessmentModule?.module?.question?.map((v: any) => {
-  //       return { ...v, answer: v?.answer ? v?.answer : "" };
-  //     });
-  //     setModuleQuestions(questions);
-  //   }
-  // }, [assessmentModule]);
-
   useEffect(() => {
     const res = sessionStorage.getItem(`${testId}-${userId}`)
     const time = sessionStorage.getItem(`txp-${testId}-${userId}`)
     if (res) {
       const assessmentTestData: any = JSON.parse(decodeURIComponent(escape(atob(res))))
-      console.log('assessmentTestData=>', assessmentTestData)
       setAssessmentModule(assessmentTestData)
       if (assessmentTestData?.module?.question) {
         const questions = assessmentTestData?.module?.question?.map((v: any) => {
@@ -196,16 +179,6 @@ const VoiceToVoice = () => {
     }
     setIsExitFullScreen(false);
   };
-
-  // useEffect(() => {
-  //   dispatcher(
-  //     setAssessmentModuleDispatcher({
-  //       moduleId: testId,
-  //       candidateId: userId,
-  //       assessmentId: assessmentId,
-  //     })
-  //   );
-  // }, [dispatcher, assessmentId, testId, userId]);
 
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -431,11 +404,6 @@ const VoiceToVoice = () => {
           questions asked by TALBot
         </span>
       </div>
-      {/* <div className="flex mb-3">
-        <span className="text-[32px] font-semibold font-sansation text-[#CC8448]">
-          Case Study
-        </span>
-      </div> */}
       <div className="flex md:flex-row flex-col md:justify-center mt-16">
         <div className="flex flex-col w-[80%] h-1/2 md:flex-row justify-between">
           <div className="relative flex w-[50%] h-[470px] bg-[#474646] justify-center items-center rounded-xl border border-[#E5A971] mr-4">

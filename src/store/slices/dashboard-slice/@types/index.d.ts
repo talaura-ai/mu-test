@@ -4,4 +4,5 @@ interface DashboardDataType {
   assessmentModuleData: any
   assessmentQuestion: any
   programmingLang: any
+  quizLoading: boolean
 }

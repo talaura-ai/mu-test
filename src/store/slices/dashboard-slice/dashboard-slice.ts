@@ -8,6 +8,7 @@ const initialState: DashboardDataType = {
   assessmentQuestion: {},
   programmingLang: [],
   loading: false,
+  quizLoading: false
 };
 
 export const dashboardSlice = createSlice({
@@ -16,6 +17,9 @@ export const dashboardSlice = createSlice({
   reducers: {
     setLoading: (state, action: PayloadAction<any>) => {
       state.loading = action.payload;
+    },
+    setQuizLoading: (state, action: PayloadAction<any>) => {
+      state.quizLoading = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -34,7 +38,7 @@ export const dashboardSlice = createSlice({
       })
     builder
       .addCase(setAssessmentModuleDispatcher.pending, (state: any) => {
-        state.loading = true;
+        // state.loading = true;
       })
       .addCase(setAssessmentModuleDispatcher.fulfilled, (state: any, action: any) => {
         if (action.payload?.data?.status) {
@@ -45,9 +49,11 @@ export const dashboardSlice = createSlice({
           sessionStorage.setItem(`txp-${moduleId}-${candidateId}`, String(action?.payload?.data?.module?.time || 0))
         }
         state.loading = false;
+        state.quizLoading = false;
       })
       .addCase(setAssessmentModuleDispatcher.rejected, (state: any) => {
         state.loading = false;
+        state.quizLoading = false;
       })
     builder
       .addCase(setAssessmentQuestionDispatcher.pending, (state: any) => {
@@ -117,6 +123,6 @@ export const dashboardSlice = createSlice({
       })
   },
 });
-export const { setLoading } = dashboardSlice.actions;
+export const { setLoading, setQuizLoading } = dashboardSlice.actions;
 
 export default dashboardSlice.reducer;

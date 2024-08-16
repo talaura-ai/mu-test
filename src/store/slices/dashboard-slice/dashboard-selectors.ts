@@ -17,6 +17,13 @@ export const getLoadingSelector = createDraftSafeSelector(
   },
 )
 
+export const getQuizLoadingSelector = createDraftSafeSelector(
+  [dashboardSelector],
+  items => {
+    return items.quizLoading
+  },
+)
+
 export const getAssessmentModuleSelector = createDraftSafeSelector(
   [dashboardSelector],
   items => {

@@ -5,7 +5,7 @@ import LockNextIcon from "../../assets/svg/lockIcon.svg";
 import StartTestConfirmationModal from "../../components/startTestConfirmationModal";
 import AssessmentCard from "../../components/assessmentCard";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { setAssessmentDispatcher, setAssessmentModuleDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
+import { setAssessmentDispatcher, setAssessmentModuleDispatcher, setLoadingDispatcher, setQuizLoadingDispatcher } from "../../store/slices/dashboard-slice/dashboard-dispatchers";
 import { getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import { toast } from "react-toastify";
 import CompletedIcon from "../../assets/svg/completedIcon.svg"
@@ -107,6 +107,12 @@ function AssessmentDetails () {
 
   const getTestData = async (testId: string) => {
     try {
+      const type = String(selectedTest?.type).toLocaleLowerCase()
+      if (type === "Quiz"?.toLocaleLowerCase()) {
+        dispatcher(setQuizLoadingDispatcher(true))
+      } else {
+        dispatcher(setLoadingDispatcher(true))
+      }
       const res = await dispatcher(
         setAssessmentModuleDispatcher({
           moduleId: testId,
@@ -114,6 +120,8 @@ function AssessmentDetails () {
           assessmentId: assessmentId,
         })
       );
+      dispatcher(setQuizLoadingDispatcher(false))
+      dispatcher(setLoadingDispatcher(false))
       if (res?.payload?.data?.status) {
         const { module } = res?.payload?.data
         if (!module?.isLocked && module?.question?.length > 0 && ['Not Started']?.includes(module?.status)) {
@@ -127,6 +135,8 @@ function AssessmentDetails () {
       }
     } catch (error) {
       console.log('res=> error', error)
+      dispatcher(setQuizLoadingDispatcher(false))
+      dispatcher(setLoadingDispatcher(false))
     }
   }
   const startTest = () => {
@@ -204,9 +214,9 @@ function AssessmentDetails () {
       screenfull.toggle(element);
     }
   }
-  const onStartTest=(item:any)=>{
-    if(assessmentEndsOn){
-      if(moment(assessmentEndsOn).diff(moment(),"seconds") <=0){
+  const onStartTest = (item: any) => {
+    if (assessmentEndsOn) {
+      if (moment(assessmentEndsOn).diff(moment(), "seconds") <= 0) {
         setErrorModalObj({ visible: true, text: "Assessment time expired!" })
       } else {
         setStartTestModal(true);
