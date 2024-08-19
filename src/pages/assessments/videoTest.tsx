@@ -626,7 +626,7 @@ const VideoTest = () => {
 
   const goBack = () => {
     clearStoredSession();
-    // window.location.replace(`/assessment/${userId}/${assessmentId}/modules`);
+    window.location.replace(`/assessment/${userId}/${assessmentId}/modules`);
   };
 
   const speedCheckerFun = () => {
