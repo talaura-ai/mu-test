@@ -72,13 +72,8 @@ const VideoTest = () => {
   const [isRecording, setIsRecording] = useState(true);
   const [cameraStats, setCameraStats] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
-  const [userMute, setUserMute] = useState(true);
   const [isExitFullScreen, setIsExitFullScreen] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [question, setQuestion] = useState({
-    title: "",
-    answer: "",
-  });
   const [conversationAns, setConversationAns] = useState<string>("");
   const [moduleQuestions, setModuleQuestions] = useState<any>([]);
   const [aiChats, setAIChat] = useState<any>([]);
@@ -102,6 +97,8 @@ const VideoTest = () => {
   let speakTimeout: any = null;
   let toasterTimeout: any = null;
   let streamRef: any = useRef(null);
+  let AISpeakingRef: any = useRef(null);
+  let AIChatDataRef: any = useRef(null);
   const uploadIdRef: any = useRef("");
 
   const { webcamRef, isLoading, detected, facesDetected }: any =
@@ -222,6 +219,7 @@ const VideoTest = () => {
 
   useEffect(() => {
     scrollToBottom();
+    AIChatDataRef.current = aiChats
   }, [aiChats]);
 
   useEffect(() => {
@@ -255,7 +253,7 @@ const VideoTest = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  function handleVisibilityChange() {
+  function handleVisibilityChange () {
     if (document?.hidden) {
       updateUserActivity("tabChangeDetected");
       setTabSwitchDetected(true);
@@ -365,33 +363,39 @@ const VideoTest = () => {
         newSocket.emit("start", { streamSid: newSocket.id, callSid: uuidv4() });
       });
       newSocket.on("pauseAudio", (data) => {
-        if (data?.stop) {
+        if (data?.stop && AISpeakingRef?.current) {
           setIsSpeaking(false);
           audioElement?.current?.pause();
           audioElement.current.currentTime = 0;
           audioElement.current.src = "";
+          if (AISpeakingRef?.current) {
+            const index = AIChatDataRef?.current?.findLastIndex((item: any) => item.type === "AI");
+            if (index !== -1) {
+              let updatedArray = [...AIChatDataRef?.current]
+              const removedItem = updatedArray?.splice(index, 1)[0];
+              setAIChat(updatedArray)
+            }
+          }
+          AISpeakingRef.current = false
         }
       });
       newSocket.on("question", (data) => {
-        // console.log("conversationAns question=>", data);
-        setQuestion({ ...question, ...data });
         setAIChat((prev: any) => {
-          return [...prev, { type: "ai", text: data?.title }];
+          return [...prev, { type: "AI", text: data?.title }];
         });
-        setConversationAns((prev) => {
-          return prev + `AI:${data?.title} `;
-        });
+        // setConversationAns((prev) => {
+        //   return prev + `AI:${data?.title} `;
+        // });
       });
       newSocket.on("answer", (data) => {
-        // console.log("conversationAns answer=>", data);
         audioElement.current.pause();
         audioElement.current.currentTime = 0;
         setAIChat((prev: any) => {
-          return [...prev, { type: "user", text: data?.answer }];
+          return [...prev, { type: "User", text: data?.answer }];
         });
-        setConversationAns((prev) => {
-          return prev + `User:${data?.answer} `;
-        });
+        // setConversationAns((prev) => {
+        //   return prev + `User:${data?.answer} `;
+        // });
       });
 
       newSocket.on("audioData", async (data) => {
@@ -400,6 +404,7 @@ const VideoTest = () => {
         // console.log("audioUrl=>", audioUrl);
         clearTimeout(speakTimeout);
         setIsSpeaking(true);
+        AISpeakingRef.current = true
         audioElement.current.pause();
         audioElement.current.currentTime = 0;
         audioElement.current.src = "";
@@ -409,6 +414,7 @@ const VideoTest = () => {
         }, 200);
         audioElement.current.onended = () => {
           setIsSpeaking(false);
+          AISpeakingRef.current = false
         };
       });
 
@@ -424,7 +430,7 @@ const VideoTest = () => {
         mediaRecorder?.stop();
         audioElement.current?.pause();
         audioElement.current.currentTime = 0;
-        mediaRecorder.removeEventListener("dataavailable", () => {});
+        mediaRecorder.removeEventListener("dataavailable", () => { });
         newSocket?.disconnect();
         if (streamRef?.current) {
           streamRef.current
@@ -471,7 +477,7 @@ const VideoTest = () => {
     }
   }, [liveVideoMediaRecorder]);
 
-  async function uploadChunk(blob: any) {
+  async function uploadChunk (blob: any) {
     const params = {
       Body: blob,
       Bucket: bucketName,
@@ -498,7 +504,7 @@ const VideoTest = () => {
     }
   }
 
-  async function stopRecording() {
+  async function stopRecording () {
     dispatcher(setLoadingDispatcher(true));
     liveVideoMediaRecorder?.stop();
     clearTimeout(speakTimeout);
@@ -512,6 +518,7 @@ const VideoTest = () => {
       webcamRef.current.video.srcObject = null;
     }
     setIsSpeaking(false);
+    AISpeakingRef.current = false
     if (streamRef?.current) {
       streamRef.current?.getTracks()?.forEach((track: any) => {
         track?.stop();
@@ -540,7 +547,7 @@ const VideoTest = () => {
     }
   }
 
-  function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  function arrayBufferToBase64 (buffer: ArrayBuffer): string {
     let binary = "";
     const bytes = new Uint8Array(buffer);
     const len = bytes.byteLength;
@@ -592,13 +599,24 @@ const VideoTest = () => {
     }
   };
 
+  const getConversation = () => {
+    let ans = ""
+    aiChats?.map((v: any) => {
+      if (v?.type === "AI") {
+        ans = ans + `AI:${v?.text} `
+      } else {
+        ans = ans + `User:${v?.text} `
+      }
+    })
+    return ans
+  }
   const submitTest = async (location: string) => {
     try {
       const res = await dispatcher(
         getModuleSubmissionDispatcher({
           moduleId: testId,
           videoUrl: location,
-          question: [{ ...moduleQuestions?.[0], answer: conversationAns }],
+          question: [{ ...moduleQuestions?.[0], answer: getConversation() }],
         })
       );
       if (res?.payload.data?.status) {
@@ -657,39 +675,39 @@ const VideoTest = () => {
     <>
       <ReactInternetSpeedMeter
         outputType=""
-        pingInterval={5000} // milliseconds
+        pingInterval={ 5000 } // milliseconds
         thresholdUnit="megabyte" // "byte" , "kilobyte", "megabyte"
-        threshold={4}
+        threshold={ 4 }
         imageUrl="https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png"
         downloadSize="500000" //bytes
-        callbackFunctionOnNetworkDown={(data: any) => {
+        callbackFunctionOnNetworkDown={ (data: any) => {
           if (isInternet5Mb) {
             speedCheckerFun();
           }
-        }}
-        callbackFunctionOnNetworkTest={(data: any) => {
+        } }
+        callbackFunctionOnNetworkTest={ (data: any) => {
           if (data >= 4 && !isInternet5Mb) {
             setIsInternet5Mb(true);
             clearTimeout(speedTimer);
           }
-        }}
+        } }
       />
       <div className="sm:p-6 md:px-20 md:py-12 p-4">
-        {isToasterDisplayed && (
+        { isToasterDisplayed && (
           <CustomToaster
-            message={toastMsg}
-            onClose={() => {
+            message={ toastMsg }
+            onClose={ () => {
               setIsToasterDisplayed(false);
-            }}
+            } }
           />
-        )}
-        {!isInternet5Mb && <CustomSpeedChecker />}
+        ) }
+        { !isInternet5Mb && <CustomSpeedChecker /> }
         <TimerCounterWithProgress
-          timestamp={moduleTime || 0}
-          title={"Video Round"}
-          onTimeout={onTimeout}
-          showTimer={true}
-          showProgressFromLT={true}
+          timestamp={ moduleTime || 0 }
+          title={ "Video Round" }
+          onTimeout={ onTimeout }
+          showTimer={ true }
+          showProgressFromLT={ true }
         />
         <div className="flex">
           <span className="text-[20px] text-black font-sansation font-semibold">
@@ -723,24 +741,24 @@ const VideoTest = () => {
             </div> */}
             <div className="flex relative h-1/2 w-full rounded-xl overflow-hidden">
               <div className="flex rounded-xl w-full overflow-hidden h-[500px] bg-gray-200">
-                {isSocketConnected && (
+                { isSocketConnected && (
                   <Webcam
-                    ref={webcamRef}
+                    ref={ webcamRef }
                     screenshotFormat="image/jpeg"
-                    screenshotQuality={1}
+                    screenshotQuality={ 1 }
                     // audio={userMute}
-                    videoConstraints={videoConstraints}
-                    onUserMedia={() => {
+                    videoConstraints={ videoConstraints }
+                    onUserMedia={ () => {
                       setCameraStats(true);
-                    }}
-                    onUserMediaError={() => {
+                    } }
+                    onUserMediaError={ () => {
                       setCameraStats(false);
-                    }}
+                    } }
                     className="overflow-hidden rounded-xl bg-gray-200 object-cover w-full"
                   />
-                )}
+                ) }
                 <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation capitalize">
-                  {(myAssessments && myAssessments?.[0]?.name) || "Candidate"}
+                  { (myAssessments && myAssessments?.[0]?.name) || "Candidate" }
                 </div>
                 {/* <div className="absolute right-6 bottom-4 text-white  px-4 py-1  ">
                   <ReactSVG
@@ -760,36 +778,36 @@ const VideoTest = () => {
                     >
                       AI
                     </div> */}
-                    {isSpeaking ? (
+                    { isSpeaking ? (
                       <Lottie
-                        options={defaultOptions}
-                        height={120}
-                        width={120}
+                        options={ defaultOptions }
+                        height={ 120 }
+                        width={ 120 }
                       />
                     ) : (
                       <Lottie
-                        options={defaultOptionsLi}
-                        height={170}
-                        width={170}
+                        options={ defaultOptionsLi }
+                        height={ 170 }
+                        width={ 170 }
                       />
-                    )}
-                    {isSpeaking? <div
-                      className={`absolute text-[#E5A971] text-[16px] md:text-[24px] font-semibold font-sansation`}
+                    ) }
+                    { isSpeaking ? <div
+                      className={ `absolute text-[#E5A971] text-[16px] md:text-[24px] font-semibold font-sansation` }
                     >
                       AI
-                    </div>: <div
-                      className={`absolute text-[#E5A971] text-[8px] md:text-[12px] font-semibold font-sansation`}
+                    </div> : <div
+                      className={ `absolute text-[#E5A971] text-[8px] md:text-[12px] font-semibold font-sansation` }
                     >
                       Listening
-                    </div>}
+                    </div> }
                   </div>
                   <div className="absolute left-2 bottom-2 bg-black opacity-75 text-white font-semibold px-3 py-1 text-[10px] rounded-[10px] font-sansation">
                     AI Bot
                   </div>
                   <div className="absolute right-2 bottom-2 text-white">
                     <ReactSVG
-                      src={MicIcon}
-                      style={{ width: "20px", height: "20px" }}
+                      src={ MicIcon }
+                      style={ { width: "20px", height: "20px" } }
                     />
                   </div>
                 </div>
@@ -799,22 +817,22 @@ const VideoTest = () => {
           <div className="flex flex-col w-[35%] bg-white shadow rounded-lg p-4 ml-4">
             <div className="flex w-full flex-col h-[440px]">
               <div className="flex gap-2 px-2 pb-2">
-                <img src={VoiceIcon} />
+                <img src={ VoiceIcon } />
                 <span className="text-xs text-gray-300 mt-2">CC/Subtitle </span>
               </div>
               <div className="flex flex-col mx-2 bg-white overflow-y-scroll space-y-2">
-                {Array.from(
+                { Array.from(
                   new Map(aiChats?.map((itm: any) => [itm?.text, itm])).values()
                 )?.map((item: any, index: number) => {
-                  if (item?.type === "ai") {
+                  if (item?.type === "AI") {
                     return (
                       <div
-                        key={item?.text + index}
+                        key={ item?.text + index }
                         className="flex flex-col gap-1 w-full max-w-[80%]"
                       >
                         <div className="flex flex-col leading-1.5 p-4 border-gray-200 bg-[#F5F2F2] rounded-xl">
                           <p className="text-sm font-normal text-gray-900">
-                            {item?.text}
+                            { item?.text }
                           </p>
                         </div>
                       </div>
@@ -822,17 +840,17 @@ const VideoTest = () => {
                   } else {
                     return (
                       <div
-                        key={item?.text + index}
+                        key={ item?.text + index }
                         className="flex justify-end"
                       >
                         <div className="bg-[#F5F2F2] text-black p-2 rounded-lg max-w-[80%]">
-                          {item?.text}
+                          { item?.text }
                         </div>
                       </div>
                     );
                   }
-                })}
-                <div ref={chatEndRef} />
+                }) }
+                <div ref={ chatEndRef } />
               </div>
             </div>
           </div>
@@ -840,44 +858,44 @@ const VideoTest = () => {
         <div className="flex justify-end py-6 mt-4 font-sansation">
           <button
             className="flex justify-center bg-[#40B24B] px-12 py-2 rounded-lg text-white font-semibold font-sansation"
-            onClick={() => {
+            onClick={ () => {
               setSubmitTestModal(true);
-            }}
+            } }
           >
             Submit
           </button>
         </div>
-        {submitTestModal ? (
+        { submitTestModal ? (
           <ModuleConfirmationModal
-            onPress={(v) => {
+            onPress={ (v) => {
               onSubmitTest(v);
-            }}
-            title={assessmentModule?.module?.name}
+            } }
+            title={ assessmentModule?.module?.name }
           />
-        ) : null}
-        {isExitFullScreen ? (
+        ) : null }
+        { isExitFullScreen ? (
           <ExitFullScreenModal
-            onPress={(v) => {
+            onPress={ (v) => {
               onExitAction(v);
-            }}
+            } }
           />
-        ) : null}
-        {networkChecking && <InternetModal />}
-        {/* { !isInternet5Mb && <InternetSpeedModal onClose={ () => { onClose() } } /> } */}
-        {tabSwitchDetected && (
+        ) : null }
+        { networkChecking && <InternetModal /> }
+        {/* { !isInternet5Mb && <InternetSpeedModal onClose={ () => { onClose() } } /> } */ }
+        { tabSwitchDetected && (
           <TabChangeDetectionModal
-            onPress={() => {
+            onPress={ () => {
               setTabSwitchDetected(false);
-            }}
+            } }
           />
-        )}
-        {quickStartInSafari && (
+        ) }
+        { quickStartInSafari && (
           <QuickStartModal
-            onClose={() => {
+            onClose={ () => {
               setQuickStartInSafari(false);
-            }}
+            } }
           />
-        )}
+        ) }
       </div>
     </>
   );
