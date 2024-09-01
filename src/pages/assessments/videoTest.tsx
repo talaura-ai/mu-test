@@ -68,7 +68,8 @@ const VideoTest = () => {
   >(null);
   // const assessmentModule = useAppSelector(getAssessmentModuleSelector);
   const [submitTestModal, setSubmitTestModal] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState<number>(0);
+  // Thinking = 0 Lisneting = 1 Speaking = 2
   const [isRecording, setIsRecording] = useState(true);
   const [cameraStats, setCameraStats] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
@@ -277,24 +278,25 @@ const VideoTest = () => {
 
   useEffect(() => {
     setQuickStartInSafari(detectBrowser() === "Safari");
-    navigator.mediaDevices
-      .getUserMedia({ audio: true })
-      .then((stream) => {
+    const initMedia = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
         streamRef.current = stream;
-        setMediaRecorder(
-          new MediaRecorder(stream, {
-            mimeType:
-              detectBrowser() === "Safari"
-                ? "audio/mp4"
-                : "audio/webm; codecs=opus",
-          })
-        );
-      })
-      .catch((error) => {
-        console.error("Error accessing microphone:", error);
-        setError("Error accessing microphone. Please check your permissions.");
-      });
-  }, []); // Setup mediaRecorder initially
+        const recorder = new MediaRecorder(stream, {
+          mimeType:
+            detectBrowser() === "Safari"
+              ? "audio/mp4"
+              : "audio/webm; codecs=opus",
+        });
+        setMediaRecorder(recorder);
+      } catch (error) {
+        console.log('ERR', error)
+      }
+    };
+    initMedia();
+  }, []);
 
   // Live video recording
   useEffect(() => {
@@ -364,7 +366,7 @@ const VideoTest = () => {
       });
       newSocket.on("pauseAudio", (data) => {
         if (data?.stop && AISpeakingRef?.current) {
-          setIsSpeaking(false);
+          setIsSpeaking(1);
           audioElement?.current?.pause();
           audioElement.current.currentTime = 0;
           audioElement.current.src = "";
@@ -393,6 +395,7 @@ const VideoTest = () => {
         setAIChat((prev: any) => {
           return [...prev, { type: "User", text: data?.answer }];
         });
+        setIsSpeaking(0);
         // setConversationAns((prev) => {
         //   return prev + `User:${data?.answer} `;
         // });
@@ -403,7 +406,7 @@ const VideoTest = () => {
         const audioUrl = URL.createObjectURL(audioBlob);
         // console.log("audioUrl=>", audioUrl);
         clearTimeout(speakTimeout);
-        setIsSpeaking(true);
+        setIsSpeaking(2);
         AISpeakingRef.current = true
         audioElement.current.pause();
         audioElement.current.currentTime = 0;
@@ -413,7 +416,7 @@ const VideoTest = () => {
           audioElement.current.play();
         }, 200);
         audioElement.current.onended = () => {
-          setIsSpeaking(false);
+          setIsSpeaking(1);
           AISpeakingRef.current = false
         };
       });
@@ -517,7 +520,7 @@ const VideoTest = () => {
     if (webcamRef && webcamRef?.current) {
       webcamRef.current.video.srcObject = null;
     }
-    setIsSpeaking(false);
+    setIsSpeaking(1);
     AISpeakingRef.current = false
     if (streamRef?.current) {
       streamRef.current?.getTracks()?.forEach((track: any) => {
@@ -778,7 +781,7 @@ const VideoTest = () => {
                     >
                       AI
                     </div> */}
-                    { isSpeaking ? (
+                    { isSpeaking === 2 ? (
                       <Lottie
                         options={ defaultOptions }
                         height={ 120 }
@@ -791,14 +794,14 @@ const VideoTest = () => {
                         width={ 170 }
                       />
                     ) }
-                    { isSpeaking ? <div
-                      className={ `absolute text-[#E5A971] text-[16px] md:text-[24px] font-semibold font-sansation` }
+                    { isSpeaking === 2 ? <div
+                      className={ `absolute text-[#E5A971] text-[16px] md:text-[24px] font-semibold font-sansation bg-[#474646]` }
                     >
                       AI
                     </div> : <div
-                      className={ `absolute text-[#E5A971] text-[8px] md:text-[12px] font-semibold font-sansation` }
+                      className={ `absolute text-[#E5A971] text-[8px] md:text-[12px] font-semibold font-sansation bg-[#474646]` }
                     >
-                      Listening
+                      { isSpeaking === 0 ? "Thinking" : "Listening" }
                     </div> }
                   </div>
                   <div className="absolute left-2 bottom-2 bg-black opacity-75 text-white font-semibold px-3 py-1 text-[10px] rounded-[10px] font-sansation">
