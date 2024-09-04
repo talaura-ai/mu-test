@@ -348,7 +348,7 @@ const VideoTest = () => {
           title: moduleQuestions?.[0]?.title,
           name: myAssessments && myAssessments?.[0]?.name,
         });
-        mediaRecorder.start(1500);
+        mediaRecorder.start(200);
         mediaRecorder.ondataavailable = async (event) => {
           if (event?.data?.size > 0) {
             // console.log("START AI");
