@@ -102,6 +102,10 @@ const VideoTest = () => {
   let AIChatDataRef: any = useRef(null);
   const uploadIdRef: any = useRef("");
 
+  let audioStatus: any = useRef(0);
+  let audioList: any = useRef([]);
+  let audioIndex: any = useRef(0);
+
   const { webcamRef, isLoading, detected, facesDetected }: any =
     useFaceDetection({
       faceDetectionOptions: {
@@ -224,6 +228,9 @@ const VideoTest = () => {
   }, [aiChats]);
 
   useEffect(() => {
+    audioStatus.current = 0
+    audioList.current = []
+    audioIndex.current = 0
     const res = sessionStorage.getItem(`${testId}-${userId}`);
     const time = sessionStorage.getItem(`txp-${testId}-${userId}`);
     if (res) {
@@ -351,10 +358,10 @@ const VideoTest = () => {
         mediaRecorder.start(200);
         mediaRecorder.ondataavailable = async (event) => {
           if (event?.data?.size > 0) {
-            // console.log("START AI");
             try {
               const arrayBuffer = await event.data.arrayBuffer();
               const base64String = arrayBufferToBase64(arrayBuffer);
+              console.log("START AI");
               newSocket.emit("media", { payload: base64String });
             } catch (err) {
               console.error("Failed to encode audio:", err);
@@ -371,27 +378,45 @@ const VideoTest = () => {
           audioElement.current.currentTime = 0;
           audioElement.current.src = "";
           if (AISpeakingRef?.current) {
-            const index = AIChatDataRef?.current?.findLastIndex((item: any) => item.type === "AI");
-            if (index !== -1) {
-              let updatedArray = [...AIChatDataRef?.current]
-              const removedItem = updatedArray?.splice(index, 1)[0];
-              setAIChat(updatedArray)
+            let flag = true
+            let updatedArray: any = []
+            for (let index = AIChatDataRef?.current?.length - 1; index >= 0; index--) {
+              if (AIChatDataRef?.current?.[index]?.type === "AI" && flag) {
+              } else {
+                flag = false
+                updatedArray = [AIChatDataRef?.current?.[index], ...updatedArray]
+              }
             }
+            setAIChat(updatedArray)
+            // const index = AIChatDataRef?.current?.findLastIndex((item: any) => item.type === "AI");
+            // if (index !== -1) {
+            //   let updatedArray = [...AIChatDataRef?.current]
+            //   const removedItem = updatedArray?.splice(index, 1)[0];
+            //   setAIChat(updatedArray)
+            // }
           }
           AISpeakingRef.current = false
+          audioStatus.current = 0
+          audioList.current = []
+          audioIndex.current = 0
         }
       });
       newSocket.on("question", (data) => {
-        setAIChat((prev: any) => {
-          return [...prev, { type: "AI", text: data?.title }];
-        });
+        if (data?.title) {
+          setAIChat((prev: any) => {
+            return [...prev, { type: "AI", text: data?.title }];
+          });
+        }
         // setConversationAns((prev) => {
         //   return prev + `AI:${data?.title} `;
         // });
       });
       newSocket.on("answer", (data) => {
-        audioElement.current.pause();
+        audioElement?.current?.pause();
         audioElement.current.currentTime = 0;
+        audioStatus.current = 0
+        audioList.current = []
+        audioIndex.current = 0
         setAIChat((prev: any) => {
           return [...prev, { type: "User", text: data?.answer }];
         });
@@ -403,21 +428,50 @@ const VideoTest = () => {
 
       newSocket.on("audioData", async (data) => {
         const audioBlob = base64ToBlob(data.audio, "audio/mpeg");
-        const audioUrl = URL.createObjectURL(audioBlob);
-        // console.log("audioUrl=>", audioUrl);
+        const audioUrl: any = URL.createObjectURL(audioBlob);
+        console.log("audioUrl=>", audioUrl);
+        // const now = moment();
+        // const formattedTime = now.format('mm:ss.SSS');
+        // console.log("formattedTime=>", formattedTime);
         clearTimeout(speakTimeout);
-        setIsSpeaking(2);
-        AISpeakingRef.current = true
-        audioElement.current.pause();
-        audioElement.current.currentTime = 0;
-        audioElement.current.src = "";
         speakTimeout = setTimeout(() => {
-          audioElement.current.src = audioUrl;
-          audioElement.current.play();
-        }, 200);
+          if (audioList?.current?.length) {
+            audioList.current = [...audioList.current, audioUrl]
+          } else {
+            audioList.current = [audioUrl]
+          }
+          setIsSpeaking(2);
+          AISpeakingRef.current = true
+          console.log('CCC----', audioStatus.current, audioIndex.current, audioList.current)
+          if (audioStatus?.current === 0 && audioList?.current?.length) {
+            audioStatus.current = 1
+            playAudioFile()
+          }
+        }, 25);
+
+        // speakTimeout = setTimeout(() => {
+        //   audioElement.current.src = audioUrl;
+        //   audioElement.current.play();
+        // }, 200);
         audioElement.current.onended = () => {
           setIsSpeaking(1);
           AISpeakingRef.current = false
+          console.log('ENMDEEDDD----', audioIndex.current, audioList?.current?.length)
+          if (audioList?.current?.length - 1 === audioIndex?.current) {
+            audioStatus.current = 0
+            audioList.current = []
+            audioIndex.current = 0
+            audioElement?.current?.pause();
+            audioElement.current.currentTime = 0;
+            audioElement.current.src = "";
+          } else {
+            audioIndex.current = audioIndex?.current + 1
+            audioStatus.current = 0
+            if (audioStatus?.current === 0 && audioList?.current?.length) {
+              audioStatus.current = 1
+              playAudioFile()
+            }
+          }
         };
       });
 
@@ -431,7 +485,7 @@ const VideoTest = () => {
       });
       return () => {
         mediaRecorder?.stop();
-        audioElement.current?.pause();
+        audioElement?.current?.pause();
         audioElement.current.currentTime = 0;
         mediaRecorder.removeEventListener("dataavailable", () => { });
         newSocket?.disconnect();
@@ -450,6 +504,18 @@ const VideoTest = () => {
     myAssessments,
     quickStartInSafari,
   ]);
+
+  const playAudioFile = () => {
+    try {
+      console.log("PLAY----", audioIndex?.current, audioStatus?.current, audioList?.current)
+      if (audioList?.current?.length - 1 >= audioIndex?.current) {
+        audioElement.current.src = audioList.current[audioIndex.current];
+        audioElement?.current?.play();
+      }
+    } catch (error) {
+      console.log('error=>', error)
+    }
+  }
 
   useEffect(() => {
     const mediaListner = async () => {
@@ -514,6 +580,9 @@ const VideoTest = () => {
     audioElement?.current?.pause();
     audioElement.current.currentTime = 0;
     audioElement.current.src = "";
+    audioStatus.current = 0
+    audioList.current = []
+    audioIndex.current = 0
     webcamRef?.current?.video?.srcObject
       ?.getTracks()
       ?.forEach((track: any) => track?.stop());
