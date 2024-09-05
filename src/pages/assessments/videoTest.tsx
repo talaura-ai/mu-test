@@ -377,6 +377,7 @@ const VideoTest = () => {
           audioElement?.current?.pause();
           audioElement.current.currentTime = 0;
           audioElement.current.src = "";
+          console.log('pauseAudio=>****************************')
           if (AISpeakingRef?.current) {
             let flag = true
             let updatedArray: any = []
@@ -387,7 +388,10 @@ const VideoTest = () => {
                 updatedArray = [AIChatDataRef?.current?.[index], ...updatedArray]
               }
             }
-            setAIChat(updatedArray)
+            setAIChat((prev: any) => {
+              return [...updatedArray];
+            });
+            // setAIChat(updatedArray)
             // const index = AIChatDataRef?.current?.findLastIndex((item: any) => item.type === "AI");
             // if (index !== -1) {
             //   let updatedArray = [...AIChatDataRef?.current]
@@ -402,7 +406,7 @@ const VideoTest = () => {
         }
       });
       newSocket.on("question", (data) => {
-        if (data?.title) {
+        if (data?.title?.trim()) {
           setAIChat((prev: any) => {
             return [...prev, { type: "AI", text: data?.title }];
           });
