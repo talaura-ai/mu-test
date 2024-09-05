@@ -458,8 +458,6 @@ const VideoTest = () => {
         //   audioElement.current.play();
         // }, 200);
         audioElement.current.onended = () => {
-          setIsSpeaking(1);
-          AISpeakingRef.current = false
           console.log('ENMDEEDDD----', audioIndex.current, audioList?.current?.length)
           if (audioList?.current?.length - 1 === audioIndex?.current) {
             audioStatus.current = 0
@@ -468,10 +466,13 @@ const VideoTest = () => {
             audioElement?.current?.pause();
             audioElement.current.currentTime = 0;
             audioElement.current.src = "";
+            setIsSpeaking(1);
+            AISpeakingRef.current = false
           } else {
             audioIndex.current = audioIndex?.current + 1
             audioStatus.current = 0
             if (audioStatus?.current === 0 && audioList?.current?.length) {
+              AISpeakingRef.current = true
               audioStatus.current = 1
               playAudioFile()
             }
