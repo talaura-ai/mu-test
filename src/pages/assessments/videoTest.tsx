@@ -447,7 +447,7 @@ const VideoTest = () => {
             audioStatus.current = 1
             playAudioFile()
           }
-        }, 25);
+        }, 15);
 
         // speakTimeout = setTimeout(() => {
         //   audioElement.current.src = audioUrl;
