@@ -374,9 +374,6 @@ const VideoTest = () => {
       newSocket.on("pauseAudio", (data) => {
         if (data?.stop && AISpeakingRef?.current) {
           setIsSpeaking(1);
-          audioElement?.current?.pause();
-          audioElement.current.currentTime = 0;
-          audioElement.current.src = "";
           console.log('pauseAudio=>****************************')
           if (AISpeakingRef?.current) {
             let flag = true
@@ -391,15 +388,11 @@ const VideoTest = () => {
             setAIChat((prev: any) => {
               return [...updatedArray];
             });
-            // setAIChat(updatedArray)
-            // const index = AIChatDataRef?.current?.findLastIndex((item: any) => item.type === "AI");
-            // if (index !== -1) {
-            //   let updatedArray = [...AIChatDataRef?.current]
-            //   const removedItem = updatedArray?.splice(index, 1)[0];
-            //   setAIChat(updatedArray)
-            // }
           }
           AISpeakingRef.current = false
+          audioElement?.current?.pause();
+          audioElement.current.currentTime = 0;
+          audioElement.current.src = "";
           audioStatus.current = 0
           audioList.current = []
           audioIndex.current = 0
@@ -416,14 +409,31 @@ const VideoTest = () => {
         // });
       });
       newSocket.on("answer", (data) => {
+        console.log('ANS---------------------', data?.answer, AISpeakingRef?.current)
+        if (AISpeakingRef?.current) {
+          let flag = true
+          let updatedArray: any = []
+          for (let index = AIChatDataRef?.current?.length - 1; index >= 0; index--) {
+            if (AIChatDataRef?.current?.[index]?.type === "AI" && flag) {
+            } else {
+              flag = false
+              updatedArray = [AIChatDataRef?.current?.[index], ...updatedArray]
+            }
+          }
+          setAIChat((prev: any) => {
+            return [...updatedArray, { type: "User", text: data?.answer }];
+          });
+        } else {
+          setAIChat((prev: any) => {
+            return [...prev, { type: "User", text: data?.answer }];
+          });
+        }
+        AISpeakingRef.current = false
         audioElement?.current?.pause();
         audioElement.current.currentTime = 0;
         audioStatus.current = 0
         audioList.current = []
         audioIndex.current = 0
-        setAIChat((prev: any) => {
-          return [...prev, { type: "User", text: data?.answer }];
-        });
         setIsSpeaking(0);
         // setConversationAns((prev) => {
         //   return prev + `User:${data?.answer} `;
@@ -433,10 +443,6 @@ const VideoTest = () => {
       newSocket.on("audioData", async (data) => {
         const audioBlob = base64ToBlob(data.audio, "audio/mpeg");
         const audioUrl: any = URL.createObjectURL(audioBlob);
-        console.log("audioUrl=>", audioUrl);
-        // const now = moment();
-        // const formattedTime = now.format('mm:ss.SSS');
-        // console.log("formattedTime=>", formattedTime);
         clearTimeout(speakTimeout);
         speakTimeout = setTimeout(() => {
           if (audioList?.current?.length) {
@@ -451,7 +457,7 @@ const VideoTest = () => {
             audioStatus.current = 1
             playAudioFile()
           }
-        }, 15);
+        }, 0);
 
         // speakTimeout = setTimeout(() => {
         //   audioElement.current.src = audioUrl;
@@ -513,9 +519,13 @@ const VideoTest = () => {
   const playAudioFile = () => {
     try {
       console.log("PLAY----", audioIndex?.current, audioStatus?.current, audioList?.current)
-      if (audioList?.current?.length - 1 >= audioIndex?.current) {
+      if (audioList?.current?.length - 1 >= audioIndex?.current && audioElement?.current && AISpeakingRef?.current) {
         audioElement.current.src = audioList.current[audioIndex.current];
-        audioElement?.current?.play();
+        audioElement?.current?.play()?.then(() => {
+          console.log("Audio is playing");
+        }).catch(error => {
+          console.log("Play request was interrupted", error);
+        });
       }
     } catch (error) {
       console.log('error=>', error)
@@ -649,15 +659,15 @@ const VideoTest = () => {
     return new Blob(byteArrays, { type });
   };
 
-  useEffect(() => {
-    if (mediaRecorder && mediaRecorder.state !== "inactive") {
-      if (isRecording) {
-        mediaRecorder.resume();
-      } else {
-        mediaRecorder.pause();
-      }
-    }
-  }, [isRecording, mediaRecorder]);
+  // useEffect(() => {
+  //   if (mediaRecorder && mediaRecorder.state !== "inactive") {
+  //     if (isRecording) {
+  //       mediaRecorder.resume();
+  //     } else {
+  //       mediaRecorder.pause();
+  //     }
+  //   }
+  // }, [isRecording, mediaRecorder]);
 
   const onTimeout = () => {
     if (Number(assessmentModule?.module?.time) > 0) {
