@@ -13,7 +13,7 @@ import CountdownTimer from "../../components/countdownTimer";
 import ModuleExpiredModal from "../../components/Modals/moduleExpired";
 import { ReactSVG } from "react-svg";
 
-function MyAssessments () {
+function MyAssessments() {
   const navigate = useNavigate();
   const { userId } = useParams();
   const [deviceConfigModal, setDeviceConfigModal] = React.useState(false);
@@ -39,7 +39,7 @@ function MyAssessments () {
       );
     }
   };
-  
+
   React.useEffect(() => {
     if (userId) {
       dispatcher(setAssessmentDispatcher({ userId }));
@@ -79,24 +79,24 @@ function MyAssessments () {
   const isDisabled = currentTime < startTime;
 
   const getStatus = (item: any) => {
-    const flag = getAssessmentStatus(item?.module)
+    const flag = getAssessmentStatus(item?.module);
     if (flag) {
-      return "Completed"
+      return "Completed";
     } else {
       const currentTime = moment().valueOf();
       const endsOn = item?.endsOn;
       const startTime = item?.startsAt;
       if (startTime < currentTime && currentTime < endsOn) {
-        return "Start"
+        return "Start";
       } else {
         if (endsOn < currentTime) {
-          return "Expired"
+          return "Expired";
         } else {
-          return "Start"
+          return "Start";
         }
       }
     }
-  }
+  };
   const onStartModule = (item: any) => {
     const currentTime = moment().valueOf();
     const endsOn = item?.endsOn;
@@ -107,20 +107,20 @@ function MyAssessments () {
     } else {
       if (endsOn < currentTime) {
         dispatcher(setAssessmentDispatcher({ userId }));
-        setIsModuleExpired(true)
+        setIsModuleExpired(true);
       }
     }
-  }
+  };
   return (
     <>
-      { deviceConfigModal && (
+      {deviceConfigModal && (
         <DeviceConfigTestModal
-          onClose={ () => {
+          onClose={() => {
             setDeviceConfigModal(false);
-          } }
-          onNextClicked={ onNextClicked }
+          }}
+          onNextClicked={onNextClicked}
         />
-      ) }
+      )}
       <div className="sm:p-6 md:px-20 md:py-7 p-4">
         <div className="flex items-center justify-between mb-6 mt-5">
           <div className="flex items-center justify-start">
@@ -128,7 +128,7 @@ function MyAssessments () {
               Assessments
             </span>
           </div>
-          <div className="flex items-center">
+          <div className="sm:flex hidden items-center">
             <div className="w-[150px] text-gray-900">
               <div className="relative w-full group">
                 <button className="py-2.5 px-3 w-full md:text-sm text-site bg-white border border-dimmed focus:border-brand focus:outline-none focus:ring-0 peer flex items-center justify-between rounded font-semibold font-sansation">
@@ -149,56 +149,110 @@ function MyAssessments () {
             </div>
           </div>
         </div>
-        { myAssessments?.map((item, index) => (
+        {myAssessments?.map((item, index) => (
           <div
-            key={ item?.assessmentId + index }
-            className="flex flex-wrap items-center justify-around mb-6 rounded-2xl bg-white relative shadow-lg"
+            key={item?.assessmentId + index}
+            className="flex flex-wrap items-center justify-around mb-6 rounded-2xl bg-white relative shadow-lg sm:pb-0 pb-6"
           >
-            <div className="w-[10px] md:h-[64px] sm:h-[130px] bg-gradient-to-r from-[#E5A971] to-[rgb(243,188,132)] rounded-r-xl absolute top-auto left-0 bottom-auto"></div>
-            <div className="flex flex-col items-center justify-center py-6 md:w-[40%] sm:w-full">
-              <span className="text-[36px] font-semibold text-[#F2BC84] self-center justify-center pr-4 pl-7 leading-[38px] font-sansation">
-                { item?.assessmentName || "" }
+            <div className="sm:w-[10px] w-[7px] h-[70%] bg-gradient-to-r from-[#E5A971] to-[rgb(243,188,132)] rounded-r-xl absolute sm:top-auto top-[15%] left-0 bottom-auto"></div>
+            <div className="flex sm:flex-col flex-row items-center justify-between sm:py-6 py-0 md:w-[40%] sm:w-full w-[90%]">
+              <span className="sm:text-[36px] text-[14px] font-semibold text-[#F2BC84] self-center justify-center pr-4 sm:pl-7 pl-0 sm:leading-[38px] leading-[20px] font-sansation">
+                {item?.assessmentName || ""}
               </span>
               {/* <span className="text-[18px] font-semibold text-[#BDBDBD] self-center leading-[20px] font-sansation">
                 Sales Department
               </span> */}
+              <div className="sm:hidden flex items-center justify-center py-6 md:w-[20%] sm:w-full">
+                {/* <button
+                type="button"
+                // disabled={
+                //   isDisabled ||
+                //   getAssessmentStatus(item?.module) ||
+                //   assessmentExpired[item?.assessmentId]
+                // }
+                onClick={() => {
+                  setDeviceConfigModal(true);
+                  setSelectAssessment(item);
+                }}
+                className={`text-white font-sansation bg-[#CC8448] hover:bg-[#CC8448]/80 ${
+                  getAssessmentStatus(item?.module)
+                    ? "bg-[#CC8448]/80 cursor-not-allowed px-6"
+                    : "px-12"
+                } ${
+                  assessmentExpired[item?.assessmentId]
+                    ? "bg-[#CC8448]/80 cursor-not-allowed px-12"
+                    : ""
+                } focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md py-2.5 text-center inline-flex items-center`}
+              >
+                {getAssessmentStatus(item?.module) ? "Completed" : "Start"}
+              </button> */}
+                <button
+                  type="button"
+                  disabled={
+                    isDisabled ||
+                    getAssessmentStatus(item?.module) ||
+                    assessmentExpired[item?.assessmentId]
+                  } // Enable the disabled attribute
+                  onClick={() => {
+                    onStartModule(item);
+                  }}
+                  className={`text-white font-sansation bg-[#CC8448] text-[14px]
+                    ${isDisabled ? "cursor-not-allowed bg-[#CC8448]/60" : ""}
+                    ${
+                      getAssessmentStatus(item?.module)
+                        ? "px-2 cursor-not-allowed bg-[#CC8448]/60"
+                        : "px-6"
+                    }
+   ${assessmentExpired[item?.assessmentId] ? "px-12" : ""}
+        focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md py-1.5 text-center inline-flex items-center`}
+                >
+                  {getStatus(item)}
+                </button>
+              </div>
             </div>
-            <div className="flex items-center sm:justify-around md:justify-between md:w-[40%] sm:w-full px-2">
+            <div className="flex items-center sm:justify-around md:justify-between md:w-[40%] sm:w-full w-[90%] justify-between px-2">
               <div className="flex flex-col justify-center">
-                <ReactSVG src={ CalenderIcon } className="h-[20px] w-[20px]" />
-                <span className="text-[16px] font-medium text-[#5C7CFA] leading-[18px] font-sansation mt-1.5">
+                <ReactSVG
+                  src={CalenderIcon}
+                  className="h-[20px] w-[20px]"
+                  // beforeInjection={(svg) => {
+                  //   svg.setAttribute("width", "50px");
+                  //   svg.setAttribute("height", "50px");
+                  // }}
+                />
+                <span className="sm:text-[16px] text-[10px] font-medium text-[#5C7CFA] leading-[18px] font-sansation mt-1.5">
                   Started On
                 </span>
-                <span className="text-[16px] font-semibold text-black leading-[16px] font-sansation">
-                  { moment(item?.startsAt).format("MMM DD, YYYY, hh:mm A") }
+                <span className="sm:text-[16px] text-[10px] font-semibold text-black leading-[16px] font-sansation">
+                  {moment(item?.startsAt).format("MMM DD, YYYY, hh:mm A")}
                 </span>
               </div>
               <div className="flex flex-col justify-center">
-                <ReactSVG src={ DurationIcon } className="h-[20px] w-[20px]" />
-                <span className="text-[16px] font-medium text-[#E9BF3E] leading-[18px] font-sansation mt-2">
+                <ReactSVG src={DurationIcon} className="h-[20px] w-[20px]" />
+                <span className="sm:text-[16px] text-[10px] font-medium text-[#E9BF3E] leading-[18px] font-sansation mt-2">
                   Duration
                 </span>
-                <span className="text-[16px] font-semibold text-black leading-[16px] font-sansation">
-                  { assessmentTotalTime(item?.module) } minutes
+                <span className="sm:text-[16px] text-[10px] font-semibold text-black leading-[16px] font-sansation">
+                  {assessmentTotalTime(item?.module)} minutes
                 </span>
               </div>
               <div className="flex flex-col justify-center">
-                <ReactSVG src={ ExpireIcon } className="h-[20px] w-[20px]" />
-                <span className="text-[16px] font-medium text-[#7951E6] leading-[18px] font-sansation mt-2">
+                <ReactSVG src={ExpireIcon} className="h-[20px] w-[20px]" />
+                <span className="sm:text-[16px] text-[10px] font-medium text-[#7951E6] leading-[18px] font-sansation mt-2">
                   Expires In
                 </span>
-                <span className="text-[16px] font-semibold text-black leading-[16px] font-sansation">
-                  {/* { getExpiredIn(item?.startsAt, ) } */ }
+                <span className="sm:text-[16px] text-[10px] font-semibold text-black leading-[16px] font-sansation">
+                  {/* { getExpiredIn(item?.startsAt, ) } */}
                   <CountdownTimer
-                    onTimeout={ () => {
+                    onTimeout={() => {
                       onExpired(item?.assessmentId);
-                    } }
-                    timestamp={ moment(item?.endsOn).diff(moment(), "minutes") }
+                    }}
+                    timestamp={moment(item?.endsOn).diff(moment(), "minutes")}
                   />
                 </span>
               </div>
             </div>
-            <div className="flex items-center justify-center py-6 md:w-[20%] sm:w-full">
+            <div className="sm:flex hidden items-center justify-center py-6 md:w-[20%] sm:w-full">
               {/* <button
                 type="button"
                 // disabled={
@@ -229,22 +283,32 @@ function MyAssessments () {
                   getAssessmentStatus(item?.module) ||
                   assessmentExpired[item?.assessmentId]
                 } // Enable the disabled attribute
-                onClick={ () => {
-                  onStartModule(item)
-                } }
-                className={ `text-white font-sansation bg-[#CC8448]
+                onClick={() => {
+                  onStartModule(item);
+                }}
+                className={`text-white font-sansation bg-[#CC8448]
         ${isDisabled ? "cursor-not-allowed bg-[#CC8448]/60" : ""}
-        ${getAssessmentStatus(item?.module) ? "px-6 cursor-not-allowed bg-[#CC8448]/60" : "px-12"}
+        ${
+          getAssessmentStatus(item?.module)
+            ? "px-6 cursor-not-allowed bg-[#CC8448]/60"
+            : "px-12"
+        }
         ${assessmentExpired[item?.assessmentId] ? "px-12" : ""}
         focus:ring-4 focus:outline-none tracking-wide focus:ring-[#CC8448]/50 font-medium rounded-lg text-md py-2.5 text-center inline-flex items-center`}
               >
-                { getStatus(item) }
+                {getStatus(item)}
               </button>
             </div>
           </div>
-        )) }
+        ))}
       </div>
-      { isModuleExpired && <ModuleExpiredModal onClose={ () => { setIsModuleExpired(false) } } /> }
+      {isModuleExpired && (
+        <ModuleExpiredModal
+          onClose={() => {
+            setIsModuleExpired(false);
+          }}
+        />
+      )}
     </>
   );
 }

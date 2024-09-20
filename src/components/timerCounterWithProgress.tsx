@@ -58,16 +58,20 @@ export default function TimerCounterWithProgress({
 
   return (
     <>
-      <div className="flex md:flex-row flex-col items-center md:justify-between mb-6 font-sansation  w-[100%]">
-        <div className="flex items-center justify-start w-[65%] flex-wrap text-wrap">
-          <span className="font-bold text-black self-center text-2xl md:text-[32px] flex">
+      <div className="flex md:flex-row flex-col items-center md:justify-between sm:mb-6 mb-2 font-sansation w-[100%]">
+        <div className="flex items-center justify-center w-[65%] flex-wrap text-wrap">
+          <span className="font-bold text-black self-center sm:text-2xl md:text-[32px] text-[20px] flex">
             {title}
           </span>
         </div>
         {showTimer ? (
-          <div className="flex items-center mt-4 md:mt-0 justify-end">
-            <div className="w-full flex">
-              <p className={`text-[18px] ${showProgressFromLT?"text-[#CC8448]":"text-[#FB2121]"} font-semibold`}>
+          <div className="flex items-center sm:mt-4 mt-2 justify-end w-full">
+            <div className="w-full flex justify-between">
+              <p
+                className={`text-[18px] ${
+                  showProgressFromLT ? "text-[#CC8448]" : "text-[#FB2121]"
+                } font-semibold`}
+              >
                 {showProgressFromLT ? "Time Lapsed" : "Auto submit in"}
               </p>
 
@@ -76,7 +80,11 @@ export default function TimerCounterWithProgress({
               ) : (
                 <ReactSVG src={TimeLeftIcon} className="px-2" />
               )}
-              <p className={`text-[18px] ${showProgressFromLT?"text-[#CC8448]":"text-[#FB2121]"} font-semibold min-w-24`}>
+              <p
+                className={`text-[18px] ${
+                  showProgressFromLT ? "text-[#CC8448]" : "text-[#FB2121]"
+                } font-semibold min-w-24`}
+              >
                 {getTimeProgress()} min
               </p>
             </div>

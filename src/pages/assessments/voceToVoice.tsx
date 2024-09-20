@@ -388,7 +388,7 @@ const VoiceToVoice = () => {
 
   const goBack = () => {
     clearStoredSession()
-    window.location.replace(`/assessment/${userId}/${assessmentId}/modules`)
+    window.location.replace(`/candidate/assessment/${userId}/${assessmentId}/modules`)
   }
 
   return (

@@ -3,7 +3,7 @@ import { getAxiosResposeInterceptors } from '../interceptors'
 import { Endpoints } from "../enpoints/v1";
 
 const AxiosService = axios.create({
-  baseURL: 'https://fantasytradingleague.com/api/talaura',
+  baseURL: 'https://dwtc.apiserver.talaura.ai',
 });
 
 AxiosService.interceptors.request.use(

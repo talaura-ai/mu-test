@@ -12,49 +12,49 @@ import PersonNeedMoreInfo from "./pages/assessments/needMoreInfo";
 import VoiceToText from "./pages/assessments/voiceToText";
 import VoiceToVoice from "./pages/assessments/voceToVoice";
 
-function App () {
+function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/candidate">
       <Routes>
         {/* <Route
           path="/assessment/:assessmentId/invitation"
           element={ <VerificationPage /> }
         /> */}
-        <Route element={ <PrivateRoute /> }>
-          <Route path="/" element={ <CommonLayout /> }>
+        <Route element={<PrivateRoute />}>
+          <Route path="/" element={<CommonLayout />}>
             <Route
               path="/assessment/:userId/:assessmentId/share-details"
-              element={ <PersonNeedMoreInfo /> }
+              element={<PersonNeedMoreInfo />}
             />
             <Route
               path="/assessment/:userId/:assessmentId/:testId/coding"
-              element={ <CodingTest /> }
+              element={<CodingTest />}
             />
             <Route
               path="/assessment/:userId/:assessmentId/:testId/video-interview"
-              element={ <VideoTest /> }
+              element={<VideoTest />}
             />
             <Route
               path="/assessment/:userId/:assessmentId/:testId/voice-to-text"
-              element={ <VoiceToText /> }
+              element={<VoiceToText />}
             />
             <Route
               path="/assessment/:userId/:assessmentId/:testId/voice-to-voice"
-              element={ <VoiceToVoice /> }
+              element={<VoiceToVoice />}
             />
             <Route
               path="/assessment/:userId/:assessmentId/:testId"
-              element={ <StartMCQTest /> }
+              element={<StartMCQTest />}
             />
             <Route
               path="/assessment/:userId/:assessmentId/modules"
-              element={ <AssessmentDetails /> }
+              element={<AssessmentDetails />}
             />
             <Route
               path="/assessment/:userId/dashboard"
-              element={ <MyAssessments /> }
+              element={<MyAssessments />}
             />
-            <Route path="/" element={ <VerificationPage /> } />
+            <Route path="/" element={<VerificationPage />} />
           </Route>
         </Route>
       </Routes>

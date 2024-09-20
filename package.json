@@ -2,7 +2,7 @@
   "name": "talaura-ui",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://jgi.talaura.ai/",
+  "homepage": "/candidate",
   "dependencies": {
     "@codemirror/lang-cpp": "^6.0.2",
     "@codemirror/lang-java": "^6.0.1",

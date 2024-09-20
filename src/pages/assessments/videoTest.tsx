@@ -1,7 +1,7 @@
 import VoiceIcon from "../../assets/Group 171.png";
 import MicIcon from "../../assets/svg/videoMicIcon.svg";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import Webcam from "react-webcam";
 import AWS from "aws-sdk";
@@ -15,9 +15,7 @@ import TimerCounterWithProgress from "../../components/timerCounterWithProgress"
 import { v4 as uuidv4 } from "uuid";
 import ModuleConfirmationModal from "../../components/Modals/confirmationModal";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import {
-  getAssessmentsSelector,
-} from "../../store/slices/dashboard-slice/dashboard-selectors";
+import { getAssessmentsSelector } from "../../store/slices/dashboard-slice/dashboard-selectors";
 import {
   getModuleSubmissionDispatcher,
   getUserActivityDispatcher,
@@ -38,13 +36,17 @@ import { detectBrowser } from "../../utils";
 import CustomSpeedChecker from "../../components/Modals/CustomSpeedChecker";
 import aiSpeaking from "../../assets/lottie/aiSpeaking.json";
 import aiListening from "../../assets/lottie/aiListening.json";
+import { createDB } from "../../utils/helper";
 
 const width = 650;
 const height = 650;
 let partNumber = 1;
+let chunkNumber = 0;
 let multipartMap: any = { Parts: [] };
 const bucketName = "masters-unoin";
 const key = `live-video/${Date.now()}.webm`;
+const audioKey = `live-audio/${Date.now()}.webm`;
+let globalSilentTime = moment();
 
 AWS.config.update({
   accessKeyId: "AKIAXYKJWKKMP33E5KUS",
@@ -78,7 +80,7 @@ const VideoTest = () => {
   const [conversationAns, setConversationAns] = useState<string>("");
   const [moduleQuestions, setModuleQuestions] = useState<any>([]);
   const [aiChats, setAIChat] = useState<any>([]);
-  const [isToasterDisplayed, setIsToasterDisplayed] = useState(false);
+  const [isToasterDisplayed, setIsToasterDisplayed] = useState(true);
   const [cameraReady, setCameraReady] = useState(false);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const [networkChecking, setNetworkChecking] = useState(false);
@@ -139,6 +141,7 @@ const VideoTest = () => {
       updateUserActivity("MultipleFaceDetected");
     }
   }, [detected, facesDetected, cameraStats, cameraReady]);
+
   useEffect(() => {
     if (screenfull.isEnabled) {
       screenfull.on("change", handleFullscreenChange);
@@ -218,19 +221,19 @@ const VideoTest = () => {
     clearTimeout(toasterTimeout);
     toasterTimeout = setTimeout(() => {
       setIsToasterDisplayed(false);
-    }, 1000);
+    }, 5000);
     setIsToasterDisplayed(true);
   };
 
   useEffect(() => {
     scrollToBottom();
-    AIChatDataRef.current = aiChats
+    AIChatDataRef.current = aiChats;
   }, [aiChats]);
 
   useEffect(() => {
-    audioStatus.current = 0
-    audioList.current = []
-    audioIndex.current = 0
+    audioStatus.current = 0;
+    audioList.current = [];
+    audioIndex.current = 0;
     const res = sessionStorage.getItem(`${testId}-${userId}`);
     const time = sessionStorage.getItem(`txp-${testId}-${userId}`);
     if (res) {
@@ -261,7 +264,7 @@ const VideoTest = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  function handleVisibilityChange () {
+  function handleVisibilityChange() {
     if (document?.hidden) {
       updateUserActivity("tabChangeDetected");
       setTabSwitchDetected(true);
@@ -299,7 +302,7 @@ const VideoTest = () => {
         });
         setMediaRecorder(recorder);
       } catch (error) {
-        console.log('ERR', error)
+        console.log("ERR", error);
       }
     };
     initMedia();
@@ -343,6 +346,7 @@ const VideoTest = () => {
       });
       // console.log("socket id", newSocket.id);
       newSocket.on("connect", () => {
+        globalSilentTime = moment();
         setIsSocketConnected(true);
         setTimeout(() => {
           setCameraReady(true);
@@ -374,28 +378,36 @@ const VideoTest = () => {
       newSocket.on("pauseAudio", (data) => {
         if (data?.stop && AISpeakingRef?.current) {
           setIsSpeaking(1);
-          console.log('pauseAudio=>****************************')
+          console.log("pauseAudio=>****************************");
+          globalSilentTime = moment();
           if (AISpeakingRef?.current) {
-            let flag = true
-            let updatedArray: any = []
-            for (let index = AIChatDataRef?.current?.length - 1; index >= 0; index--) {
+            let flag = true;
+            let updatedArray: any = [];
+            for (
+              let index = AIChatDataRef?.current?.length - 1;
+              index >= 0;
+              index--
+            ) {
               if (AIChatDataRef?.current?.[index]?.type === "AI" && flag) {
               } else {
-                flag = false
-                updatedArray = [AIChatDataRef?.current?.[index], ...updatedArray]
+                flag = false;
+                updatedArray = [
+                  AIChatDataRef?.current?.[index],
+                  ...updatedArray,
+                ];
               }
             }
             setAIChat((prev: any) => {
               return [...updatedArray];
             });
           }
-          AISpeakingRef.current = false
+          AISpeakingRef.current = false;
           audioElement?.current?.pause();
           audioElement.current.currentTime = 0;
           audioElement.current.src = "";
-          audioStatus.current = 0
-          audioList.current = []
-          audioIndex.current = 0
+          audioStatus.current = 0;
+          audioList.current = [];
+          audioIndex.current = 0;
         }
       });
       newSocket.on("question", (data) => {
@@ -409,15 +421,23 @@ const VideoTest = () => {
         // });
       });
       newSocket.on("answer", (data) => {
-        console.log('ANS---------------------', data?.answer, AISpeakingRef?.current)
+        console.log(
+          "ANS---------------------",
+          data?.answer,
+          AISpeakingRef?.current
+        );
         if (AISpeakingRef?.current) {
-          let flag = true
-          let updatedArray: any = []
-          for (let index = AIChatDataRef?.current?.length - 1; index >= 0; index--) {
+          let flag = true;
+          let updatedArray: any = [];
+          for (
+            let index = AIChatDataRef?.current?.length - 1;
+            index >= 0;
+            index--
+          ) {
             if (AIChatDataRef?.current?.[index]?.type === "AI" && flag) {
             } else {
-              flag = false
-              updatedArray = [AIChatDataRef?.current?.[index], ...updatedArray]
+              flag = false;
+              updatedArray = [AIChatDataRef?.current?.[index], ...updatedArray];
             }
           }
           setAIChat((prev: any) => {
@@ -428,12 +448,12 @@ const VideoTest = () => {
             return [...prev, { type: "User", text: data?.answer }];
           });
         }
-        AISpeakingRef.current = false
+        AISpeakingRef.current = false;
         audioElement?.current?.pause();
         audioElement.current.currentTime = 0;
-        audioStatus.current = 0
-        audioList.current = []
-        audioIndex.current = 0
+        audioStatus.current = 0;
+        audioList.current = [];
+        audioIndex.current = 0;
         setIsSpeaking(0);
         // setConversationAns((prev) => {
         //   return prev + `User:${data?.answer} `;
@@ -446,16 +466,31 @@ const VideoTest = () => {
         clearTimeout(speakTimeout);
         speakTimeout = setTimeout(() => {
           if (audioList?.current?.length) {
-            audioList.current = [...audioList.current, audioUrl]
+            audioList.current = [...audioList.current, audioUrl];
           } else {
-            audioList.current = [audioUrl]
+            audioList.current = [audioUrl];
+            const differenceInMilliseconds = moment().diff(
+              globalSilentTime,
+              "milliseconds"
+            );
+            console.log(
+              "*****differenceInMilliseconds******",
+              differenceInMilliseconds
+            );
+            globalSilentTime = moment();
+            storeSilentAudio(differenceInMilliseconds);
           }
           setIsSpeaking(2);
-          AISpeakingRef.current = true
-          console.log('CCC----', audioStatus.current, audioIndex.current, audioList.current)
+          AISpeakingRef.current = true;
+          console.log(
+            "CCC----",
+            audioStatus.current,
+            audioIndex.current,
+            audioList.current
+          );
           if (audioStatus?.current === 0 && audioList?.current?.length) {
-            audioStatus.current = 1
-            playAudioFile()
+            audioStatus.current = 1;
+            playAudioFile();
           }
         }, 0);
 
@@ -464,23 +499,28 @@ const VideoTest = () => {
         //   audioElement.current.play();
         // }, 200);
         audioElement.current.onended = () => {
-          console.log('ENMDEEDDD----', audioIndex.current, audioList?.current?.length)
+          console.log(
+            "ENMDEEDDD----",
+            audioIndex.current,
+            audioList?.current?.length
+          );
           if (audioList?.current?.length - 1 === audioIndex?.current) {
-            audioStatus.current = 0
-            audioList.current = []
-            audioIndex.current = 0
+            audioStatus.current = 0;
+            audioList.current = [];
+            audioIndex.current = 0;
             audioElement?.current?.pause();
             audioElement.current.currentTime = 0;
             audioElement.current.src = "";
             setIsSpeaking(1);
-            AISpeakingRef.current = false
+            AISpeakingRef.current = false;
+            globalSilentTime = moment();
           } else {
-            audioIndex.current = audioIndex?.current + 1
-            audioStatus.current = 0
+            audioIndex.current = audioIndex?.current + 1;
+            audioStatus.current = 0;
             if (audioStatus?.current === 0 && audioList?.current?.length) {
-              AISpeakingRef.current = true
-              audioStatus.current = 1
-              playAudioFile()
+              AISpeakingRef.current = true;
+              audioStatus.current = 1;
+              playAudioFile();
             }
           }
         };
@@ -498,7 +538,7 @@ const VideoTest = () => {
         mediaRecorder?.stop();
         audioElement?.current?.pause();
         audioElement.current.currentTime = 0;
-        mediaRecorder.removeEventListener("dataavailable", () => { });
+        mediaRecorder.removeEventListener("dataavailable", () => {});
         newSocket?.disconnect();
         if (streamRef?.current) {
           streamRef.current
@@ -518,18 +558,267 @@ const VideoTest = () => {
 
   const playAudioFile = () => {
     try {
-      console.log("PLAY----", audioIndex?.current, audioStatus?.current, audioList?.current)
-      if (audioList?.current?.length - 1 >= audioIndex?.current && audioElement?.current && AISpeakingRef?.current) {
+      if (
+        audioList?.current?.length - 1 >= audioIndex?.current &&
+        audioElement?.current &&
+        AISpeakingRef?.current
+      ) {
         audioElement.current.src = audioList.current[audioIndex.current];
-        audioElement?.current?.play()?.then(() => {
-          console.log("Audio is playing");
-        }).catch(error => {
-          console.log("Play request was interrupted", error);
-        });
+        audioElement?.current
+          ?.play()
+          ?.then(async () => {
+            console.log("Audio is playing");
+            const audioBlob = await fetch(
+              audioList.current[audioIndex.current]
+            ).then((res) => res.blob());
+            console.log("audioBlob=> IDB", audioBlob);
+            saveChunkToIndexedDB(audioBlob, 0, "AI");
+          })
+          .catch((error) => {
+            console.log("Play request was interrupted", error);
+          });
       }
     } catch (error) {
-      console.log('error=>', error)
+      console.log("error=>", error);
     }
+  };
+
+  const storeSilentAudio = async (milli: number) => {
+    const silentBlob = createSilentAudio(milli); // 1 second of silence
+    await saveChunkToIndexedDB(silentBlob, 0, "silent");
+  };
+
+  // Store audio chunk in IndexedDB
+  const saveChunkToIndexedDB = async (
+    blob: Blob,
+    partNumber111: number,
+    type: string
+  ) => {
+    try {
+      chunkNumber++;
+      const db = await createDB();
+      if (db) {
+        await db.put("chunks", { id: chunkNumber, chunk: blob, type });
+        console.log(`Chunk ${chunkNumber} saved to IndexedDB`);
+      }
+    } catch (error) {
+      console.log("Error in saveChunkToIndexedDB", error);
+    }
+  };
+
+  const combineDiscontinuousAudioChunks = useCallback(async () => {
+    try {
+      const db = await createDB();
+      if (db) {
+        const transaction = db.transaction("chunks", "readonly");
+        const store = transaction.objectStore("chunks");
+        const allKeys = await store.getAllKeys();
+        const audioChunks = [];
+
+        for (let key of allKeys) {
+          const record = (await store.get(key)) as {
+            id: number;
+            chunk: Blob;
+            type: string;
+          };
+          audioChunks.push(record.chunk); // Push only the Blob (audio chunk)
+        }
+
+        if (audioChunks.length > 0) {
+          // Create an AudioContext to decode and process audio chunks
+          const audioContext = new AudioContext();
+
+          // Decode all audio chunks asynchronously
+          const decodedChunks = await Promise.all(
+            audioChunks.map(async (chunk) => {
+              const arrayBuffer = await chunk.arrayBuffer();
+              return audioContext.decodeAudioData(arrayBuffer);
+            })
+          );
+
+          // Calculate the total length of the combined buffer
+          const totalLength = decodedChunks.reduce(
+            (sum, buffer) => sum + buffer.length,
+            0
+          );
+
+          // Create a new buffer to hold the combined audio
+          const combinedBuffer = audioContext.createBuffer(
+            decodedChunks[0].numberOfChannels,
+            totalLength,
+            decodedChunks[0].sampleRate
+          );
+
+          // Copy each chunk's buffer data into the combined buffer
+          let offset = 0;
+          for (let buffer of decodedChunks) {
+            for (
+              let channel = 0;
+              channel < buffer.numberOfChannels;
+              channel++
+            ) {
+              combinedBuffer.copyToChannel(
+                buffer.getChannelData(channel),
+                channel,
+                offset
+              );
+            }
+            offset += buffer.length;
+          }
+
+          // Export the combined buffer as a Blob (WAV or another format)
+          const combinedBlob = await exportBufferToWAV(combinedBuffer);
+
+          // Create a URL for the combined audio blob
+          const combinedAudioUrl = URL.createObjectURL(combinedBlob);
+          console.log("Combined audio URL: ", combinedAudioUrl);
+
+          // Create an audio element to play the combined audio
+          // const audioElement = document.createElement("audio");
+          // audioElement.src = combinedAudioUrl;
+          // audioElement.controls = true;
+          // document.body.appendChild(audioElement);
+
+          // Alternatively, download the combined audio file
+          // const downloadLink = document.createElement("a");
+          // downloadLink.href = combinedAudioUrl;
+          // downloadLink.download = "combined_audio.wav"; // Name the file as needed
+          // downloadLink.click();
+
+          const params = {
+            Bucket: bucketName,
+            Key: audioKey,
+            Body: combinedBlob,
+            ContentType: "audio/wav",
+          };
+          try {
+            const res = await s3.upload(params).promise();
+            console.log("res----", res);
+            return res?.Location;
+          } catch (error) {
+            console.log("ERROR---", error);
+            return "";
+          }
+        } else {
+          console.log("No audio chunks found in IndexedDB.");
+          return "";
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      return "";
+    }
+  }, []);
+
+  // Helper function to export the AudioBuffer to WAV format
+  async function exportBufferToWAV(audioBuffer: AudioBuffer) {
+    // Create a new offline audio context for rendering the audio buffer
+    const offlineContext = new OfflineAudioContext(
+      audioBuffer.numberOfChannels,
+      audioBuffer.length,
+      audioBuffer.sampleRate
+    );
+
+    // Create a buffer source for the audio buffer
+    const source = offlineContext.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(offlineContext.destination);
+    source.start();
+
+    // Render the audio data
+    const renderedBuffer = await offlineContext.startRendering();
+
+    // Convert the rendered audio buffer to WAV Blob
+    const wavBlob = audioBufferToWavBlob(renderedBuffer);
+    return wavBlob;
+  }
+
+  // Utility function to convert an AudioBuffer to a WAV Blob
+  function audioBufferToWavBlob(buffer: AudioBuffer) {
+    const numOfChannels = buffer.numberOfChannels;
+    const length = buffer.length * numOfChannels * 2 + 44; // 16-bit PCM
+    const bufferData = new ArrayBuffer(length);
+    const view = new DataView(bufferData);
+
+    // Write WAV container header
+    writeString(view, 0, "RIFF");
+    view.setUint32(4, 36 + buffer.length * numOfChannels * 2, true);
+    writeString(view, 8, "WAVE");
+    writeString(view, 12, "fmt ");
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, numOfChannels, true);
+    view.setUint32(24, buffer.sampleRate, true);
+    view.setUint32(28, buffer.sampleRate * numOfChannels * 2, true);
+    view.setUint16(32, numOfChannels * 2, true);
+    view.setUint16(34, 16, true);
+    writeString(view, 36, "data");
+    view.setUint32(40, buffer.length * numOfChannels * 2, true);
+
+    // Write interleaved PCM samples
+    let offset = 44;
+    for (let i = 0; i < buffer.length; i++) {
+      for (let channel = 0; channel < numOfChannels; channel++) {
+        const sample = buffer.getChannelData(channel)[i] * 0x7fff;
+        view.setInt16(offset, sample < 0 ? sample : sample, true);
+        offset += 2;
+      }
+    }
+
+    return new Blob([view], { type: "audio/wav" });
+  }
+
+  function writeString(view: DataView, offset: number, string: string) {
+    for (let i = 0; i < string.length; i++) {
+      view.setUint8(offset + i, string.charCodeAt(i));
+    }
+  }
+
+  function createSilentAudio(durationMs: number) {
+    const sampleRate = 44100;
+    const numChannels = 1;
+    const bitsPerSample = 16;
+    const numSamples = Math.floor((sampleRate * durationMs) / 1000);
+    const blockAlign = (numChannels * bitsPerSample) / 8;
+    const byteRate = sampleRate * blockAlign;
+    const dataLength = numSamples * blockAlign;
+
+    const buffer = new ArrayBuffer(44 + dataLength);
+    const view = new DataView(buffer);
+
+    /* RIFF identifier */
+    writeString(view, 0, "RIFF");
+    /* file length */
+    view.setUint32(4, 36 + dataLength, true);
+    /* RIFF type */
+    writeString(view, 8, "WAVE");
+    /* format chunk identifier */
+    writeString(view, 12, "fmt ");
+    /* format chunk length */
+    view.setUint32(16, 16, true);
+    /* sample format (PCM) */
+    view.setUint16(20, 1, true);
+    /* channel count */
+    view.setUint16(22, numChannels, true);
+    /* sample rate */
+    view.setUint32(24, sampleRate, true);
+    /* byte rate */
+    view.setUint32(28, byteRate, true);
+    /* block align */
+    view.setUint16(32, blockAlign, true);
+    /* bits per sample */
+    view.setUint16(34, bitsPerSample, true);
+    /* data chunk identifier */
+    writeString(view, 36, "data");
+    /* data chunk length */
+    view.setUint32(40, dataLength, true);
+
+    // Write PCM samples (silence)
+    for (let i = 0; i < numSamples; i++) {
+      view.setInt16(44 + i * 2, 0, true); // Little endian
+    }
+
+    return new Blob([buffer], { type: "audio/wav" });
   }
 
   useEffect(() => {
@@ -561,7 +850,7 @@ const VideoTest = () => {
     }
   }, [liveVideoMediaRecorder]);
 
-  async function uploadChunk (blob: any) {
+  async function uploadChunk(blob: any) {
     const params = {
       Body: blob,
       Bucket: bucketName,
@@ -588,16 +877,16 @@ const VideoTest = () => {
     }
   }
 
-  async function stopRecording () {
+  async function stopRecording() {
     dispatcher(setLoadingDispatcher(true));
     liveVideoMediaRecorder?.stop();
     clearTimeout(speakTimeout);
     audioElement?.current?.pause();
     audioElement.current.currentTime = 0;
     audioElement.current.src = "";
-    audioStatus.current = 0
-    audioList.current = []
-    audioIndex.current = 0
+    audioStatus.current = 0;
+    audioList.current = [];
+    audioIndex.current = 0;
     webcamRef?.current?.video?.srcObject
       ?.getTracks()
       ?.forEach((track: any) => track?.stop());
@@ -605,7 +894,7 @@ const VideoTest = () => {
       webcamRef.current.video.srcObject = null;
     }
     setIsSpeaking(1);
-    AISpeakingRef.current = false
+    AISpeakingRef.current = false;
     if (streamRef?.current) {
       streamRef.current?.getTracks()?.forEach((track: any) => {
         track?.stop();
@@ -615,6 +904,12 @@ const VideoTest = () => {
     }
     if (mediaRecorder) {
       mediaRecorder.stop();
+    }
+    let audioURL: any = "";
+    try {
+      audioURL = await combineDiscontinuousAudioChunks();
+    } catch (error) {
+      console.log("error a", error);
     }
     try {
       // Complete multipart upload
@@ -626,15 +921,18 @@ const VideoTest = () => {
           MultipartUpload: multipartMap,
         })
         .promise();
-      submitTest(completeMultipartUpload?.Location || "");
-      // console.log("Multipart upload completed:", completeMultipartUpload);
+      submitTest(completeMultipartUpload?.Location || "", audioURL);
+      console.log(
+        "Multipart upload completeMultipartUpload:",
+        completeMultipartUpload
+      );
     } catch (err) {
       console.error("Error completing multipart upload:", err);
-      submitTest("");
+      submitTest("", audioURL);
     }
   }
 
-  function arrayBufferToBase64 (buffer: ArrayBuffer): string {
+  function arrayBufferToBase64(buffer: ArrayBuffer): string {
     let binary = "";
     const bytes = new Uint8Array(buffer);
     const len = bytes.byteLength;
@@ -681,32 +979,33 @@ const VideoTest = () => {
   const onSubmitTest = (type: string) => {
     setSubmitTestModal(false);
     if (type === "submit") {
-      // submitTest();
       stopRecording();
     }
   };
 
   const getConversation = () => {
-    let ans = ""
+    let ans = "";
     aiChats?.map((v: any) => {
       if (v?.type === "AI") {
-        ans = ans + `AI:${v?.text} `
+        ans = ans + `AI:${v?.text} `;
       } else {
-        ans = ans + `User:${v?.text} `
+        ans = ans + `User:${v?.text} `;
       }
-    })
-    return ans
-  }
-  const submitTest = async (location: string) => {
+    });
+    return ans;
+  };
+  const submitTest = async (location: string, audioUrl: string) => {
     try {
       const res = await dispatcher(
         getModuleSubmissionDispatcher({
           moduleId: testId,
           videoUrl: location,
+          audioUrl,
           question: [{ ...moduleQuestions?.[0], answer: getConversation() }],
         })
       );
       if (res?.payload.data?.status) {
+        clearIndexedDB();
         toast.success(
           `${assessmentModule?.module?.name} completed successfully!`,
           {}
@@ -725,13 +1024,25 @@ const VideoTest = () => {
     }
   };
 
+  const clearIndexedDB = async () => {
+    const db = await createDB();
+    if (db) {
+      const transaction = db.transaction("chunks", "readwrite");
+      const store = transaction.objectStore("chunks");
+      await store.clear();
+      console.log("IndexedDB cleared.");
+    }
+  };
+
   const onClose = () => {
     setIsInternet5Mb(true);
   };
 
   const goBack = () => {
     clearStoredSession();
-    window.location.replace(`/assessment/${userId}/${assessmentId}/modules`);
+    window.location.replace(
+      `/candidate/assessment/${userId}/${assessmentId}/modules`
+    );
   };
 
   const speedCheckerFun = () => {
@@ -762,42 +1073,42 @@ const VideoTest = () => {
     <>
       <ReactInternetSpeedMeter
         outputType=""
-        pingInterval={ 5000 } // milliseconds
+        pingInterval={5000} // milliseconds
         thresholdUnit="megabyte" // "byte" , "kilobyte", "megabyte"
-        threshold={ 4 }
+        threshold={4}
         imageUrl="https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png"
         downloadSize="500000" //bytes
-        callbackFunctionOnNetworkDown={ (data: any) => {
+        callbackFunctionOnNetworkDown={(data: any) => {
           if (isInternet5Mb) {
             speedCheckerFun();
           }
-        } }
-        callbackFunctionOnNetworkTest={ (data: any) => {
+        }}
+        callbackFunctionOnNetworkTest={(data: any) => {
           if (data >= 4 && !isInternet5Mb) {
             setIsInternet5Mb(true);
             clearTimeout(speedTimer);
           }
-        } }
+        }}
       />
       <div className="sm:p-6 md:px-20 md:py-12 p-4">
-        { isToasterDisplayed && (
+        {isToasterDisplayed && toastMsg && (
           <CustomToaster
-            message={ toastMsg }
-            onClose={ () => {
+            message={toastMsg}
+            onClose={() => {
               setIsToasterDisplayed(false);
-            } }
+            }}
           />
-        ) }
-        { !isInternet5Mb && <CustomSpeedChecker /> }
+        )}
+        {!isInternet5Mb && <CustomSpeedChecker />}
         <TimerCounterWithProgress
-          timestamp={ moduleTime || 0 }
-          title={ "Video Round" }
-          onTimeout={ onTimeout }
-          showTimer={ true }
-          showProgressFromLT={ true }
+          timestamp={moduleTime || 0}
+          title={"Video Round"}
+          onTimeout={onTimeout}
+          showTimer={true}
+          showProgressFromLT={true}
         />
         <div className="flex">
-          <span className="text-[20px] text-black font-sansation font-semibold">
+          <span className="sm:text-[20px] text-[14px] text-black font-sansation font-semibold text-center">
             TALBot is your interviewer, please listen carefully and respond to
             the questions asked by TALBot
           </span>
@@ -807,8 +1118,8 @@ const VideoTest = () => {
           Case Study
         </span>
       </div> */}
-        <div className="flex md:flex-row flex-col md:justify-center mt-8">
-          <div className="flex flex-col w-[65%] h-1/2 md:flex-row justify-between">
+        <div className="flex md:flex-row flex-col md:justify-center sm:mt-8 mt-2">
+          <div className="flex flex-col sm:w-[65%] w-[100%] h-1/2 md:flex-row justify-between">
             {/* <div className="relative flex w-[50%] h-[470px] bg-[#474646] justify-center items-center rounded-xl border border-[#E5A971] mr-4">
               <div className="flex justify-center items-center">
                 <div
@@ -828,24 +1139,24 @@ const VideoTest = () => {
             </div> */}
             <div className="flex relative h-1/2 w-full rounded-xl overflow-hidden">
               <div className="flex rounded-xl w-full overflow-hidden h-[500px] bg-gray-200">
-                { isSocketConnected && (
+                {isSocketConnected && (
                   <Webcam
-                    ref={ webcamRef }
+                    ref={webcamRef}
                     screenshotFormat="image/jpeg"
-                    screenshotQuality={ 1 }
+                    screenshotQuality={1}
                     // audio={userMute}
-                    videoConstraints={ videoConstraints }
-                    onUserMedia={ () => {
+                    videoConstraints={videoConstraints}
+                    onUserMedia={() => {
                       setCameraStats(true);
-                    } }
-                    onUserMediaError={ () => {
+                    }}
+                    onUserMediaError={() => {
                       setCameraStats(false);
-                    } }
+                    }}
                     className="overflow-hidden rounded-xl bg-gray-200 object-cover w-full"
                   />
-                ) }
+                )}
                 <div className="absolute left-6 bottom-4 bg-black opacity-75 text-white font-semibold px-4 py-1 rounded font-sansation capitalize">
-                  { (myAssessments && myAssessments?.[0]?.name) || "Candidate" }
+                  {(myAssessments && myAssessments?.[0]?.name) || "Candidate"}
                 </div>
                 {/* <div className="absolute right-6 bottom-4 text-white  px-4 py-1  ">
                   <ReactSVG
@@ -856,7 +1167,7 @@ const VideoTest = () => {
                     className="h-8 w-10"
                   />
                 </div> */}
-                <div className="absolute bottom-4 right-4 flex w-[200px] h-[200px] bg-[#474646] justify-center items-center rounded-xl border-[2px] border-[#CC8448]">
+                <div className="absolute bottom-4 right-4 flex sm:w-[200px] sm:h-[200px] w-[151px] h-[100pxx] bg-[#474646] justify-center items-center rounded-xl border-[2px] border-[#CC8448]">
                   <div className="flex justify-center items-center">
                     {/* <div
                       className={`h-10 w-10 md:h-[90px] md:w-[90px] bg-white text-[#E5A971] rounded-full text-[20px] md:text-[36px] font-semibold font-sansation flex justify-center items-center ${
@@ -865,61 +1176,65 @@ const VideoTest = () => {
                     >
                       AI
                     </div> */}
-                    { isSpeaking === 2 ? (
+                    {isSpeaking === 2 ? (
                       <Lottie
-                        options={ defaultOptions }
-                        height={ 120 }
-                        width={ 120 }
+                        options={defaultOptions}
+                        height={120}
+                        width={120}
                       />
                     ) : (
                       <Lottie
-                        options={ defaultOptionsLi }
-                        height={ 170 }
-                        width={ 170 }
+                        options={defaultOptionsLi}
+                        height={170}
+                        width={170}
                       />
-                    ) }
-                    { isSpeaking === 2 ? <div
-                      className={ `absolute text-[#E5A971] text-[16px] md:text-[24px] font-semibold font-sansation bg-[#474646]` }
-                    >
-                      AI
-                    </div> : <div
-                      className={ `absolute text-[#E5A971] text-[8px] md:text-[12px] font-semibold font-sansation bg-[#474646]` }
-                    >
-                      { isSpeaking === 0 ? "Thinking" : "Listening" }
-                    </div> }
+                    )}
+                    {isSpeaking === 2 ? (
+                      <div
+                        className={`absolute text-[#E5A971] text-[16px] md:text-[24px] font-semibold font-sansation bg-[#474646]`}
+                      >
+                        AI
+                      </div>
+                    ) : (
+                      <div
+                        className={`absolute text-[#E5A971] text-[8px] md:text-[12px] font-semibold font-sansation bg-[#474646]`}
+                      >
+                        {isSpeaking === 0 ? "Thinking" : "Listening"}
+                      </div>
+                    )}
                   </div>
                   <div className="absolute left-2 bottom-2 bg-black opacity-75 text-white font-semibold px-3 py-1 text-[10px] rounded-[10px] font-sansation">
                     AI Bot
                   </div>
                   <div className="absolute right-2 bottom-2 text-white">
                     <ReactSVG
-                      src={ MicIcon }
-                      style={ { width: "20px", height: "20px" } }
+                      src={MicIcon}
+                      style={{ width: "20px", height: "20px" }}
                     />
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="flex flex-col w-[35%] bg-white shadow rounded-lg p-4 ml-4">
+          <div className="sm:flex hidden flex-col sm:w-[35%] w-[100%] bg-white shadow rounded-lg p-4 sm:ml-4 ml-0 sm:mt-0 mt-4">
             <div className="flex w-full flex-col h-[440px]">
               <div className="flex gap-2 px-2 pb-2">
-                <img src={ VoiceIcon } />
+                <img src={VoiceIcon} />
                 <span className="text-xs text-gray-300 mt-2">CC/Subtitle </span>
               </div>
               <div className="flex flex-col mx-2 bg-white overflow-y-scroll space-y-2">
-                { Array.from(
+                {Array.from(
                   new Map(aiChats?.map((itm: any) => [itm?.text, itm])).values()
                 )?.map((item: any, index: number) => {
                   if (item?.type === "AI") {
                     return (
                       <div
-                        key={ item?.text + index }
+                        key={item?.text + index}
                         className="flex flex-col gap-1 w-full max-w-[80%]"
                       >
                         <div className="flex flex-col leading-1.5 p-4 border-gray-200 bg-[#F5F2F2] rounded-xl">
                           <p className="text-sm font-normal text-gray-900">
-                            { item?.text }
+                            {item?.text}
                           </p>
                         </div>
                       </div>
@@ -927,62 +1242,62 @@ const VideoTest = () => {
                   } else {
                     return (
                       <div
-                        key={ item?.text + index }
+                        key={item?.text + index}
                         className="flex justify-end"
                       >
                         <div className="bg-[#F5F2F2] text-black p-2 rounded-lg max-w-[80%]">
-                          { item?.text }
+                          {item?.text}
                         </div>
                       </div>
                     );
                   }
-                }) }
-                <div ref={ chatEndRef } />
+                })}
+                <div ref={chatEndRef} />
               </div>
             </div>
           </div>
         </div>
-        <div className="flex justify-end py-6 mt-4 font-sansation">
+        <div className="flex sm:justify-end justify-center sm:py-6 mt-4 font-sansation">
           <button
-            className="flex justify-center bg-[#40B24B] px-12 py-2 rounded-lg text-white font-semibold font-sansation"
-            onClick={ () => {
+            className="flex justify-center bg-[#40B24B] sm:px-12 px-8 py-2 rounded-lg text-white font-semibold font-sansation"
+            onClick={() => {
               setSubmitTestModal(true);
-            } }
+            }}
           >
             Submit
           </button>
         </div>
-        { submitTestModal ? (
+        {submitTestModal ? (
           <ModuleConfirmationModal
-            onPress={ (v) => {
+            onPress={(v) => {
               onSubmitTest(v);
-            } }
-            title={ assessmentModule?.module?.name }
+            }}
+            title={assessmentModule?.module?.name}
           />
-        ) : null }
-        { isExitFullScreen ? (
+        ) : null}
+        {isExitFullScreen ? (
           <ExitFullScreenModal
-            onPress={ (v) => {
+            onPress={(v) => {
               onExitAction(v);
-            } }
+            }}
           />
-        ) : null }
-        { networkChecking && <InternetModal /> }
-        {/* { !isInternet5Mb && <InternetSpeedModal onClose={ () => { onClose() } } /> } */ }
-        { tabSwitchDetected && (
+        ) : null}
+        {networkChecking && <InternetModal />}
+        {/* { !isInternet5Mb && <InternetSpeedModal onClose={ () => { onClose() } } /> } */}
+        {tabSwitchDetected && (
           <TabChangeDetectionModal
-            onPress={ () => {
+            onPress={() => {
               setTabSwitchDetected(false);
-            } }
+            }}
           />
-        ) }
-        { quickStartInSafari && (
+        )}
+        {quickStartInSafari && (
           <QuickStartModal
-            onClose={ () => {
+            onClose={() => {
               setQuickStartInSafari(false);
-            } }
+            }}
           />
-        ) }
+        )}
       </div>
     </>
   );
