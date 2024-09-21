@@ -10,7 +10,7 @@ export default function VoiceToVideoInstructions({ test }: any) {
             1.{" "}
             <span className=" text-black sm:text-[18px] text-[11px] font-medium">
               Ensure you have a stable internet connection. Choose a quiet,
-              well-lit room free from distractions
+              well-lit room free from distractions.
             </span>
           </span>
           <span className="sm:text-[18px] text-[11px] font-semibold text-[#7A8A94] py-1">
@@ -38,21 +38,21 @@ export default function VoiceToVideoInstructions({ test }: any) {
             <span className=" text-black sm:text-[18px] text-[11px] font-medium">
               You will be monitored throughout the assessment via webcam and
               microphone. Any suspicious activity may be flagged and could
-              result in disqualification
+              result in disqualification.
             </span>
           </span>
           <span className="sm:text-[18px] text-[11px] font-semibold text-[#7A8A94] py-1">
             6.{" "}
             <span className=" text-black sm:text-[18px] text-[11px] font-medium">
               Always remain in front of your camera during the test. Moving out
-              of the camera's view can be considered suspicious activity
+              of the camera's view can be considered suspicious activity.
             </span>
           </span>
           <span className="sm:text-[18px] text-[11px] font-semibold text-[#7A8A94] py-1">
             7.{" "}
             <span className=" text-black sm:text-[18px] text-[11px] font-medium">
               You cannot switch tabs during the test. If you switch tabs, your
-              interview may be flagged or automatically submitted
+              interview may be flagged or automatically submitted.
             </span>
           </span>
           <span className="sm:text-[18px] text-[11px] font-semibold text-[#7A8A94] py-1">

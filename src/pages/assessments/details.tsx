@@ -208,14 +208,15 @@ function AssessmentDetails() {
     let w = detectBrowser() === "Edge" ? 300 : 50;
     const widthThreshold = window.outerWidth - window.innerWidth > w;
     const heightThreshold = window.outerHeight - window.innerHeight > h;
-    if (widthThreshold || heightThreshold) {
-      toast.error(
-        `Alert: Your Dev Tools Opened, Please close them before proceed!`,
-        {}
-      );
-    } else {
-      checkInternetSpeed();
-    }
+    // if (widthThreshold || heightThreshold) {
+    //   toast.error(
+    //     `Alert: Your Dev Tools Opened, Please close them before proceed!`,
+    //     {}
+    //   );
+    // }
+    // else {
+    checkInternetSpeed();
+    // }
   };
 
   React.useEffect(() => {
