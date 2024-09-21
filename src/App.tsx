@@ -14,7 +14,8 @@ import VoiceToVoice from "./pages/assessments/voceToVoice";
 
 function App() {
   return (
-    <BrowserRouter basename="/candidate">
+    // later add 'basename="/candidate"' in the browser router tag
+    <BrowserRouter>
       <Routes>
         {/* <Route
           path="/assessment/:assessmentId/invitation"
