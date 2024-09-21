@@ -57,7 +57,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "CI=false react-scripts buil",
+    "build": "react-scripts buil",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
