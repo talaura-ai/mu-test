@@ -2,7 +2,7 @@ import VoiceIcon from "../../assets/Group 171.png";
 import MicIcon from "../../assets/svg/videoMicIcon.svg";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 import Webcam from "react-webcam";
 import AWS from "aws-sdk";
 import Lottie from "react-lottie";
@@ -60,6 +60,7 @@ const VideoTest = () => {
   const navigate = useNavigate();
   const { assessmentId, testId, userId } = useParams();
   const chatEndRef: any = useRef(null);
+  const socketRef: any = useRef(null);
   const myAssessments = useAppSelector(getAssessmentsSelector);
   const dispatcher = useAppDispatch();
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
@@ -89,7 +90,7 @@ const VideoTest = () => {
   const [moduleTime, setModuleTime] = useState(0);
   const [tabSwitchDetected, setTabSwitchDetected] = useState(false);
   const [quickStartInSafari, setQuickStartInSafari] = useState(false);
-
+  const [submitLoaderMessage, setSubmitLoaderMessage] = useState(false);
   const state = useNetworkState();
   let internetTimer: any = null;
   let speedTimer: any = null;
@@ -338,6 +339,9 @@ const VideoTest = () => {
         },
         transports: ["websocket"],
       });
+
+      socketRef.current = newSocket;
+
       newSocket.on("connect_error", (error) => {
         console.error("Connection error:=>", error);
       });
@@ -979,7 +983,11 @@ const VideoTest = () => {
   const onSubmitTest = (type: string) => {
     setSubmitTestModal(false);
     if (type === "submit") {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
       stopRecording();
+      setSubmitLoaderMessage(true);
     }
   };
 
@@ -1297,6 +1305,25 @@ const VideoTest = () => {
               setQuickStartInSafari(false);
             }}
           />
+        )}
+        {submitLoaderMessage && (
+          <>
+            <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed top-2/3 left-1/2 -translate-x-1/2 -translate-y-1/2 inset-0 z-[60] outline-none focus:outline-none">
+              <div className="relative mx-auto sm:w-[550px] w-[90%]">
+                <div className="border-2 border-[#cc8448] rounded-xl overflow-hidden shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                  <div className="relative flex-auto justify-center flex-col items-center">
+                    <h1 className="text-black leading-relaxed px-8 pt-4 font-sansation font-medium text-[22px] text-center">
+                      You interview is being submitted.
+                    </h1>
+                    <h2 className="text-black leading-relaxed px-8 pb-4 font-sansation font-medium text-[16px] text-center">
+                      Please do not close this tab/window.
+                    </h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* <div className="opacity-25 fixed inset-0 z-40 bg-black"></div> */}
+          </>
         )}
       </div>
     </>

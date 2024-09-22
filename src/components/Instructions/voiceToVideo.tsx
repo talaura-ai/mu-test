@@ -16,27 +16,27 @@ export default function VoiceToVideoInstructions({ test }: any) {
           <span className="sm:text-[18px] text-[11px] font-semibold text-[#7A8A94] py-1">
             2.{" "}
             <span className=" text-black sm:text-[18px] text-[11px] font-medium">
-              The assessment consists of a varying number of questions. The
-              exact number may change depending on your responses.
+              The interview consists of a varying number of questions. The exact
+              number may change depending on your responses.
             </span>
           </span>
           <span className="sm:text-[18px] text-[11px] font-semibold text-[#7A8A94] py-1">
             3.{" "}
             <span className=" text-black sm:text-[18px] text-[11px] font-medium">
-              You have {test?.time || 0} minutes to complete the test.
+              You have {test?.time || 0} minutes to complete the interview.
             </span>
           </span>
           <span className="sm:text-[18px] text-[11px] font-semibold text-[#7A8A94] py-1">
             4.{" "}
             <span className=" text-black sm:text-[18px] text-[11px] font-medium">
-              The test is conducted by an AI system, which will narrate each
-              question.
+              The interview is conducted by an AI system, which will narrate
+              each question.
             </span>
           </span>
           <span className="sm:text-[18px] text-[11px] font-semibold text-[#7A8A94] py-1">
             5.{" "}
             <span className=" text-black sm:text-[18px] text-[11px] font-medium">
-              You will be monitored throughout the assessment via webcam and
+              You will be monitored throughout the interview via webcam and
               microphone. Any suspicious activity may be flagged and could
               result in disqualification.
             </span>
@@ -44,28 +44,28 @@ export default function VoiceToVideoInstructions({ test }: any) {
           <span className="sm:text-[18px] text-[11px] font-semibold text-[#7A8A94] py-1">
             6.{" "}
             <span className=" text-black sm:text-[18px] text-[11px] font-medium">
-              Always remain in front of your camera during the test. Moving out
-              of the camera's view can be considered suspicious activity.
+              Always remain in front of your camera during the interview. Moving
+              out of the camera's view can be considered suspicious activity.
             </span>
           </span>
           <span className="sm:text-[18px] text-[11px] font-semibold text-[#7A8A94] py-1">
             7.{" "}
             <span className=" text-black sm:text-[18px] text-[11px] font-medium">
-              You cannot switch tabs during the test. If you switch tabs, your
-              interview may be flagged or automatically submitted.
+              You cannot switch tabs during the interview. If you switch tabs,
+              your interview may be flagged or automatically submitted.
             </span>
           </span>
           <span className="sm:text-[18px] text-[11px] font-semibold text-[#7A8A94] py-1">
             8.{" "}
             <span className=" text-black sm:text-[18px] text-[11px] font-medium">
               Sharing your screen or any part of your screen is strictly
-              prohibited during the test.
+              prohibited during the interview.
             </span>
           </span>
           <span className="sm:text-[18px] text-[11px] font-semibold text-[#7A8A94] py-1">
             9.{" "}
             <span className=" text-black sm:text-[18px] text-[11px] font-medium">
-              If you submit the assessment, you will not be able to restart or
+              If you submit the interview, you will not be able to restart or
               reopen it.
             </span>
           </span>
