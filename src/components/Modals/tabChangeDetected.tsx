@@ -9,7 +9,7 @@ export default function TabChangeDetectionModal(
 ) {
   return (
     <>
-      <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+      <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-[70] outline-none focus:outline-none">
         <div className="relative mx-auto sm:w-[550px] w-[90%]">
           <div className="border-0 rounded-xl overflow-hidden shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
             <div className="relative flex-auto justify-center flex-col items-center">

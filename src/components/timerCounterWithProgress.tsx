@@ -59,14 +59,14 @@ export default function TimerCounterWithProgress({
   return (
     <>
       <div className="flex md:flex-row flex-col items-center md:justify-between sm:mb-6 mb-2 font-sansation w-[100%]">
-        <div className="flex items-center justify-center w-[65%] flex-wrap text-wrap">
+        <div className="flex items-center sm:justify-between justify-center w-[65%] flex-wrap text-wrap">
           <span className="font-bold text-black self-center sm:text-2xl md:text-[32px] text-[20px] flex">
             {title}
           </span>
         </div>
         {showTimer ? (
-          <div className="flex items-center sm:mt-4 mt-2 justify-end w-full">
-            <div className="w-full flex justify-between">
+          <div className="flex items-center sm:mt-4 mt-2 justify-center w-full">
+            <div className="w-full flex sm:justify-end justify-center">
               <p
                 className={`text-[18px] ${
                   showProgressFromLT ? "text-[#CC8448]" : "text-[#FB2121]"
