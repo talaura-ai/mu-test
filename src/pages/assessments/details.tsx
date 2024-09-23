@@ -208,14 +208,15 @@ function AssessmentDetails() {
     let w = detectBrowser() === "Edge" ? 300 : 50;
     const widthThreshold = window.outerWidth - window.innerWidth > w;
     const heightThreshold = window.outerHeight - window.innerHeight > h;
-    if (widthThreshold || heightThreshold) {
-      toast.error(
-        `Alert: Your Dev Tools Opened, Please close them before proceed!`,
-        {}
-      );
-    } else {
-      checkInternetSpeed();
-    }
+    // if (widthThreshold || heightThreshold) {
+    //   toast.error(
+    //     `Alert: Your Dev Tools Opened, Please close them before proceed!`,
+    //     {}
+    //   );
+    // }
+    // else {
+    checkInternetSpeed();
+    // }
   };
 
   React.useEffect(() => {
@@ -310,7 +311,7 @@ function AssessmentDetails() {
                 {["Completed"].includes(item?.status) ? (
                   <button
                     type="button"
-                    className="text-white bg-[#CC8448]/80 font-sansation tracking-wide font-medium rounded-lg text-md sm:px-6 px-5 sm:py-2.5 py-1.5 text-center inline-flex items-center cursor-not-allowed"
+                    className="text-white bg-[#CC8448]/80 font-sansation tracking-wide font-medium rounded-lg text-md sm:px-6 px-3 sm:py-2.5 py-1.5 text-center inline-flex items-center cursor-not-allowed"
                   >
                     Completed
                   </button>
@@ -318,7 +319,7 @@ function AssessmentDetails() {
                 {["Pending"].includes(item?.status) ? (
                   <button
                     type="button"
-                    className="text-white bg-[#EE4B2B]/80 font-sansation tracking-wide font-medium rounded-lg text-md sm:px-6 px-5 sm:py-2.5 py-1.5  text-center inline-flex items-center cursor-not-allowed"
+                    className="text-white bg-[#EE4B2B]/80 font-sansation tracking-wide font-medium rounded-lg text-md sm:px-6 px-3 sm:py-2.5 py-1.5  text-center inline-flex items-center cursor-not-allowed"
                   >
                     Interrupted
                   </button>

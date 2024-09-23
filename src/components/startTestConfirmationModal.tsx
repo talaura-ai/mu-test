@@ -49,7 +49,7 @@ export default function StartTestConfirmationModal(props: any) {
                 <CodingInstructions test={props?.selectedTest} />
               ) : null}
             </div>
-            <div className="flex items-center sm:justify-between justify-evenly border-t-[#CCC] border-t border-solid sm:py-4 py-2">
+            <div className="flex items-center justify-center border-t-[#CCC] border-t border-solid sm:py-4 py-2">
               <button
                 onClick={() => {
                   props?.onClose();

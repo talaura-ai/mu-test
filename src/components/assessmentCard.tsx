@@ -30,8 +30,8 @@ function AssessmentCard({ onExpired }: any) {
   return (
     <>
       <div className="flex flex-wrap items-center justify-center md:mb-12 mb-6 ">
-        <div className="flex md:flex-row flex-col items-center justify-around md:justify-between md:w-[55%] w-full bg-white rounded-lg shadow-lg sm:px-10 px-6   py-6">
-          <div className="flex flex-col justify-center md:max-w-[40%]">
+        <div className="flex md:flex-row flex-col items-center justify-around md:justify-between md:w-[55%]  w-full bg-white rounded-lg shadow-lg sm:px-10 px-6   py-6">
+          <div className="flex justify-center flex-col items-start sm:w-[40%] w-[100%]">
             <span className="sm:text-[36px] text-[26px] sm:text-left text-center font-semibold text-[#F2BC84] self-center sm:leading-[38px] leading-[30px] font-sansation">
               {selectAssessment?.assessmentName || ""}
             </span>
@@ -39,7 +39,7 @@ function AssessmentCard({ onExpired }: any) {
               Sales Department
             </span> */}
           </div>
-          <div className="flex w-full justify-between sm:mt-0 mt-4">
+          <div className="flex justify-between sm:mt-0 mt-4 sm:w-[60%] w-[100%]">
             <div className="flex flex-col justify-center mb-4">
               <ReactSVG src={CalenderIcon} className="h-[20px] w-[20px]" />
               <span className="sm:text-[16px] text-[10px] font-medium text-[#5C7CFA] leading-[18px] font-sansation mt-1.5">
